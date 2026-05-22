@@ -4,6 +4,7 @@
 import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore, Student, Gender } from "@/lib/student-store";
+import { useSessionStore } from "@/lib/session-store";
 import {
   Table,
   TableBody,
@@ -28,12 +29,12 @@ import { Plus, Search, Filter, Trash2, Edit, CheckCircle2, Calendar } from "luci
 import { Badge } from "@/components/ui/badge";
 
 export default function PatSatPage() {
-  const { students, addStudent, updateStudent, deleteStudent, isLoaded } = useStudentStore();
+  const { students, addStudent, updateStudent, deleteStudent, isLoaded: studentsLoaded } = useStudentStore();
+  const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
+  
   const [search, setSearch] = useState("");
   const [filterGender, setFilterGender] = useState<string>("all");
-  const [academicYear, setAcademicYear] = useState("2024-25");
   const [selectedStandard, setSelectedStandard] = useState("all");
-  const [semester, setSemester] = useState("Semester 1");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
@@ -48,7 +49,7 @@ export default function PatSatPage() {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  if (!isLoaded) return null;
+  if (!studentsLoaded || !sessionLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
@@ -87,7 +88,7 @@ export default function PatSatPage() {
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
               <Calendar className="w-4 h-4 text-muted-foreground" />
-              <Select value={academicYear} onValueChange={setAcademicYear}>
+              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
                 <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
                   <SelectValue placeholder="Year" />
                 </SelectTrigger>
@@ -98,13 +99,14 @@ export default function PatSatPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Select value={semester} onValueChange={setSemester}>
-              <SelectTrigger className="w-[140px] bg-white font-bold text-xs">
+            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
+              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Semester 1">Semester 1</SelectItem>
                 <SelectItem value="Semester 2">Semester 2</SelectItem>
+                <SelectItem value="Annual">Annual</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -158,8 +160,31 @@ export default function PatSatPage() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Student Name</Label>
-                  <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                  <Label>Student Profile</Label>
+                  <Select 
+                    value={formData.name} 
+                    onValueChange={(val) => {
+                      const student = students.find(s => s.name === val);
+                      if (student) {
+                        setFormData({
+                          ...formData,
+                          name: student.name,
+                          age: student.age,
+                          gender: student.gender,
+                          academicStandard: student.academicStandard
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pick a student..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {students.map(s => (
+                        <SelectItem key={s.id} value={s.name}>{s.name} ({s.academicStandard})</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
