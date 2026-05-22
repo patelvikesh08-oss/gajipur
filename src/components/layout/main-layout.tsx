@@ -29,7 +29,8 @@ import {
   GraduationCap,
   Trophy,
   PieChart,
-  IdCard
+  IdCard,
+  FileText
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -50,6 +51,7 @@ const examinationSubItems = [
   { name: "SVADHYAY", href: "/svadhyay", icon: BookOpen },
   { name: "PAT/SAT", href: "/pat-sat", icon: CheckCircle2 },
   { name: "Top Performers", href: "/top-performers", icon: Trophy },
+  { name: "Report Card", href: "/report-card", icon: FileText },
   { name: "Results", href: "/results", icon: PieChart },
 ];
 
