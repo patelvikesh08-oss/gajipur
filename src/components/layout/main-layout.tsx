@@ -14,6 +14,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { 
   LayoutDashboard,
@@ -43,6 +44,7 @@ import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import React from "react";
 
 const mainNavigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -68,12 +70,69 @@ const settingsSubItems = [
   { name: "Patrak-B Config", href: "/patrak-b-config", icon: Settings2 },
 ];
 
+/**
+ * Helper component that consumes useSidebar to handle auto-collapse logic
+ */
+function MainLayoutContent({ children, pathname }: { children: React.ReactNode, pathname: string }) {
+  const { setOpen, setOpenMobile, isMobile, open } = useSidebar();
+
+  const handleContentClick = () => {
+    if (open) {
+      if (isMobile) {
+        setOpenMobile(false);
+      } else {
+        setOpen(false);
+      }
+    }
+  };
+
+  return (
+    <SidebarInset onClick={handleContentClick} className="bg-[#f3f4f7] transition-all duration-300">
+      <header className="flex h-16 shrink-0 items-center justify-between gap-2 bg-white px-6 shadow-sm border-b no-print">
+        <div className="flex items-center gap-4 flex-1">
+          <SidebarTrigger />
+          <div className="relative w-64 max-sm:hidden">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search Dashboard..."
+              className="pl-9 border-none bg-transparent shadow-none focus-visible:ring-0"
+            />
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors cursor-pointer">
+            <Avatar className="w-8 h-8 border border-green-500 p-0.5">
+              <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
+            </Avatar>
+            <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="p-2 hover:bg-muted rounded-full relative">
+              <Bell className="w-5 h-5 text-muted-foreground" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-pink-500 rounded-full border-2 border-white" />
+            </button>
+            <button className="p-2 hover:bg-muted rounded-full">
+              <Menu className="w-5 h-5 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+      </header>
+      <main className="flex-1 overflow-auto p-4 md:p-8">
+        <div className="mx-auto max-w-7xl space-y-8">
+          {children}
+        </div>
+      </main>
+    </SidebarInset>
+  );
+}
+
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
     <SidebarProvider>
-      <Sidebar className="border-r border-sidebar-border bg-white">
+      <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-white no-print">
         <SidebarHeader className="p-6 border-b border-sidebar-border">
           <div className="flex items-center gap-3 mb-8">
             <span className="font-headline font-bold text-xl text-primary tracking-tight">EduPulse Admin</span>
@@ -190,43 +249,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset className="bg-[#f3f4f7]">
-        <header className="flex h-16 shrink-0 items-center justify-between gap-2 bg-white px-6 shadow-sm border-b">
-          <div className="flex items-center gap-4 flex-1">
-            <SidebarTrigger />
-            <div className="relative w-64 max-sm:hidden">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search Dashboard..."
-                className="pl-9 border-none bg-transparent shadow-none focus-visible:ring-0"
-              />
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors cursor-pointer">
-              <Avatar className="w-8 h-8 border border-green-500 p-0.5">
-                <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
-              </Avatar>
-              <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="p-2 hover:bg-muted rounded-full relative">
-                <Bell className="w-5 h-5 text-muted-foreground" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-pink-500 rounded-full border-2 border-white" />
-              </button>
-              <button className="p-2 hover:bg-muted rounded-full">
-                <Menu className="w-5 h-5 text-muted-foreground" />
-              </button>
-            </div>
-          </div>
-        </header>
-        <main className="flex-1 overflow-auto p-8">
-          <div className="mx-auto max-w-7xl space-y-8">
-            {children}
-          </div>
-        </main>
-      </SidebarInset>
+      <MainLayoutContent pathname={pathname}>{children}</MainLayoutContent>
     </SidebarProvider>
   );
 }

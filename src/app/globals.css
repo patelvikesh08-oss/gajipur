@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,27 +34,6 @@
     --sidebar-border: 220 20% 92%;
     --sidebar-ring: 224 72% 52%;
   }
-  .dark {
-    --background: 224 71% 4%;
-    --foreground: 210 40% 98%;
-    --card: 224 71% 6%;
-    --card-foreground: 210 40% 98%;
-    --popover: 224 71% 6%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 224 72% 52%;
-    --primary-foreground: 224 71% 4%;
-    --secondary: 224 71% 12%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 224 71% 12%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 191 76% 48%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 224 71% 12%;
-    --input: 224 71% 12%;
-    --ring: 224 72% 52%;
-  }
 }
 
 @layer base {
@@ -75,25 +55,42 @@
 }
 
 @media print {
+  /* Hide all UI elements that are not part of the content */
   .no-print, 
   aside, 
   header,
   [data-sidebar="trigger"],
-  .sidebar-provider,
+  [data-sidebar="sidebar"],
   button,
   .scroll-bar {
     display: none !important;
+  }
+
+  /* Reset layout constraints to ensure content uses full width */
+  :root {
+    --sidebar-width: 0px !important;
+    --sidebar-width-icon: 0px !important;
   }
 
   body {
     background: white !important;
     padding: 0 !important;
     margin: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Target the sidebar provider wrapper to reset grid/flex layout */
+  .group\/sidebar-wrapper {
+    display: block !important;
+    width: 100% !important;
   }
 
   main {
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
     overflow: visible !important;
   }
 
@@ -125,7 +122,6 @@
     border-radius: 0 !important;
   }
 
-  /* Force table to fit or split correctly */
   @page {
     size: landscape;
     margin: 1cm;
