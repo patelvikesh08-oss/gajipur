@@ -69,13 +69,14 @@
     margin: 0 !important;
   }
 
-  /* Target the Next.js and Sidebar layout wrappers specifically */
+  /* Target the Next.js and Sidebar layout wrappers specifically to prevent blank page bug */
   .group\/sidebar-wrapper,
   [data-sidebar="inset"],
   main,
   .min-h-svh,
   .min-h-screen,
-  div[data-radix-popper-content-wrapper] {
+  div[data-sidebar="inset"],
+  div[data-sidebar="wrapper"] {
     display: block !important;
     min-height: 0 !important;
     height: auto !important;
@@ -96,17 +97,16 @@
   [data-sidebar="sidebar"],
   button,
   .scroll-bar,
-  [role="scrollbar"],
-  .custom-scrollbar {
+  [role="scrollbar"] {
     display: none !important;
   }
 
-  /* Checkbox Print Visibility Fix - JUST THE TICK, NO FILL */
+  /* Checkbox Print Visibility Fix - JUST THE TICK, NO BOX, NO FILL */
   [role="checkbox"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    border: 1px solid #000 !important;
-    background-color: transparent !important; /* NO SOLID BOX FILL */
+    border: none !important; /* REMOVE THE BOX */
+    background: transparent !important;
     opacity: 1 !important;
     visibility: visible !important;
     display: flex !important;
@@ -114,21 +114,20 @@
     justify-content: center !important;
     width: 12px !important;
     height: 12px !important;
-    border-radius: 1px !important;
     box-shadow: none !important;
   }
 
-  /* Ensure the tick mark itself is high-contrast black */
+  /* Ensure the tick mark itself is high-contrast black and bold */
   [role="checkbox"][data-state="checked"] svg {
     color: #000 !important;
     stroke: #000 !important;
-    stroke-width: 3px !important; /* Make tick bolder for print */
+    stroke-width: 4px !important; /* Make tick extra bold for visibility */
     fill: none !important;
     opacity: 1 !important;
     visibility: visible !important;
     display: block !important;
-    width: 10px !important;
-    height: 10px !important;
+    width: 12px !important;
+    height: 12px !important;
   }
 
   /* Table Specific Printing */
