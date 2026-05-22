@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -24,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit, ScrollText, Download } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, ScrollText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function PatrakBPage() {
@@ -77,10 +76,6 @@ export default function PatrakBPage() {
             </div>
             <h1 className="text-2xl font-bold text-slate-800">PATRAK-B (Internal Progress Records)</h1>
           </div>
-          <Button variant="outline" className="font-bold gap-2">
-            <Download className="w-4 h-4" />
-            Export Patrak-B
-          </Button>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">

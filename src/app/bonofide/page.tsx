@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
-import { useStudentStore, Student } from "@/lib/student-store";
+import { useStudentStore } from "@/lib/student-store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { IdCard, Printer, FileText, Download, CheckCircle2 } from "lucide-react";
+import { IdCard, FileText, Download, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function BonofidePage() {
@@ -16,10 +16,6 @@ export default function BonofidePage() {
   if (!isLoaded) return null;
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
-
-  const handlePrint = () => {
-    window.print();
-  };
 
   return (
     <MainLayout>
@@ -41,6 +37,7 @@ export default function BonofidePage() {
           <CardContent className="flex flex-col sm:flex-row gap-4 items-end">
             <div className="flex-1 space-y-2">
               <label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Student Name</label>
+              <span className="block text-[10px] text-muted-foreground mt-1">Select from the dropdown to preview</span>
               <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a student..." />
@@ -54,14 +51,6 @@ export default function BonofidePage() {
                 </SelectContent>
               </Select>
             </div>
-            <Button 
-              disabled={!selectedStudentId} 
-              onClick={handlePrint}
-              className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20"
-            >
-              <Printer className="w-4 h-4" />
-              Print Certificate
-            </Button>
           </CardContent>
         </Card>
 
@@ -75,7 +64,7 @@ export default function BonofidePage() {
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" className="font-bold gap-2">
                   <Download className="w-3.5 h-3.5" />
-                  PDF
+                  Download PDF
                 </Button>
                 <Badge className="bg-green-500 font-bold flex gap-1">
                   <CheckCircle2 className="w-3 h-3" /> Ready
@@ -84,7 +73,7 @@ export default function BonofidePage() {
             </div>
 
             {/* Certificate Template */}
-            <div className="relative bg-white p-12 border-8 border-double border-slate-200 shadow-2xl rounded-sm font-serif min-h-[600px] flex flex-col justify-between print:border-none print:shadow-none print:p-0">
+            <div className="relative bg-white p-12 border-8 border-double border-slate-200 shadow-2xl rounded-sm font-serif min-h-[600px] flex flex-col justify-between">
               <div className="text-center space-y-6">
                 <div className="space-y-2">
                   <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase">EduPulse Global Academy</h1>

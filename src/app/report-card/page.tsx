@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
-import { useStudentStore, Student } from "@/lib/student-store";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useStudentStore } from "@/lib/student-store";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Printer, GraduationCap, Layers, Users, CheckCircle2 } from "lucide-react";
+import { FileText, GraduationCap, Layers, Users } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -35,10 +35,6 @@ export default function ReportCardPage() {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   const activeReports = isBulkMode 
     ? students.filter(s => selectedStudentIds.includes(s.id))
     : (selectedStudentIds[0] ? [students.find(s => s.id === selectedStudentIds[0])!] : []);
@@ -53,8 +49,8 @@ export default function ReportCardPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto space-y-8 pb-20 print:p-0 print:m-0 print:max-w-none print:w-full">
-        <div className="flex items-center justify-between print:hidden">
+      <div className="max-w-6xl mx-auto space-y-8 pb-20">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <GraduationCap className="w-6 h-6 text-primary" />
@@ -63,9 +59,9 @@ export default function ReportCardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 print:block print:w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Configuration Sidebar */}
-          <Card className="lg:col-span-1 border-none shadow-md h-fit sticky top-8 print:hidden">
+          <Card className="lg:col-span-1 border-none shadow-md h-fit sticky top-8">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Users className="w-5 h-5 text-primary" />
@@ -130,48 +126,20 @@ export default function ReportCardPage() {
           </Card>
 
           {/* Preview and Report Content */}
-          <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0 print:block">
-            {activeReports.length > 0 && (
-              <div className="flex justify-between items-center bg-white p-4 rounded-xl border shadow-sm print:hidden sticky top-8 z-10">
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none font-bold">
-                    {activeReports.length} Reports Ready
-                  </Badge>
-                </div>
-                <Button 
-                  onClick={handlePrint}
-                  className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-xl shadow-primary/30 h-11 px-8 rounded-full"
-                >
-                  <Printer className="w-4 h-4" />
-                  Print Reports
-                </Button>
-              </div>
-            )}
-
-            <div className="print-area space-y-8 print:space-y-0 print:w-full">
-              {activeReports.map((student, index) => {
-                const isEvenStudent = index % 2 !== 0;
-                // Alternate order for 2-in-1 filing requirement
-                // Student 1 (index 0, even in logic): 1,2
-                // Student 2 (index 1, odd in logic): 2,1
-                const parts = isEvenStudent && isBulkMode
-                  ? [
-                      { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
-                      { id: 'patrakf', title: 'PATRAK - F', pageNum: 1 }
-                    ]
-                  : [
-                      { id: 'patrakf', title: 'PATRAK - F', pageNum: 1 },
-                      { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 }
-                    ];
+          <div className="lg:col-span-3 space-y-8">
+            <div className="space-y-8">
+              {activeReports.map((student) => {
+                const parts = [
+                  { id: 'patrakf', title: 'PATRAK - F', pageNum: 1 },
+                  { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 }
+                ];
 
                 return (
-                  <div key={student.id} className="report-student-group print:flex print:flex-row print:w-full print:page-break-after-always print:h-screen print:m-0 print:p-0">
+                  <div key={student.id} className="flex flex-col gap-8">
                     {parts.map((part) => (
                       <div 
                         key={`${student.id}-${part.id}`} 
-                        className={`print-page bg-white p-10 border border-slate-200 shadow-xl rounded-sm mb-8 print:shadow-none print:border-none print:m-0 print:p-10 flex flex-col justify-between
-                          ${twoInOne ? "print:w-1/2 print:h-screen print:border-r print:border-slate-100" : "print:w-full print:h-screen print:page-break-after-always"}
-                        `}
+                        className="bg-white p-10 border border-slate-200 shadow-xl rounded-sm flex flex-col justify-between min-h-[800px]"
                       >
                         <div className="report-content">
                           <div className="text-center mb-8 space-y-2">
@@ -267,7 +235,7 @@ export default function ReportCardPage() {
               })}
 
               {activeReports.length === 0 && (
-                <div className="text-center py-40 border-2 border-dashed rounded-2xl bg-white/50 print:hidden">
+                <div className="text-center py-40 border-2 border-dashed rounded-2xl bg-white/50">
                   <FileText className="w-20 h-20 text-muted-foreground mx-auto mb-6 opacity-10" />
                   <h3 className="text-xl font-bold text-slate-400">Select Students to Preview</h3>
                   <p className="text-muted-foreground font-medium max-w-xs mx-auto">Use the sidebar to choose individual students or enable Bulk Mode for class reports.</p>
@@ -277,99 +245,6 @@ export default function ReportCardPage() {
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        @media print {
-          @page {
-            size: landscape;
-            margin: 0 !important;
-          }
-
-          /* Extreme reset to force full width landscape */
-          :root {
-            --sidebar-width: 0px !important;
-            --sidebar-width-mobile: 0px !important;
-          }
-
-          body {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: white !important;
-            -webkit-print-color-adjust: exact !important;
-          }
-
-          /* Hide ALL layout administrative wrappers */
-          aside, header, nav, [data-sidebar], [data-sidebar-rail], [data-sidebar-trigger], .print\\:hidden {
-            display: none !important;
-            visibility: hidden !important;
-          }
-
-          /* Force main area to be full screen for landscape */
-          main, .mx-auto, .lg\\:col-span-3, .print-area, [data-sidebar-inset], [class*="SidebarProvider"] {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            max-width: none !important;
-            border: none !important;
-            box-shadow: none !important;
-            background: white !important;
-            display: block !important;
-            position: static !important;
-          }
-
-          .report-student-group {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            page-break-after: always !important;
-            box-sizing: border-box !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-
-          .print-page {
-            box-sizing: border-box !important;
-            page-break-inside: avoid !important;
-            height: 100vh !important;
-            border: none !important;
-            margin: 0 !important;
-            background: white !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: space-between !important;
-            overflow: hidden !important;
-          }
-
-          ${twoInOne ? `
-            .print-page {
-              width: 50vw !important;
-              padding: 3.5rem !important;
-              border-right: 1px solid #eee !important;
-            }
-            .print-page:nth-child(2n) {
-              border-right: none !important;
-            }
-          ` : `
-            .print-page {
-              width: 100vw !important;
-              padding: 5rem !important;
-            }
-          `}
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #e2e8f0;
-          border-radius: 10px;
-        }
-      `}</style>
     </MainLayout>
   );
 }
