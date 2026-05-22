@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileSpreadsheet, Calendar, Save, Trophy, ScrollText } from "lucide-react";
+import { FileSpreadsheet, Calendar, Save, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -27,7 +27,7 @@ export default function PatrakCPage() {
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
   const { mappings, isLoaded: subjectsLoaded } = useSubjectStore();
   
-  const [search, setSearch] = setSearch("");
+  const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
 
   const isAnnual = semester === "Annual";
