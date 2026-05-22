@@ -136,7 +136,6 @@ export default function SvadhyayPage() {
                     {subject} (Units)
                   </TableHead>
                 ))}
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l">Status</TableHead>
               </TableRow>
               {isAnnual && (
                 <TableRow>
@@ -186,14 +185,11 @@ export default function SvadhyayPage() {
                       )}
                     </React.Fragment>
                   ))}
-                  <TableCell className="text-right border-l">
-                    <Badge className="bg-pink-500 font-bold px-3 text-[10px]">VERIFIED</Badge>
-                  </TableCell>
                 </TableRow>
               ))}
               {selectedStandard === "all" && (
                 <TableRow>
-                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 2} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 1} className="h-32 text-center text-muted-foreground">
                     Select a standard to view subject-wise self-study columns.
                   </TableCell>
                 </TableRow>
