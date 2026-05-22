@@ -18,7 +18,8 @@ import {
   Search, 
   Bell, 
   Menu,
-  Users
+  Users,
+  ScrollText
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -29,6 +30,7 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Students", href: "/students", icon: Users },
   { name: "TRIMASIK", href: "/trimasik", icon: ClipboardList },
+  { name: "PATRAK-B", href: "/patrak-b", icon: ScrollText },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
