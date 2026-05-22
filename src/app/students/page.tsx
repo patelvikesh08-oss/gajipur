@@ -25,13 +25,13 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit, Calendar, User, CreditCard, Building2, Phone, Home } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, Calendar, User, CreditCard, Building2, Phone, Home, ScrollText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function StudentsPage() {
   const { students, addStudent, updateStudent, deleteStudent, isLoaded: studentsLoaded } = useStudentStore();
-  const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
+  const { academicYear, isLoaded: sessionLoaded } = useSessionStore();
   
   const [search, setSearch] = useState("");
   const [filterGender, setFilterGender] = useState<string>("all");
@@ -129,19 +129,9 @@ export default function StudentsPage() {
           <h1 className="text-2xl font-bold text-slate-800">Student Information System</h1>
           
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
-                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
-                  <SelectValue placeholder="Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2023-24">2023-24</SelectItem>
-                  <SelectItem value="2024-25">2024-25</SelectItem>
-                  <SelectItem value="2025-26">2025-26</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+             <Badge variant="outline" className="px-4 py-2 bg-white font-bold text-primary border-primary/20">
+                Session: {academicYear}
+             </Badge>
           </div>
         </div>
 
@@ -301,59 +291,80 @@ export default function StudentsPage() {
         </div>
 
         <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">G.R. No</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Name</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Standard</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Birth Date / Age</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Child UID</TableHead>
-                <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredStudents.length > 0 ? (
-                filteredStudents.map((s) => (
-                  <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
-                    <TableCell className="font-bold text-slate-500">{s.grNumber}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-bold text-slate-900">{s.name}</span>
-                        <span className="text-[10px] text-muted-foreground uppercase">{s.gender}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="font-bold">{s.academicStandard}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">{s.birthday}</span>
-                        <span className="text-[10px] text-primary font-bold">{calculateAge(s.birthday)} Yrs Old</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs font-mono">{s.childUniqueId}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(s)}>
-                          <Edit className="h-4 w-4 text-primary" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => deleteStudent(s.id)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
+          <ScrollArea className="w-full">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">G.R. No</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Full Name</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Gender</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Standard</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Birthday</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Attendance (%)</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Caste</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Child UID</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Aadhar Card</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Father Name</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Mother Name</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Bank Name</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Account Number</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">IFSC Code</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Mobile</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Address</TableHead>
+                  <TableHead className="text-right font-bold uppercase tracking-wider text-xs whitespace-nowrap">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredStudents.length > 0 ? (
+                  filteredStudents.map((s) => (
+                    <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
+                      <TableCell className="font-bold text-slate-500 whitespace-nowrap">{s.grNumber}</TableCell>
+                      <TableCell className="font-bold text-slate-900 whitespace-nowrap">{s.name}</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <Badge variant="outline" className="text-[10px] uppercase">{s.gender}</Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <Badge variant="secondary" className="font-bold">{s.academicStandard}</Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap font-medium">{s.birthday}</TableCell>
+                      <TableCell className="whitespace-nowrap text-center">
+                        <span className={`font-bold ${s.attendance < 75 ? 'text-destructive' : 'text-primary'}`}>
+                          {s.attendance}%
+                        </span>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">{s.caste}</TableCell>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">{s.childUniqueId}</TableCell>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">{s.aadharCard}</TableCell>
+                      <TableCell className="whitespace-nowrap font-medium">{s.fatherName}</TableCell>
+                      <TableCell className="whitespace-nowrap font-medium">{s.motherName}</TableCell>
+                      <TableCell className="whitespace-nowrap">{s.bankName}</TableCell>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">{s.bankAccountNumber}</TableCell>
+                      <TableCell className="whitespace-nowrap font-mono text-xs">{s.ifscCode}</TableCell>
+                      <TableCell className="whitespace-nowrap text-xs">{s.mobileNumber}</TableCell>
+                      <TableCell className="whitespace-nowrap max-w-[200px] truncate text-xs">{s.address}</TableCell>
+                      <TableCell className="text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEdit(s)}>
+                            <Edit className="h-4 w-4 text-primary" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteStudent(s.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={17} className="h-32 text-center text-muted-foreground font-medium italic">
+                      No student records matching your criteria.
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-32 text-center text-muted-foreground font-medium italic">
-                    No student records matching your criteria.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                )}
+              </TableBody>
+            </Table>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
       </div>
     </MainLayout>
