@@ -35,7 +35,8 @@ import {
   Layers,
   Calculator,
   SpellCheck,
-  Settings2
+  Settings2,
+  Settings
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -48,9 +49,6 @@ const mainNavigation = [
   { name: "Students", href: "/students", icon: Users },
   { name: "Bonofide", href: "/bonofide", icon: IdCard },
   { name: "FLN", href: "/fln", icon: SpellCheck },
-  { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
-  { name: "Marks Mapping", href: "/marks-mapping", icon: Calculator },
-  { name: "Patrak-B Config", href: "/patrak-b-config", icon: Settings2 },
 ];
 
 const examinationSubItems = [
@@ -62,6 +60,12 @@ const examinationSubItems = [
   { name: "Top Performers", href: "/top-performers", icon: Trophy },
   { name: "Report Card", href: "/report-card", icon: FileText },
   { name: "Results", href: "/results", icon: PieChart },
+];
+
+const settingsSubItems = [
+  { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
+  { name: "Marks Mapping", href: "/marks-mapping", icon: Calculator },
+  { name: "Patrak-B Config", href: "/patrak-b-config", icon: Settings2 },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
@@ -106,6 +110,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuItem>
             ))}
 
+            {/* Examination Section */}
             <Collapsible 
               asChild 
               defaultOpen={examinationSubItems.some(i => pathname === i.href)}
@@ -124,6 +129,45 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                 <CollapsibleContent>
                   <SidebarMenuSub className="mx-0 px-0 border-l-0 space-y-1 mt-1">
                     {examinationSubItems.map((item) => (
+                      <SidebarMenuSubItem key={item.name} className="px-2">
+                        <SidebarMenuSubButton 
+                          asChild 
+                          isActive={pathname === item.href}
+                          className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto"
+                        >
+                          <Link href={item.href}>
+                            <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold">
+                              {item.name}
+                            </span>
+                            <item.icon className="w-3.5 h-3.5 text-muted-foreground group-data-[active=true]:text-primary" />
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+
+            {/* Settings Section */}
+            <Collapsible 
+              asChild 
+              defaultOpen={settingsSubItems.some(i => pathname === i.href)}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg">
+                    <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary">Settings</span>
+                    <div className="flex items-center gap-2">
+                      <Settings className="w-4 h-4 text-muted-foreground group-data-[state=open]:text-primary" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                    </div>
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub className="mx-0 px-0 border-l-0 space-y-1 mt-1">
+                    {settingsSubItems.map((item) => (
                       <SidebarMenuSubItem key={item.name} className="px-2">
                         <SidebarMenuSubButton 
                           asChild 
