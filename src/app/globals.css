@@ -58,6 +58,7 @@
   .no-print, 
   aside, 
   header,
+  footer,
   [data-sidebar="trigger"],
   [data-sidebar="sidebar"],
   button,
@@ -73,10 +74,12 @@
     --sidebar-width-icon: 0px !important;
   }
 
-  body {
+  html, body {
     background: white !important;
     padding: 0 !important;
     margin: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     overflow: visible !important;
@@ -86,15 +89,20 @@
   .group\/sidebar-wrapper {
     display: block !important;
     width: 100% !important;
+    min-height: 0 !important;
   }
 
-  main {
+  main, 
+  .relative.flex.min-h-svh,
+  [data-sidebar="inset"] {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
     position: static !important;
+    min-height: 0 !important;
+    height: auto !important;
   }
 
   .mx-auto {
@@ -106,7 +114,7 @@
   table {
     width: 100% !important;
     border-collapse: collapse !important;
-    font-size: 6pt !important; /* Slightly smaller to fit more columns */
+    font-size: 7pt !important;
     table-layout: auto !important;
   }
 
@@ -120,7 +128,7 @@
 
   th, td {
     border: 1px solid #000 !important;
-    padding: 1px !important; /* Minimum padding */
+    padding: 1px !important;
     overflow: visible !important;
     white-space: nowrap !important;
   }
@@ -133,25 +141,36 @@
   /* Ensure scrollable containers expand to show all content */
   [data-radix-scroll-area-viewport],
   .overflow-hidden,
-  .overflow-auto {
+  .overflow-auto,
+  .max-h-\[70vh\] {
     overflow: visible !important;
     display: block !important;
     width: 100% !important;
     height: auto !important;
     max-height: none !important;
+    min-height: 0 !important;
   }
 
   .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
     box-shadow: none !important;
   }
 
-  .rounded-xl {
+  .rounded-xl, .rounded-lg, .rounded-md {
     border-radius: 0 !important;
   }
 
   @page {
     margin: 1cm;
-    /* Removed fixed landscape to respect browser settings, 
-       though landscape is recommended for this wide table */
+    /* Respect browser settings, but hint at landscape for wide content */
+  }
+
+  /* Specific fix for extra blank page: avoid trailing margins */
+  .pb-12, .pb-20, .pt-8 {
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+  }
+  
+  .space-y-8 > :last-child {
+    margin-bottom: 0 !important;
   }
 }

@@ -175,7 +175,6 @@ export default function FlnPage() {
           <ScrollArea className="w-full">
             <Table className="border-collapse w-full">
               <TableHeader className="bg-slate-50 print:bg-slate-100">
-                {/* Tier 1 Header */}
                 <TableRow>
                   <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[50px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
                   <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-[50px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
@@ -189,7 +188,6 @@ export default function FlnPage() {
                     </TableHead>
                   ))}
                 </TableRow>
-                {/* Tier 2 Header */}
                 <TableRow>
                   {flnCategories.map((cat) => (
                     <React.Fragment key={`${cat.name}-subs`}>
@@ -234,38 +232,32 @@ export default function FlnPage() {
                     ))}
                   </TableRow>
                 ))}
-                {filteredStudents.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={35} className="h-32 text-center text-muted-foreground italic">
-                      No student records found matching your criteria.
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
             <ScrollBar orientation="horizontal" className="no-print" />
           </ScrollArea>
         </div>
 
-        {/* Action Buttons Bottom */}
-        <div className="flex justify-end pt-4 pb-12 gap-3 no-print">
-          <Button 
-            variant="outline" 
-            size="lg" 
-            onClick={() => window.print()} 
-            className="font-bold gap-2 shadow-sm border-slate-200"
-          >
-            <Printer className="w-4 h-4 text-slate-500" />
-            Print Milestone Records
-          </Button>
-          <Button 
-            onClick={handleSaveAll} 
-            size="lg"
-            className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 px-8"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Commit Changes
-          </Button>
+        <div className="flex justify-end pt-4 pb-0 no-print">
+          <div className="flex gap-3 mb-12">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={() => window.print()} 
+              className="font-bold gap-2 shadow-sm border-slate-200"
+            >
+              <Printer className="w-4 h-4 text-slate-500" />
+              Print Milestone Records
+            </Button>
+            <Button 
+              onClick={handleSaveAll} 
+              size="lg"
+              className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 px-8"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Commit Changes
+            </Button>
+          </div>
         </div>
       </div>
     </MainLayout>
