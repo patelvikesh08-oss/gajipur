@@ -69,23 +69,6 @@ export default function ReportCardPage() {
             </div>
             <h1 className="text-2xl font-bold text-slate-800">Advanced Report Generation</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-lg border shadow-sm">
-              <Switch id="two-in-one" checked={twoInOne} onCheckedChange={setTwoInOne} />
-              <Label htmlFor="two-in-one" className="text-sm font-bold flex items-center gap-2 cursor-pointer">
-                <Layers className="w-4 h-4 text-primary" />
-                2-in-1 Layout
-              </Label>
-            </div>
-            <Button 
-              disabled={selectedStudentIds.length === 0} 
-              onClick={handlePrint}
-              className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20 h-11 px-6"
-            >
-              <Printer className="w-4 h-4" />
-              Print Selected ({selectedStudentIds.length})
-            </Button>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 print:hidden">
@@ -104,6 +87,14 @@ export default function ReportCardPage() {
                   if (!val && selectedStudentIds.length > 1) setSelectedStudentIds([selectedStudentIds[0]]);
                 }} />
                 <Label htmlFor="bulk-mode" className="text-sm font-bold cursor-pointer">Enable Bulk Mode</Label>
+              </div>
+
+              <div className="flex items-center space-x-2 pt-2">
+                <Switch id="two-in-one" checked={twoInOne} onCheckedChange={setTwoInOne} />
+                <Label htmlFor="two-in-one" className="text-sm font-bold flex items-center gap-2 cursor-pointer">
+                  <Layers className="w-4 h-4 text-primary" />
+                  2-in-1 Layout
+                </Label>
               </div>
 
               <div className="pt-4 border-t space-y-4">
@@ -142,6 +133,17 @@ export default function ReportCardPage() {
                     </Select>
                   </div>
                 )}
+              </div>
+
+              <div className="pt-4 border-t">
+                <Button 
+                  disabled={selectedStudentIds.length === 0} 
+                  onClick={handlePrint}
+                  className="w-full bg-primary hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20 h-11"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print Selected ({selectedStudentIds.length})
+                </Button>
               </div>
             </CardContent>
           </Card>
