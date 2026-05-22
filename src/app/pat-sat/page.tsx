@@ -16,10 +16,11 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Calendar, Save, FileText } from "lucide-react";
+import { CheckCircle2, Calendar, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import React from "react";
 
 export default function PatSatPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
@@ -28,6 +29,8 @@ export default function PatSatPage() {
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
+
+  const isAnnual = semester === "Annual";
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
@@ -50,7 +53,7 @@ export default function PatSatPage() {
   const handleSaveAll = () => {
     toast({
       title: "Assessments Saved",
-      description: `PAT/SAT scores successfully committed.`,
+      description: `PAT/SAT scores successfully committed for ${selectedStandard}.`,
     });
   };
 
@@ -122,36 +125,71 @@ export default function PatSatPage() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
                 {activeSubjects.map((subject) => (
-                  <TableHead key={subject} className="font-bold uppercase tracking-wider text-xs text-center min-w-[100px]">
+                  <TableHead 
+                    key={subject} 
+                    colSpan={isAnnual ? 2 : 1} 
+                    className="font-bold uppercase tracking-wider text-xs text-center border-l"
+                  >
                     {subject}
                   </TableHead>
                 ))}
-                <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Grade</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l">Grade</TableHead>
               </TableRow>
+              {isAnnual && (
+                <TableRow>
+                  {activeSubjects.map((subject) => (
+                    <React.Fragment key={`${subject}-sem-header`}>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[80px]">Sem 1</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[80px]">Sem 2</TableHead>
+                    </React.Fragment>
+                  ))}
+                </TableRow>
+              )}
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50">
                   <TableCell className="font-black text-slate-700 whitespace-nowrap">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
-                    <TableCell key={`${s.id}-${subject}`}>
-                      <Input 
-                        type="number" 
-                        className="h-8 font-bold text-center mx-auto w-16" 
-                        defaultValue={Math.floor(Math.random() * 20) + 30} 
-                      />
-                    </TableCell>
+                    <React.Fragment key={`${s.id}-${subject}`}>
+                      {isAnnual ? (
+                        <>
+                          <TableCell className="border-l p-1">
+                            <Input 
+                              type="number" 
+                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14" 
+                              defaultValue={Math.floor(Math.random() * 20) + 30} 
+                            />
+                          </TableCell>
+                          <TableCell className="border-l p-1">
+                            <Input 
+                              type="number" 
+                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14" 
+                              defaultValue={Math.floor(Math.random() * 20) + 30} 
+                            />
+                          </TableCell>
+                        </>
+                      ) : (
+                        <TableCell className="border-l">
+                          <Input 
+                            type="number" 
+                            className="h-8 text-center font-bold focus:ring-primary mx-auto w-16" 
+                            defaultValue={Math.floor(Math.random() * 20) + 30} 
+                          />
+                        </TableCell>
+                      )}
+                    </React.Fragment>
                   ))}
-                  <TableCell className="text-right">
+                  <TableCell className="text-right border-l">
                     <Badge className="bg-indigo-600 font-bold px-3">A+</Badge>
                   </TableCell>
                 </TableRow>
               ))}
               {selectedStandard === "all" && (
                 <TableRow>
-                  <TableCell colSpan={activeSubjects.length + 2} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 2} className="h-32 text-center text-muted-foreground">
                     Please select an academic standard to view subject columns and enter assessment scores.
                   </TableCell>
                 </TableRow>
@@ -163,4 +201,3 @@ export default function PatSatPage() {
     </MainLayout>
   );
 }
-
