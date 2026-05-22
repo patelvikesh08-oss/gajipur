@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -50,8 +49,6 @@ export default function PatrakBPage() {
     });
   };
 
-  const dynamicFields = Array.from({ length: config.fieldCount }, (_, i) => i + 1);
-
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
@@ -62,7 +59,7 @@ export default function PatrakBPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">PATRAK-B (Internal Progress)</h1>
-              <p className="text-xs text-muted-foreground font-medium">Log behavioral and qualitative progress</p>
+              <p className="text-xs text-muted-foreground font-medium">Log behavioral and qualitative progress milestones</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -120,49 +117,64 @@ export default function PatrakBPage() {
           <ScrollArea className="w-full">
             <Table className="border-collapse">
               <TableHeader className="bg-slate-50">
+                {/* Tier 1 Header */}
                 <TableRow>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs w-[80px] border-r sticky left-0 bg-slate-50 z-20">Roll No</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[80px] bg-slate-50 z-20">Student Name</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs w-[80px] border-r sticky left-0 bg-slate-50 z-20 text-center">Roll No</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[80px] bg-slate-50 z-20">Student Name</TableHead>
                   
-                  {dynamicFields.map(num => (
-                    <TableHead key={num} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field {num}</TableHead>
+                  {config.fields.map(field => (
+                    <TableHead key={field.id} colSpan={field.subColumnCount} className="font-bold uppercase tracking-wider text-[10px] text-center border-r bg-muted/30">
+                      Field {field.id}
+                    </TableHead>
                   ))}
 
-                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-blue-50/50">Sem 1 Total</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-green-50/50">Sem 2 Total</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-orange-50/50">Avg Marks</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-blue-50/50">Sem 1 Total</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-green-50/50">Sem 2 Total</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-orange-50/50">Avg Marks</TableHead>
+                </TableRow>
+                {/* Tier 2 Header (Sub-columns) */}
+                <TableRow>
+                  {config.fields.map(field => (
+                    Array.from({ length: field.subColumnCount }).map((_, i) => (
+                      <TableHead key={`${field.id}-${i}`} className="text-[9px] font-bold text-center border-r min-w-[50px] bg-white">
+                        {i + 1}
+                      </TableHead>
+                    ))
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredStudents.map((s) => (
-                  <TableRow key={s.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-center">
+                  <TableRow key={s.id} className="hover:bg-slate-50/50 h-10">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-center text-xs">
                       {s.rollNumber}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-700 border-r sticky left-[80px] bg-white z-10">
+                    <TableCell className="font-bold text-slate-700 border-r sticky left-[80px] bg-white z-10 text-xs">
                       {s.name}
                     </TableCell>
                     
-                    {dynamicFields.map(num => (
-                      <TableCell key={num} className="p-1 border-r">
-                        <Input className="h-8 text-center" defaultValue="" />
-                      </TableCell>
+                    {config.fields.map(field => (
+                      Array.from({ length: field.subColumnCount }).map((_, i) => (
+                        <TableCell key={`${s.id}-${field.id}-${i}`} className="p-1 border-r">
+                          <Input className="h-7 text-center text-xs" defaultValue="" />
+                        </TableCell>
+                      ))
                     ))}
 
                     <TableCell className="p-1 border-r bg-blue-50/10">
-                      <Input type="number" className="h-8 text-center font-bold" defaultValue={0} />
+                      <Input type="number" className="h-7 text-center font-bold text-xs" defaultValue={0} />
                     </TableCell>
                     <TableCell className="p-1 border-r bg-green-50/10">
-                      <Input type="number" className="h-8 text-center font-bold" defaultValue={0} />
+                      <Input type="number" className="h-7 text-center font-bold text-xs" defaultValue={0} />
                     </TableCell>
                     <TableCell className="p-1 border-r bg-orange-50/10">
-                      <Input type="number" className="h-8 text-center font-black text-orange-600" defaultValue={0} />
+                      <Input type="number" className="h-7 text-center font-black text-orange-600 text-xs" defaultValue={0} />
                     </TableCell>
                   </TableRow>
                 ))}
                 {filteredStudents.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={config.fieldCount + 5} className="h-24 text-center text-muted-foreground font-medium italic">
+                    <TableCell colSpan={config.fields.reduce((acc, f) => acc + f.subColumnCount, 0) + 5} className="h-24 text-center text-muted-foreground font-medium italic text-xs">
                       No students matching criteria.
                     </TableCell>
                   </TableRow>
