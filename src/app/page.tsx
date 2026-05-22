@@ -43,12 +43,22 @@ export default function Dashboard() {
     });
     const genderData = Object.entries(genderMap).map(([name, value]) => ({ name, value }));
 
-    // Standard distribution
-    const stdMap: Record<string, number> = {};
+    // Standard distribution with Gender Breakdown
+    const stdMap: Record<string, { total: number, male: number, female: number, other: number }> = {};
     students.forEach(s => {
-      stdMap[s.academicStandard] = (stdMap[s.academicStandard] || 0) + 1;
+      if (!stdMap[s.academicStandard]) {
+        stdMap[s.academicStandard] = { total: 0, male: 0, female: 0, other: 0 };
+      }
+      stdMap[s.academicStandard].total += 1;
+      if (s.gender === 'Male') stdMap[s.academicStandard].male += 1;
+      else if (s.gender === 'Female') stdMap[s.academicStandard].female += 1;
+      else stdMap[s.academicStandard].other += 1;
     });
-    const standardData = Object.entries(stdMap).map(([name, count]) => ({ name, count }));
+    
+    const standardData = Object.entries(stdMap).map(([name, data]) => ({ 
+      name, 
+      ...data 
+    })).sort((a, b) => a.name.localeCompare(b.name));
 
     return { total, avgAge, ageData, genderData, standardData };
   }, [students]);
@@ -89,77 +99,94 @@ export default function Dashboard() {
         </div>
 
         {/* Demographic Summary Tables */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Gender Table */}
-          <Card className="border-none shadow-sm overflow-hidden">
-            <CardHeader className="bg-slate-50/50 border-b">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Gender Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-[10px] font-bold uppercase">Gender</TableHead>
-                    <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {stats.genderData.map((row) => (
-                    <TableRow key={row.name} className="h-10">
-                      <TableCell className="font-medium">{row.name}</TableCell>
-                      <TableCell className="text-right font-bold text-primary">{row.value}</TableCell>
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          
+          <div className="xl:col-span-4 grid grid-cols-1 gap-6">
+            {/* Gender Table */}
+            <Card className="border-none shadow-sm overflow-hidden">
+              <CardHeader className="bg-slate-50/50 border-b">
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Gender Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="text-[10px] font-bold uppercase">Gender</TableHead>
+                      <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {stats.genderData.map((row) => (
+                      <TableRow key={row.name} className="h-10">
+                        <TableCell className="font-medium">{row.name}</TableCell>
+                        <TableCell className="text-right font-bold text-primary">{row.value}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
 
-          {/* Age Table */}
-          <Card className="border-none shadow-sm overflow-hidden">
-            <CardHeader className="bg-slate-50/50 border-b">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Distribution</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-[10px] font-bold uppercase">Age Group</TableHead>
-                    <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {stats.ageData.map((row) => (
-                    <TableRow key={row.age} className="h-10">
-                      <TableCell className="font-medium">{row.age}</TableCell>
-                      <TableCell className="text-right font-bold text-primary">{row.count}</TableCell>
+            {/* Age Table */}
+            <Card className="border-none shadow-sm overflow-hidden">
+              <CardHeader className="bg-slate-50/50 border-b">
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Distribution</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="text-[10px] font-bold uppercase">Age Group</TableHead>
+                      <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {stats.ageData.map((row) => (
+                      <TableRow key={row.age} className="h-10">
+                        <TableCell className="font-medium">{row.age}</TableCell>
+                        <TableCell className="text-right font-bold text-primary">{row.count}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Standard Table */}
-          <Card className="border-none shadow-sm overflow-hidden">
+          {/* Standard Table with Breakdown */}
+          <Card className="xl:col-span-8 border-none shadow-sm overflow-hidden">
             <CardHeader className="bg-slate-50/50 border-b">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Standard Summary</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Grade Level Breakdown</CardTitle>
+              <CardDescription>Detailed student count by gender per standard</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="text-[10px] font-bold uppercase">Standard</TableHead>
-                    <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-center">Male</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-center">Female</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-center">Other</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-right">Total</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {stats.standardData.map((row) => (
-                    <TableRow key={row.name} className="h-10">
-                      <TableCell className="font-medium truncate max-w-[120px]">{row.name}</TableCell>
-                      <TableCell className="text-right font-bold text-primary">{row.count}</TableCell>
+                    <TableRow key={row.name} className="h-10 hover:bg-slate-50/50 transition-colors">
+                      <TableCell className="font-bold text-slate-700">{row.name}</TableCell>
+                      <TableCell className="text-center text-blue-600 font-medium">{row.male}</TableCell>
+                      <TableCell className="text-center text-pink-600 font-medium">{row.female}</TableCell>
+                      <TableCell className="text-center text-slate-400 font-medium">{row.other}</TableCell>
+                      <TableCell className="text-right font-black text-primary">{row.total}</TableCell>
                     </TableRow>
                   ))}
+                  {stats.standardData.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                        No standard data available.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
