@@ -178,7 +178,7 @@ export default function PatrakCPage() {
                     {/* Patrak B Tier 2 for Annual */}
                     <TableHead className="text-[10px] font-bold text-center border-r border-b bg-blue-50/50">Sem 1</TableHead>
                     <TableHead className="text-[10px] font-bold text-center border-r border-b bg-green-50/50">Sem 2</TableHead>
-                    <TableHead className="text-[10px] font-black text-center border-r border-b bg-indigo-100">Total</TableHead>
+                    <TableHead className="text-[10px] font-black text-center border-r border-b bg-indigo-100">Avg</TableHead>
                   </TableRow>
                 ) : (
                   <TableRow>
@@ -295,7 +295,7 @@ export default function PatrakCPage() {
                           <Input type="number" className="h-7 text-[10px] text-center font-bold" defaultValue={88} />
                         </TableCell>
                         <TableCell className="p-1 border-r bg-indigo-100/30 text-center font-black text-indigo-700 text-xs">
-                          173
+                          86.5
                         </TableCell>
                       </>
                     ) : (
