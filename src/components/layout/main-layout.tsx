@@ -44,6 +44,7 @@ const mainNavigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Students", href: "/students", icon: Users },
   { name: "Bonofide", href: "/bonofide", icon: IdCard },
+  { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
 ];
 
 const examinationSubItems = [
@@ -55,7 +56,6 @@ const examinationSubItems = [
   { name: "Top Performers", href: "/top-performers", icon: Trophy },
   { name: "Report Card", href: "/report-card", icon: FileText },
   { name: "Results", href: "/results", icon: PieChart },
-  { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
