@@ -4,7 +4,7 @@
 import { MainLayout } from "@/components/layout/main-layout";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { useStudentStore } from "@/lib/student-store";
-import { LayoutDashboard, Users, GraduationCap, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, Users, GraduationCap, ClipboardCheck, ListFilter } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -13,11 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AgeChart } from "@/components/dashboard/age-chart";
-import { GenderChart } from "@/components/dashboard/gender-chart";
-import { StandardChart } from "@/components/dashboard/standard-chart";
 import { useMemo } from "react";
 
 export default function Dashboard() {
@@ -51,7 +48,7 @@ export default function Dashboard() {
     students.forEach(s => {
       stdMap[s.academicStandard] = (stdMap[s.academicStandard] || 0) + 1;
     });
-    const standardData = Object.entries(stdMap).map(([name, students]) => ({ name, students }));
+    const standardData = Object.entries(stdMap).map(([name, count]) => ({ name, count }));
 
     return { total, avgAge, ageData, genderData, standardData };
   }, [students]);
@@ -66,6 +63,7 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard</h1>
         </div>
 
+        {/* Top Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard
             title="Total Students"
@@ -90,21 +88,94 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <GenderChart data={stats.genderData} />
-          </div>
-          <div className="lg:col-span-1">
-            <AgeChart data={stats.ageData} />
-          </div>
-          <div className="lg:col-span-1">
-            <StandardChart data={stats.standardData} />
-          </div>
+        {/* Demographic Summary Tables */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Gender Table */}
+          <Card className="border-none shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/50 border-b">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Gender Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="text-[10px] font-bold uppercase">Gender</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stats.genderData.map((row) => (
+                    <TableRow key={row.name} className="h-10">
+                      <TableCell className="font-medium">{row.name}</TableCell>
+                      <TableCell className="text-right font-bold text-primary">{row.value}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Age Table */}
+          <Card className="border-none shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/50 border-b">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Distribution</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="text-[10px] font-bold uppercase">Age Group</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stats.ageData.map((row) => (
+                    <TableRow key={row.age} className="h-10">
+                      <TableCell className="font-medium">{row.age}</TableCell>
+                      <TableCell className="text-right font-bold text-primary">{row.count}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Standard Table */}
+          <Card className="border-none shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/50 border-b">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Standard Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="text-[10px] font-bold uppercase">Standard</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stats.standardData.map((row) => (
+                    <TableRow key={row.name} className="h-10">
+                      <TableCell className="font-medium truncate max-w-[120px]">{row.name}</TableCell>
+                      <TableCell className="text-right font-bold text-primary">{row.count}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
 
+        {/* Recent Enrollment Table */}
         <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white">
           <CardHeader className="border-b px-8 py-6">
-            <CardTitle className="text-xl font-bold text-slate-700">Recent Student Enrollment</CardTitle>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl font-bold text-slate-700">Recent Student Enrollment</CardTitle>
+                <CardDescription>Latest 5 students added to the system</CardDescription>
+              </div>
+              <ListFilter className="w-5 h-5 text-slate-400" />
+            </div>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
@@ -121,12 +192,18 @@ export default function Dashboard() {
                 {students.slice(-5).reverse().map((student) => (
                   <TableRow key={student.id} className="hover:bg-slate-50 transition-colors">
                     <TableCell className="px-8 font-medium text-slate-700">{student.name}</TableCell>
-                    <TableCell className="text-slate-500">{student.academicStandard}</TableCell>
+                    <TableCell className="text-slate-500">
+                      <Badge variant="secondary" className="font-medium">{student.academicStandard}</Badge>
+                    </TableCell>
                     <TableCell className="text-slate-500">{student.age}</TableCell>
                     <TableCell className="text-slate-500">
-                      <Badge variant="outline" className="text-[10px] uppercase font-bold px-2 py-0 border-primary/30 text-primary">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        student.gender === 'Male' ? 'bg-blue-100 text-blue-700' : 
+                        student.gender === 'Female' ? 'bg-pink-100 text-pink-700' : 
+                        'bg-slate-100 text-slate-700'
+                      }`}>
                         {student.gender}
-                      </Badge>
+                      </span>
                     </TableCell>
                     <TableCell className="px-8 text-right">
                       <Badge className="bg-green-500 hover:bg-green-600 border-none px-4 py-1 rounded-full font-bold">
@@ -135,6 +212,13 @@ export default function Dashboard() {
                     </TableCell>
                   </TableRow>
                 ))}
+                {students.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                      No student records found.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
