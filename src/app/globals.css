@@ -76,6 +76,7 @@
 
   html, body {
     background: white !important;
+    color: black !important;
     padding: 0 !important;
     margin: 0 !important;
     height: auto !important;
@@ -83,6 +84,12 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     overflow: visible !important;
+  }
+
+  /* Remove all shadows */
+  *, ::before, ::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
 
   /* Target the sidebar provider wrapper to reset grid/flex layout */
@@ -103,6 +110,7 @@
     position: static !important;
     min-height: 0 !important;
     height: auto !important;
+    background: white !important;
   }
 
   .mx-auto {
@@ -110,12 +118,14 @@
     width: 100% !important;
   }
 
-  /* Table Specific Printing */
+  /* Table Specific Printing - Clear and Bold */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
     font-size: 7pt !important;
     table-layout: auto !important;
+    background: white !important;
+    border: 1px solid black !important;
   }
 
   thead {
@@ -124,13 +134,23 @@
 
   tr {
     page-break-inside: avoid !important;
+    background: white !important;
   }
 
   th, td {
-    border: 1px solid #000 !important;
-    padding: 1px !important;
+    border: 1px solid black !important;
+    padding: 2px !important;
     overflow: visible !important;
     white-space: nowrap !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Force tickmarks to be visible and clear */
+  [role="checkbox"][data-state="checked"] {
+    background-color: black !important;
+    border-color: black !important;
+    color: white !important;
   }
 
   /* Kill all sticky positioning in print */
@@ -151,26 +171,26 @@
     min-height: 0 !important;
   }
 
-  .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
-    box-shadow: none !important;
-  }
-
-  .rounded-xl, .rounded-lg, .rounded-md {
-    border-radius: 0 !important;
-  }
-
-  @page {
-    margin: 1cm;
-    /* Respect browser settings, but hint at landscape for wide content */
-  }
-
   /* Specific fix for extra blank page: avoid trailing margins */
-  .pb-12, .pb-20, .pt-8 {
+  .pb-12, .pb-20, .pt-8, .p-4, .md\:p-8 {
     padding-bottom: 0 !important;
     padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
   
   .space-y-8 > :last-child {
     margin-bottom: 0 !important;
+  }
+
+  /* Hide decorative spans or extra indicators */
+  .badge, [class*="Badge"], .badge * {
+    background: transparent !important;
+    border: 1px solid black !important;
+    color: black !important;
+  }
+
+  @page {
+    margin: 0.5cm;
   }
 }

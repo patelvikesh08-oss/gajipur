@@ -34,7 +34,6 @@ export default function FlnPage() {
   const [selectedStandard, setSelectedStandard] = useState("all");
   const [selectedMonth, setSelectedMonth] = useState("June");
 
-  // State to track ticks: { [studentId]: { [category]: boolean[] } }
   const [flnData, setFlnData] = useState<Record<string, Record<string, boolean[]>>>({});
 
   const flnCategories = [
@@ -140,7 +139,6 @@ export default function FlnPage() {
           </div>
         </div>
 
-        {/* Print Only Header */}
         <div className="hidden print:block text-center mb-6 space-y-2 border-b-2 border-slate-900 pb-4">
           <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
           <h2 className="text-lg font-bold uppercase">FLN Milestone Progress Report</h2>
@@ -174,7 +172,7 @@ export default function FlnPage() {
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <ScrollArea className="w-full">
             <Table className="border-collapse w-full">
-              <TableHeader className="bg-slate-50 print:bg-slate-100">
+              <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
                   <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[50px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
                   <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-[50px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
@@ -182,7 +180,7 @@ export default function FlnPage() {
                     <TableHead 
                       key={cat.name} 
                       colSpan={11} 
-                      className={`font-black uppercase tracking-widest text-[9px] text-center border-r border-b ${cat.color} print:border-slate-300`}
+                      className={`font-black uppercase tracking-widest text-[9px] text-center border-r border-b ${cat.color} print:bg-white print:border-black`}
                     >
                       {cat.name}
                     </TableHead>
@@ -192,11 +190,11 @@ export default function FlnPage() {
                   {flnCategories.map((cat) => (
                     <React.Fragment key={`${cat.name}-subs`}>
                       {subColumns.map(num => (
-                        <TableHead key={`${cat.name}-${num}`} className="text-[8px] font-bold text-center px-0.5 border-r min-w-[24px] bg-white print:border-slate-300">
+                        <TableHead key={`${cat.name}-${num}`} className="text-[8px] font-bold text-center px-0.5 border-r min-w-[24px] bg-white print:border-black">
                           {num}
                         </TableHead>
                       ))}
-                      <TableHead className="text-[8px] font-black text-center px-0.5 border-r min-w-[30px] bg-slate-100 text-primary print:border-slate-300 print:text-black">
+                      <TableHead className="text-[8px] font-black text-center px-0.5 border-r min-w-[30px] bg-slate-100 text-primary print:bg-white print:text-black print:border-black">
                         TOT
                       </TableHead>
                     </React.Fragment>
@@ -205,27 +203,27 @@ export default function FlnPage() {
               </TableHeader>
               <TableBody>
                 {filteredStudents.map((s) => (
-                  <TableRow key={s.id} className="hover:bg-slate-50/50 h-10 print:h-8">
-                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-[10px] text-center print:static print:text-black print:border-slate-300">
+                  <TableRow key={s.id} className="hover:bg-slate-50/50 h-10 print:h-8 print:bg-white">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-[10px] text-center print:static print:text-black print:border-black">
                       {s.rollNumber}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[50px] bg-white z-10 text-[10px] print:static print:border-slate-300">
+                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[50px] bg-white z-10 text-[10px] print:static print:border-black">
                       {s.name}
                     </TableCell>
                     {flnCategories.map((cat) => (
                       <React.Fragment key={`${s.id}-${cat.name}`}>
                         {subColumns.map(num => (
-                          <TableCell key={`${s.id}-${cat.name}-${num}`} className="p-0 border-r text-center print:border-slate-300">
+                          <TableCell key={`${s.id}-${cat.name}-${num}`} className="p-0 border-r text-center print:border-black">
                             <div className="flex items-center justify-center h-10 print:h-8">
                               <Checkbox 
                                 checked={flnData[s.id]?.[cat.name]?.[num-1] || false}
                                 onCheckedChange={(val) => handleCheck(s.id, cat.name, num-1, val)}
-                                className="h-3 w-3 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 print:border-black print:bg-transparent print:data-[state=checked]:bg-slate-800"
+                                className="h-3 w-3 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 print:border-black print:bg-transparent print:data-[state=checked]:bg-black"
                               />
                             </div>
                           </TableCell>
                         ))}
-                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[10px] print:border-slate-300 print:text-black">
+                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[10px] print:bg-white print:text-black print:border-black">
                           {getCategoryTotal(s.id, cat.name)}
                         </TableCell>
                       </React.Fragment>
