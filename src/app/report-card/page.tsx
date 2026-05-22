@@ -16,7 +16,7 @@ export default function ReportCardPage() {
   const { students, isLoaded } = useStudentStore();
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [isBulkMode, setIsBulkMode] = useState(false);
-  const [twoInOne, setTwoInOne] = useState(false);
+  const [twoInOne, setTwoInOne] = useState(true); // Default to true as per landscape requirement
 
   if (!isLoaded) return null;
 
@@ -145,12 +145,12 @@ export default function ReportCardPage() {
           </Card>
 
           {/* Preview Panel */}
-          <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0 print:block">
+          <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0 print:block print-area">
             {activeReports.length > 0 ? (
-              <div className={`grid gap-12 print:block ${twoInOne && !isBulkMode ? "print:grid-cols-2 print:gap-0" : "grid-cols-1"}`}>
+              <div className={`grid gap-12 print:block ${twoInOne ? "grid-cols-1" : "grid-cols-1"}`}>
                 {activeReports.map((student, index) => {
                   const isEvenStudent = index % 2 !== 0;
-                  // Alternating page logic for specific bulk printing requirements
+                  // Alternating logic for specific bulk requirements
                   const parts = isEvenStudent && isBulkMode
                     ? [
                         { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
@@ -263,16 +263,26 @@ export default function ReportCardPage() {
 
       <style jsx global>{`
         @media print {
+          /* Force landscape orientation */
+          @page {
+            size: landscape;
+            margin: 0 !important;
+          }
+
+          /* Hide ALL non-essential UI elements */
           aside, 
           [data-sidebar],
           header, 
           nav,
           [data-sidebar="trigger"],
           .print\\:hidden,
+          button,
           .lg\\:col-span-1 {
             display: none !important;
+            visibility: hidden !important;
           }
 
+          /* Reset layout containers to take full page */
           html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -288,6 +298,14 @@ export default function ReportCardPage() {
             padding: 0 !important;
             width: 100% !important;
             max-width: none !important;
+            display: block !important;
+          }
+
+          /* The print area container */
+          .print-area {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
 
           .print-page {
@@ -295,13 +313,10 @@ export default function ReportCardPage() {
             border: none !important;
             margin: 0 !important;
             page-break-after: always !important;
+            background: white !important;
           }
 
           ${twoInOne ? `
-            @page {
-              size: landscape;
-              margin: 0;
-            }
             .print-page {
               width: 50vw !important;
               height: 100vh !important;
@@ -310,15 +325,17 @@ export default function ReportCardPage() {
               box-sizing: border-box;
               page-break-after: auto !important;
               padding: 40px !important;
+              vertical-align: top;
             }
             .print-page:nth-child(2n) {
               page-break-after: always !important;
               border-right: none !important;
             }
           ` : `
-            @page {
-              size: portrait;
-              margin: 0;
+            .print-page {
+              width: 100vw !important;
+              height: 100vh !important;
+              display: block !important;
             }
           `}
         }
