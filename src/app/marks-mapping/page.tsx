@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useMarksMappingStore, AssessmentType } from "@/lib/marks-mapping-store";
 import { useStudentStore } from "@/lib/student-store";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, Save, Calendar, CheckCircle2 } from "lucide-react";
+import { Calculator, Save, Calendar, CheckCircle2, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 export default function MarksMappingPage() {
@@ -20,30 +20,62 @@ export default function MarksMappingPage() {
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
   
   const [selectedStandard, setSelectedStandard] = useState("");
+  const [localMarks, setLocalMarks] = useState<Record<AssessmentType, string>>({
+    'TRIMASIK': '',
+    'SVADHYAY': '',
+    'PAT/SAT': '',
+    'PATRAK-B': ''
+  });
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
+  // Sync local marks when standard or semester changes
+  useEffect(() => {
+    if (selectedStandard && marksLoaded) {
+      setLocalMarks({
+        'TRIMASIK': getMarksFor(selectedStandard, semester, 'TRIMASIK').toString(),
+        'SVADHYAY': getMarksFor(selectedStandard, semester, 'SVADHYAY').toString(),
+        'PAT/SAT': getMarksFor(selectedStandard, semester, 'PAT/SAT').toString(),
+        'PATRAK-B': getMarksFor(selectedStandard, semester, 'PATRAK-B').toString()
+      });
+    }
+  }, [selectedStandard, semester, marksLoaded, getMarksFor]);
+
   if (!marksLoaded || !studentsLoaded || !sessionLoaded) return null;
 
-  const handleSaveMarks = (type: AssessmentType, value: string) => {
-    const numValue = parseInt(value);
-    if (isNaN(numValue)) return;
-    
+  const assessmentTypes: AssessmentType[] = ['TRIMASIK', 'SVADHYAY', 'PAT/SAT', 'PATRAK-B'];
+
+  const handleSaveAll = () => {
     if (!selectedStandard) {
-      toast({ title: "Please select a standard first", variant: "destructive" });
+      toast({ title: "Please select a standard", variant: "destructive" });
       return;
     }
 
-    saveMarksMapping(selectedStandard, semester, type, numValue);
-    toast({
-      title: "Marks Updated",
-      description: `${type} max marks set to ${numValue} for ${selectedStandard}`,
+    let hasErrors = false;
+    assessmentTypes.forEach(type => {
+      const val = parseInt(localMarks[type]);
+      if (!isNaN(val)) {
+        saveMarksMapping(selectedStandard, semester, type, val);
+      } else {
+        hasErrors = true;
+      }
     });
-  };
 
-  const assessmentTypes: AssessmentType[] = ['TRIMASIK', 'SVADHYAY', 'PAT/SAT', 'PATRAK-B'];
+    if (!hasErrors) {
+      toast({
+        title: "Configuration Saved",
+        description: `Assessment thresholds for ${selectedStandard} updated successfully.`,
+      });
+    } else {
+      toast({
+        title: "Partial Save",
+        description: "Some values were invalid and were not saved. Please check your inputs.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <MainLayout>
@@ -89,7 +121,7 @@ export default function MarksMappingPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Standard Configuration</CardTitle>
-            <CardDescription>Select a standard to configure its assessment thresholds.</CardDescription>
+            <CardDescription>Select a standard to configure its assessment thresholds for the active session.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -109,39 +141,49 @@ export default function MarksMappingPage() {
         </Card>
 
         {selectedStandard ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
-            {assessmentTypes.map((type) => (
-              <Card key={type} className="border-l-4 border-l-primary">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-black uppercase tracking-widest text-primary">{type}</CardTitle>
-                  <CardDescription>Maximum possible marks</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <Input 
-                        type="number" 
-                        placeholder="e.g. 100" 
-                        defaultValue={getMarksFor(selectedStandard, semester, type)}
-                        onBlur={(e) => handleSaveMarks(type, e.target.value)}
-                        className="font-bold"
-                      />
+          <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {assessmentTypes.map((type) => (
+                <Card key={type} className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-black uppercase tracking-widest text-primary">{type}</CardTitle>
+                    <CardDescription>Maximum possible {type === 'SVADHYAY' ? 'Units' : 'Marks'}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <Input 
+                          type="number" 
+                          placeholder="e.g. 100" 
+                          value={localMarks[type]}
+                          onChange={(e) => setLocalMarks({...localMarks, [type]: e.target.value})}
+                          className="font-bold text-lg"
+                        />
+                      </div>
+                      <div className="flex items-center px-4 bg-muted rounded-md text-xs font-bold text-muted-foreground">
+                        / {type === 'SVADHYAY' ? 'Units' : 'Max'}
+                      </div>
                     </div>
-                    <div className="flex items-center px-3 bg-muted rounded-md text-xs font-bold text-muted-foreground">
-                      / {type === 'SVADHYAY' ? 'Units' : 'Marks'}
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground italic">
-                    All subjects in {selectedStandard} for {semester} will be assessed out of this value.
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="flex justify-end pt-4">
+              <Button 
+                onClick={handleSaveAll} 
+                size="lg" 
+                className="font-headline font-bold px-12 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform"
+              >
+                <Check className="w-5 h-5 mr-2" />
+                Save Configuration
+              </Button>
+            </div>
           </div>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed rounded-2xl">
-            <Calculator className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-            <p className="text-muted-foreground font-medium">Please select an academic standard to view marks mapping.</p>
+          <div className="text-center py-20 border-2 border-dashed rounded-2xl bg-white/50">
+            <Calculator className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-10" />
+            <p className="text-muted-foreground font-medium">Please select an academic standard to view and edit marks mapping.</p>
           </div>
         )}
       </div>
