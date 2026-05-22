@@ -3,9 +3,9 @@
 
 import { MainLayout } from "@/components/layout/main-layout";
 import { StatCard } from "@/components/dashboard/stat-card";
-import { useStudentStore } from "@/lib/student-store";
+import { useStudentStore, calculateAge } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
-import { LayoutDashboard, Users, GraduationCap, ClipboardCheck, ListFilter, Calendar } from "lucide-react";
+import { LayoutDashboard, Users, GraduationCap, ClipboardCheck, Calendar } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,7 +15,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMemo } from "react";
 
@@ -27,12 +26,13 @@ export default function Dashboard() {
     if (!students.length) return { total: 0, avgAge: "0", ageData: [], genderData: [], standardData: [] };
 
     const total = students.length;
-    const sumAge = students.reduce((acc, s) => acc + s.age, 0);
+    const sumAge = students.reduce((acc, s) => acc + calculateAge(s.birthday), 0);
     const avgAge = (sumAge / total).toFixed(1);
 
     const ageMap: Record<number, number> = {};
     students.forEach(s => {
-      ageMap[s.age] = (ageMap[s.age] || 0) + 1;
+      const age = calculateAge(s.birthday);
+      ageMap[age] = (ageMap[age] || 0) + 1;
     });
     const ageData = Object.entries(ageMap)
       .map(([age, count]) => ({ age: `${age} Yrs`, count }))
@@ -103,23 +103,23 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard
-            title="Total Students"
+            title="Total Enrollment"
             value={stats.total}
-            description={`${academicYear} Enrollment`}
+            description={`${academicYear} Academic Session`}
             icon={Users}
             variant="purple"
           />
           <StatCard
-            title="Average Age"
+            title="Avg. Student Age"
             value={`${stats.avgAge} Yrs`}
-            description="Student demographics"
+            description="Calculated from birth dates"
             icon={GraduationCap}
             variant="blue"
           />
           <StatCard
-            title="Active Semester"
+            title="Active Term"
             value={semester}
-            description="Processing Period"
+            description="Academic Period"
             icon={ClipboardCheck}
             variant="orange"
           />
@@ -129,7 +129,7 @@ export default function Dashboard() {
           <div className="xl:col-span-4 grid grid-cols-1 gap-6">
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="bg-slate-50/50 border-b">
-                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Gender Summary</CardTitle>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Gender Distribution</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
@@ -153,14 +153,14 @@ export default function Dashboard() {
 
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="bg-slate-50/50 border-b">
-                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Distribution</CardTitle>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Bracket Count</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-[10px] font-bold uppercase">Age Group</TableHead>
-                      <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
+                      <TableHead className="text-[10px] font-bold uppercase">Age</TableHead>
+                      <TableHead className="text-[10px] font-bold uppercase text-right">Students</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -178,8 +178,8 @@ export default function Dashboard() {
 
           <Card className="xl:col-span-8 border-none shadow-sm overflow-hidden">
             <CardHeader className="bg-slate-50/50 border-b">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Grade Level Breakdown</CardTitle>
-              <CardDescription>Detailed student count by gender per standard</CardDescription>
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Enrollment by Grade & Gender</CardTitle>
+              <CardDescription>Consolidated view of standard-wise demographics</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <Table>

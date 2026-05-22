@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
-import { useStudentStore, Student, Gender } from "@/lib/student-store";
+import { useStudentStore, Student, Gender, calculateAge } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
 import {
   Table,
@@ -25,8 +25,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit, Calendar } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, Calendar, User, CreditCard, Building2, Phone, Home } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function StudentsPage() {
   const { students, addStudent, updateStudent, deleteStudent, isLoaded: studentsLoaded } = useStudentStore();
@@ -37,18 +38,31 @@ export default function StudentsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Omit<Student, 'id'>>({
     name: "",
-    age: 0,
+    birthday: "",
     gender: "Male" as Gender,
     academicStandard: "",
+    attendance: 0,
+    grNumber: "",
+    caste: "",
+    childUniqueId: "",
+    aadharCard: "",
+    fatherName: "",
+    motherName: "",
+    bankName: "",
+    bankAccountNumber: "",
+    ifscCode: "",
+    address: "",
+    mobileNumber: "",
   });
 
   if (!studentsLoaded || !sessionLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
-                          s.academicStandard.toLowerCase().includes(search.toLowerCase());
+                          s.academicStandard.toLowerCase().includes(search.toLowerCase()) ||
+                          s.grNumber.toLowerCase().includes(search.toLowerCase());
     const matchesGender = filterGender === "all" || s.gender === filterGender;
     return matchesSearch && matchesGender;
   });
@@ -60,13 +74,51 @@ export default function StudentsPage() {
     } else {
       addStudent(formData);
     }
-    setFormData({ name: "", age: 0, gender: "Male", academicStandard: "" });
+    resetForm();
     setIsAddDialogOpen(false);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      birthday: "",
+      gender: "Male",
+      academicStandard: "",
+      attendance: 0,
+      grNumber: "",
+      caste: "",
+      childUniqueId: "",
+      aadharCard: "",
+      fatherName: "",
+      motherName: "",
+      bankName: "",
+      bankAccountNumber: "",
+      ifscCode: "",
+      address: "",
+      mobileNumber: "",
+    });
   };
 
   const handleEdit = (s: Student) => {
     setEditingStudent(s);
-    setFormData({ name: s.name, age: s.age, gender: s.gender, academicStandard: s.academicStandard });
+    setFormData({
+      name: s.name,
+      birthday: s.birthday,
+      gender: s.gender,
+      academicStandard: s.academicStandard,
+      attendance: s.attendance,
+      grNumber: s.grNumber,
+      caste: s.caste,
+      childUniqueId: s.childUniqueId,
+      aadharCard: s.aadharCard,
+      fatherName: s.fatherName,
+      motherName: s.motherName,
+      bankName: s.bankName,
+      bankAccountNumber: s.bankAccountNumber,
+      ifscCode: s.ifscCode,
+      address: s.address,
+      mobileNumber: s.mobileNumber,
+    });
     setIsAddDialogOpen(true);
   };
 
@@ -74,7 +126,7 @@ export default function StudentsPage() {
     <MainLayout>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-slate-800">Student Manager</h1>
+          <h1 className="text-2xl font-bold text-slate-800">Student Information System</h1>
           
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
@@ -90,16 +142,6 @@ export default function StudentsPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
-              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
-                <SelectValue placeholder="Semester" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
 
@@ -107,7 +149,7 @@ export default function StudentsPage() {
           <div className="relative w-full sm:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search students or standards..."
+              placeholder="Search by Name, G.R., or Standard..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
@@ -128,50 +170,130 @@ export default function StudentsPage() {
             </Select>
             <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
               setIsAddDialogOpen(open);
-              if (!open) setEditingStudent(null);
+              if (!open) {
+                setEditingStudent(null);
+                resetForm();
+              }
             }}>
               <DialogTrigger asChild>
                 <Button className="font-headline font-bold">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Student
+                  Enroll Student
                 </Button>
               </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="font-headline text-xl">{editingStudent ? "Edit Student Record" : "New Student Enrollment"}</DialogTitle>
+              <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+                <DialogHeader className="p-6 pb-0">
+                  <DialogTitle className="font-headline text-xl">{editingStudent ? "Update Student Profile" : "New Student Enrollment"}</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. John Doe" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="age">Age</Label>
-                      <Input id="age" type="number" value={formData.age} onChange={(e) => setFormData({...formData, age: parseInt(e.target.value) || 0})} />
+                <ScrollArea className="h-full max-h-[70vh] px-6">
+                  <div className="grid gap-6 py-4">
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-primary flex items-center gap-2 border-b pb-2">
+                        <User className="w-4 h-4" /> Personal Details
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="name">Full Name</Label>
+                          <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="birthday">Birthday</Label>
+                          <Input id="birthday" type="date" value={formData.birthday} onChange={(e) => setFormData({...formData, birthday: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="gender">Gender</Label>
+                          <Select value={formData.gender} onValueChange={(val: Gender) => setFormData({...formData, gender: val})}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Male">Male</SelectItem>
+                              <SelectItem value="Female">Female</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="fatherName">Father's Name</Label>
+                          <Input id="fatherName" value={formData.fatherName} onChange={(e) => setFormData({...formData, fatherName: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="motherName">Mother's Name</Label>
+                          <Input id="motherName" value={formData.motherName} onChange={(e) => setFormData({...formData, motherName: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="caste">Caste</Label>
+                          <Input id="caste" value={formData.caste} onChange={(e) => setFormData({...formData, caste: e.target.value})} />
+                        </div>
+                      </div>
                     </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="gender">Gender</Label>
-                      <Select value={formData.gender} onValueChange={(val: Gender) => setFormData({...formData, gender: val})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Male">Male</SelectItem>
-                          <SelectItem value="Female">Female</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
+
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-primary flex items-center gap-2 border-b pb-2">
+                        <CreditCard className="w-4 h-4" /> Identification & Schooling
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="grNumber">G.R. Number</Label>
+                          <Input id="grNumber" value={formData.grNumber} onChange={(e) => setFormData({...formData, grNumber: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="std">Academic Standard</Label>
+                          <Input id="std" value={formData.academicStandard} onChange={(e) => setFormData({...formData, academicStandard: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="childUid">Child Unique ID</Label>
+                          <Input id="childUid" value={formData.childUniqueId} onChange={(e) => setFormData({...formData, childUniqueId: e.target.value})} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="aadhar">Aadhar Card Number</Label>
+                          <Input id="aadhar" value={formData.aadharCard} onChange={(e) => setFormData({...formData, aadharCard: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="attendance">Attendance (%)</Label>
+                          <Input id="attendance" type="number" value={formData.attendance} onChange={(e) => setFormData({...formData, attendance: parseInt(e.target.value) || 0})} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-primary flex items-center gap-2 border-b pb-2">
+                        <Building2 className="w-4 h-4" /> Bank & Contact Info
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="bankName">Bank Name</Label>
+                          <Input id="bankName" value={formData.bankName} onChange={(e) => setFormData({...formData, bankName: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="accNo">Account Number</Label>
+                          <Input id="accNo" value={formData.bankAccountNumber} onChange={(e) => setFormData({...formData, bankAccountNumber: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="ifsc">IFSC Code</Label>
+                          <Input id="ifsc" value={formData.ifscCode} onChange={(e) => setFormData({...formData, ifscCode: e.target.value})} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="mobile"><Phone className="w-3 h-3 inline mr-1" /> Mobile Number</Label>
+                          <Input id="mobile" value={formData.mobileNumber} onChange={(e) => setFormData({...formData, mobileNumber: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="address"><Home className="w-3 h-3 inline mr-1" /> Residential Address</Label>
+                          <Input id="address" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="std">Academic Standard</Label>
-                    <Input id="std" value={formData.academicStandard} onChange={(e) => setFormData({...formData, academicStandard: e.target.value})} placeholder="e.g. 10th Grade" />
-                  </div>
-                </div>
-                <DialogFooter>
+                </ScrollArea>
+                <DialogFooter className="p-6 pt-0 border-t mt-4">
                   <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                  <Button onClick={handleSave}>Save Record</Button>
+                  <Button onClick={handleSave} className="font-bold">Save Student Profile</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -182,10 +304,11 @@ export default function StudentsPage() {
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow>
+                <TableHead className="font-bold uppercase tracking-wider text-xs">G.R. No</TableHead>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Name</TableHead>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Standard</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Age</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Gender</TableHead>
+                <TableHead className="font-bold uppercase tracking-wider text-xs">Birth Date / Age</TableHead>
+                <TableHead className="font-bold uppercase tracking-wider text-xs">Child UID</TableHead>
                 <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -193,24 +316,27 @@ export default function StudentsPage() {
               {filteredStudents.length > 0 ? (
                 filteredStudents.map((s) => (
                   <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
-                    <TableCell className="font-medium text-foreground">{s.name}</TableCell>
+                    <TableCell className="font-bold text-slate-500">{s.grNumber}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="font-medium">{s.academicStandard}</Badge>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900">{s.name}</span>
+                        <span className="text-[10px] text-muted-foreground uppercase">{s.gender}</span>
+                      </div>
                     </TableCell>
-                    <TableCell>{s.age} yrs</TableCell>
                     <TableCell>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                        s.gender === 'Male' ? 'bg-blue-100 text-blue-700' : 
-                        s.gender === 'Female' ? 'bg-pink-100 text-pink-700' : 
-                        'bg-gray-100 text-gray-700'
-                      }`}>
-                        {s.gender}
-                      </span>
+                      <Badge variant="secondary" className="font-bold">{s.academicStandard}</Badge>
                     </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{s.birthday}</span>
+                        <span className="text-[10px] text-primary font-bold">{calculateAge(s.birthday)} Yrs Old</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs font-mono">{s.childUniqueId}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Button variant="ghost" size="icon" onClick={() => handleEdit(s)}>
-                          <Edit className="h-4 w-4 text-muted-foreground" />
+                          <Edit className="h-4 w-4 text-primary" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => deleteStudent(s.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
@@ -221,8 +347,8 @@ export default function StudentsPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                    No students found matching your criteria.
+                  <TableCell colSpan={6} className="h-32 text-center text-muted-foreground font-medium italic">
+                    No student records matching your criteria.
                   </TableCell>
                 </TableRow>
               )}
