@@ -142,10 +142,9 @@ export default function ReportCardPage() {
               </div>
             )}
 
-            <div className="print-area space-y-8">
+            <div className="print-area space-y-8 print:space-y-0">
               {activeReports.map((student, index) => {
                 const isEvenStudent = index % 2 !== 0;
-                // Alternating logic: Student 1 (index 0, even is false): 1,2 | Student 2 (index 1, even is true): 2,1
                 const parts = isEvenStudent && isBulkMode
                   ? [
                       { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
@@ -157,7 +156,7 @@ export default function ReportCardPage() {
                     ];
 
                 return (
-                  <div key={student.id} className="report-student-group print:flex print:flex-wrap print:w-full print:page-break-after-always">
+                  <div key={student.id} className="report-student-group print:flex print:flex-wrap print:w-full print:page-break-after-always print:h-screen">
                     {parts.map((part) => (
                       <div 
                         key={`${student.id}-${part.id}`} 
@@ -270,34 +269,38 @@ export default function ReportCardPage() {
             margin: 0 !important;
           }
 
-          /* Completely hide all UI wrapper elements */
+          /* Force hide the sidebar system completely */
+          [data-sidebar-wrapper],
+          [data-sidebar],
+          [data-sidebar-trigger],
+          aside,
+          header,
+          nav,
+          .print\\:hidden,
+          .lg\\:col-span-1 {
+            display: none !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
+          }
+
+          /* Reset all potential UI wrappers to take full width */
           html, body {
             background: white !important;
             margin: 0 !important;
             padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
+            width: 100vw !important;
+            height: 100vh !important;
             overflow: visible !important;
           }
 
-          aside, 
-          header, 
-          nav, 
-          [data-sidebar], 
-          [data-sidebar-trigger],
-          .print\\:hidden,
-          .lg\\:col-span-1 {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-            position: absolute !important;
-          }
-
-          /* Reset all containers to be full width */
           main, 
           .mx-auto, 
           [class*="SidebarInset"],
-          .lg\\:col-span-3 {
+          .lg\\:col-span-3,
+          .report-student-group {
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
@@ -305,13 +308,21 @@ export default function ReportCardPage() {
             display: block !important;
             background: white !important;
             border: none !important;
+            box-shadow: none !important;
+            /* Reset shadcn sidebar-specific push variables */
+            --sidebar-width: 0px !important;
+            --sidebar-width-icon: 0px !important;
+            transform: none !important;
           }
 
           .report-student-group {
             display: flex !important;
-            flex-wrap: wrap !important;
-            width: 100% !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            width: 100vw !important;
+            height: 100vh !important;
             page-break-after: always !important;
+            box-sizing: border-box !important;
           }
 
           .print-page {
@@ -321,25 +332,25 @@ export default function ReportCardPage() {
             border: none !important;
             margin: 0 !important;
             background: white !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            overflow: hidden !important;
           }
 
           ${twoInOne ? `
             .print-page {
-              width: 50% !important;
-              display: flex !important;
-              flex-direction: column !important;
-              justify-content: space-between !important;
+              width: 50vw !important;
               border-right: 1px solid #f1f5f9 !important;
+              padding: 2.5rem !important;
             }
             .print-page:nth-child(2n) {
               border-right: none !important;
             }
           ` : `
             .print-page {
-              width: 100% !important;
-              display: flex !important;
-              flex-direction: column !important;
-              justify-content: space-between !important;
+              width: 100vw !important;
+              padding: 4rem !important;
             }
           `}
         }
