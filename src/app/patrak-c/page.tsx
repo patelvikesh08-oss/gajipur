@@ -27,7 +27,7 @@ export default function PatrakCPage() {
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
   const { mappings, isLoaded: subjectsLoaded } = useSubjectStore();
   
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = setSearch("");
   const [selectedStandard, setSelectedStandard] = useState("all");
 
   const isAnnual = semester === "Annual";
@@ -156,7 +156,7 @@ export default function PatrakCPage() {
                   ))}
 
                   {/* PATRAK B SECTION */}
-                  <TableHead colSpan={isAnnual ? 3 : 1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50">
+                  <TableHead colSpan={1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50">
                     PATRAK-B
                   </TableHead>
 
@@ -175,10 +175,8 @@ export default function PatrakCPage() {
                         <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b">Grade</TableHead>
                       </React.Fragment>
                     ))}
-                    {/* Patrak B Tier 2 for Annual */}
-                    <TableHead className="text-[10px] font-bold text-center border-r border-b bg-blue-50/50">Sem 1</TableHead>
-                    <TableHead className="text-[10px] font-bold text-center border-r border-b bg-green-50/50">Sem 2</TableHead>
-                    <TableHead className="text-[10px] font-black text-center border-r border-b bg-indigo-100">Avg</TableHead>
+                    {/* Patrak B Tier 2 for Annual - Only Avg */}
+                    <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-indigo-100">Avg</TableHead>
                   </TableRow>
                 ) : (
                   <TableRow>
@@ -286,23 +284,9 @@ export default function PatrakCPage() {
                     ))}
 
                     {/* PATRAK B DATA CELLS */}
-                    {isAnnual ? (
-                      <>
-                        <TableCell className="p-1 border-r bg-blue-50/20">
-                          <Input type="number" className="h-7 text-[10px] text-center font-bold" defaultValue={85} />
-                        </TableCell>
-                        <TableCell className="p-1 border-r bg-green-50/20">
-                          <Input type="number" className="h-7 text-[10px] text-center font-bold" defaultValue={88} />
-                        </TableCell>
-                        <TableCell className="p-1 border-r bg-indigo-100/30 text-center font-black text-indigo-700 text-xs">
-                          86.5
-                        </TableCell>
-                      </>
-                    ) : (
-                      <TableCell className="p-1 border-r bg-indigo-50/20">
-                        <Input type="number" className="h-7 text-xs text-center font-bold" defaultValue={85} />
-                      </TableCell>
-                    )}
+                    <TableCell className={`p-1 border-r text-center font-bold text-xs ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700' : 'bg-indigo-50/20'}`}>
+                      {isAnnual ? "86.5" : <Input type="number" className="h-7 text-xs text-center font-bold" defaultValue={85} />}
+                    </TableCell>
 
                     <TableCell className="text-center font-black text-orange-600 border-l">84.5%</TableCell>
                     <TableCell className="text-right sticky right-0 bg-white z-10 border-l">
@@ -314,7 +298,7 @@ export default function PatrakCPage() {
                 ))}
                 {(selectedStandard === "all" || (activeSubjects.length === 0)) && (
                   <TableRow>
-                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + (isAnnual ? 11 : 9)} className="h-32 text-center text-muted-foreground">
+                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + (isAnnual ? 9 : 9)} className="h-32 text-center text-muted-foreground">
                       {selectedStandard === "all" 
                         ? "Select a standard to begin direct results entry." 
                         : "No subjects mapped for this standard in " + semester + "."}
