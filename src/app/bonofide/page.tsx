@@ -1,43 +1,61 @@
+
 "use client";
 
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
+import { useSessionStore } from "@/lib/session-store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { IdCard, FileText, Download, CheckCircle2 } from "lucide-react";
+import { IdCard, FileText, Download, CheckCircle2, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function BonofidePage() {
-  const { students, isLoaded } = useStudentStore();
+  const { students, isLoaded: studentsLoaded } = useStudentStore();
+  const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
   const [selectedStudentId, setSelectedStudentId] = useState<string>("");
 
-  if (!isLoaded) return null;
+  if (!studentsLoaded || !sessionLoaded) return null;
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
 
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <IdCard className="w-6 h-6 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-slate-800">Bonofide Certificate</h1>
           </div>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
+                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2023-24">2023-24</SelectItem>
+                  <SelectItem value="2024-25">2024-25</SelectItem>
+                  <SelectItem value="2025-26">2025-26</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Select Student</CardTitle>
-            <CardDescription>Choose a student to generate a formal bonofide certificate</CardDescription>
+            <CardDescription>Choose a student to generate a formal bonofide certificate for {academicYear}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-4 items-end">
             <div className="flex-1 space-y-2">
               <label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Student Name</label>
-              <span className="block text-[10px] text-muted-foreground mt-1">Select from the dropdown to preview</span>
               <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a student..." />
@@ -72,28 +90,23 @@ export default function BonofidePage() {
               </div>
             </div>
 
-            {/* Certificate Template */}
             <div className="relative bg-white p-12 border-8 border-double border-slate-200 shadow-2xl rounded-sm font-serif min-h-[600px] flex flex-col justify-between">
               <div className="text-center space-y-6">
                 <div className="space-y-2">
                   <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase">EduPulse Global Academy</h1>
-                  <p className="text-sm font-sans font-bold text-slate-500 uppercase tracking-widest">Affiliated with District Educational Board</p>
+                  <p className="text-sm font-sans font-bold text-slate-500 uppercase tracking-widest">Academic Year {academicYear}</p>
                 </div>
-                
                 <div className="h-px bg-slate-200 w-full" />
-                
                 <div className="py-8">
                   <span className="inline-block border-b-2 border-slate-900 px-8 py-2 text-2xl font-bold uppercase italic tracking-widest">Bonofide Certificate</span>
                 </div>
-
                 <div className="text-xl leading-[3rem] text-slate-700 text-left px-4">
                   This is to certify that <span className="font-bold border-b border-slate-400 px-4 text-slate-900">{selectedStudent.name}</span>, 
                   age <span className="font-bold border-b border-slate-400 px-4 text-slate-900">{selectedStudent.age}</span>, 
                   is a bonofide student of this school studying in the 
-                  <span className="font-bold border-b border-slate-400 px-4 text-slate-900">{selectedStudent.academicStandard}</span>. 
-                  His/Her general conduct during the academic period has been found to be <span className="font-bold border-b border-slate-400 px-4 text-slate-900">Satisfactory</span>.
-                  <br /><br />
-                  He/She bears a good moral character.
+                  <span className="font-bold border-b border-slate-400 px-4 text-slate-900">{selectedStudent.academicStandard}</span> 
+                  during the academic session <span className="font-bold">{academicYear}</span>. 
+                  His/Her general conduct has been found to be <span className="font-bold border-b border-slate-400 px-4 text-slate-900">Satisfactory</span>.
                 </div>
               </div>
 
@@ -107,12 +120,6 @@ export default function BonofidePage() {
                   <p className="text-sm font-bold text-slate-500 uppercase">Principal Signature</p>
                 </div>
               </div>
-              
-              {/* Decorative Corner Elements */}
-              <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-slate-300" />
-              <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-slate-300" />
-              <div className="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-slate-300" />
-              <div className="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-slate-300" />
             </div>
           </div>
         ) : (

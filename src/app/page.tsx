@@ -4,7 +4,8 @@
 import { MainLayout } from "@/components/layout/main-layout";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { useStudentStore } from "@/lib/student-store";
-import { LayoutDashboard, Users, GraduationCap, ClipboardCheck, ListFilter } from "lucide-react";
+import { useSessionStore } from "@/lib/session-store";
+import { LayoutDashboard, Users, GraduationCap, ClipboardCheck, ListFilter, Calendar } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,10 +16,12 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMemo } from "react";
 
 export default function Dashboard() {
-  const { students, isLoaded } = useStudentStore();
+  const { students, isLoaded: studentsLoaded } = useStudentStore();
+  const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
 
   const stats = useMemo(() => {
     if (!students.length) return { total: 0, avgAge: "0", ageData: [], genderData: [], standardData: [] };
@@ -27,7 +30,6 @@ export default function Dashboard() {
     const sumAge = students.reduce((acc, s) => acc + s.age, 0);
     const avgAge = (sumAge / total).toFixed(1);
 
-    // Age distribution
     const ageMap: Record<number, number> = {};
     students.forEach(s => {
       ageMap[s.age] = (ageMap[s.age] || 0) + 1;
@@ -36,14 +38,12 @@ export default function Dashboard() {
       .map(([age, count]) => ({ age: `${age} Yrs`, count }))
       .sort((a, b) => parseInt(a.age) - parseInt(b.age));
 
-    // Gender distribution
     const genderMap: Record<string, number> = { Male: 0, Female: 0, Other: 0 };
     students.forEach(s => {
       genderMap[s.gender] = (genderMap[s.gender] || 0) + 1;
     });
     const genderData = Object.entries(genderMap).map(([name, value]) => ({ name, value }));
 
-    // Standard distribution with Gender Breakdown
     const stdMap: Record<string, { total: number, male: number, female: number, other: number }> = {};
     students.forEach(s => {
       if (!stdMap[s.academicStandard]) {
@@ -63,22 +63,49 @@ export default function Dashboard() {
     return { total, avgAge, ageData, genderData, standardData };
   }, [students]);
 
-  if (!isLoaded) return null;
+  if (!studentsLoaded || !sessionLoaded) return null;
 
   return (
     <MainLayout>
       <div className="space-y-8 pb-12">
-        <div className="flex items-center gap-3">
-          <LayoutDashboard className="w-8 h-8 text-primary" />
-          <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard</h1>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <LayoutDashboard className="w-8 h-8 text-primary" />
+            <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard</h1>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
+                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2023-24">2023-24</SelectItem>
+                  <SelectItem value="2024-25">2024-25</SelectItem>
+                  <SelectItem value="2025-26">2025-26</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
+              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
+                <SelectValue placeholder="Semester" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Semester 1">Semester 1</SelectItem>
+                <SelectItem value="Semester 2">Semester 2</SelectItem>
+                <SelectItem value="Annual">Annual</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        {/* Top Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard
             title="Total Students"
             value={stats.total}
-            description="Active enrollment"
+            description={`${academicYear} Enrollment`}
             icon={Users}
             variant="purple"
           />
@@ -90,19 +117,16 @@ export default function Dashboard() {
             variant="blue"
           />
           <StatCard
-            title="TRIMASIK Pending"
-            value="12"
-            description="Reports to process"
+            title="Active Semester"
+            value={semester}
+            description="Processing Period"
             icon={ClipboardCheck}
             variant="orange"
           />
         </div>
 
-        {/* Demographic Summary Tables */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          
           <div className="xl:col-span-4 grid grid-cols-1 gap-6">
-            {/* Gender Table */}
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="bg-slate-50/50 border-b">
                 <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Gender Summary</CardTitle>
@@ -127,7 +151,6 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            {/* Age Table */}
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="bg-slate-50/50 border-b">
                 <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Distribution</CardTitle>
@@ -153,7 +176,6 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          {/* Standard Table with Breakdown */}
           <Card className="xl:col-span-8 border-none shadow-sm overflow-hidden">
             <CardHeader className="bg-slate-50/50 border-b">
               <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Grade Level Breakdown</CardTitle>
@@ -180,76 +202,11 @@ export default function Dashboard() {
                       <TableCell className="text-right font-black text-primary">{row.total}</TableCell>
                     </TableRow>
                   ))}
-                  {stats.standardData.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                        No standard data available.
-                      </TableCell>
-                    </TableRow>
-                  )}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
         </div>
-
-        {/* Recent Enrollment Table */}
-        <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white">
-          <CardHeader className="border-b px-8 py-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-bold text-slate-700">Recent Student Enrollment</CardTitle>
-                <CardDescription>Latest 5 students added to the system</CardDescription>
-              </div>
-              <ListFilter className="w-5 h-5 text-slate-400" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader className="bg-slate-50/50">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="px-8 font-bold text-slate-500">Name</TableHead>
-                  <TableHead className="font-bold text-slate-500">Standard</TableHead>
-                  <TableHead className="font-bold text-slate-500">Age</TableHead>
-                  <TableHead className="font-bold text-slate-500">Gender</TableHead>
-                  <TableHead className="px-8 font-bold text-slate-500 text-right">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {students.slice(-5).reverse().map((student) => (
-                  <TableRow key={student.id} className="hover:bg-slate-50 transition-colors">
-                    <TableCell className="px-8 font-medium text-slate-700">{student.name}</TableCell>
-                    <TableCell className="text-slate-500">
-                      <Badge variant="secondary" className="font-medium">{student.academicStandard}</Badge>
-                    </TableCell>
-                    <TableCell className="text-slate-500">{student.age}</TableCell>
-                    <TableCell className="text-slate-500">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        student.gender === 'Male' ? 'bg-blue-100 text-blue-700' : 
-                        student.gender === 'Female' ? 'bg-pink-100 text-pink-700' : 
-                        'bg-slate-100 text-slate-700'
-                      }`}>
-                        {student.gender}
-                      </span>
-                    </TableCell>
-                    <TableCell className="px-8 text-right">
-                      <Badge className="bg-green-500 hover:bg-green-600 border-none px-4 py-1 rounded-full font-bold">
-                        Active
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {students.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                      No student records found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
       </div>
     </MainLayout>
   );

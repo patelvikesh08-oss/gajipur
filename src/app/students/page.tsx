@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore, Student, Gender } from "@/lib/student-store";
+import { useSessionStore } from "@/lib/session-store";
 import {
   Table,
   TableBody,
@@ -24,11 +25,13 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function StudentsPage() {
-  const { students, addStudent, updateStudent, deleteStudent, isLoaded } = useStudentStore();
+  const { students, addStudent, updateStudent, deleteStudent, isLoaded: studentsLoaded } = useStudentStore();
+  const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
+  
   const [search, setSearch] = useState("");
   const [filterGender, setFilterGender] = useState<string>("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -41,7 +44,7 @@ export default function StudentsPage() {
     academicStandard: "",
   });
 
-  if (!isLoaded) return null;
+  if (!studentsLoaded || !sessionLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -70,6 +73,36 @@ export default function StudentsPage() {
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold text-slate-800">Student Manager</h1>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
+                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2023-24">2023-24</SelectItem>
+                  <SelectItem value="2024-25">2024-25</SelectItem>
+                  <SelectItem value="2025-26">2025-26</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
+              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
+                <SelectValue placeholder="Semester" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Semester 1">Semester 1</SelectItem>
+                <SelectItem value="Semester 2">Semester 2</SelectItem>
+                <SelectItem value="Annual">Annual</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="relative w-full sm:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
