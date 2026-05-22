@@ -13,19 +13,13 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { 
-  LayoutDashboard, 
-  Users, 
-  BrainCircuit, 
-  FileInput, 
+  Home,
+  LayoutDashboard,
+  ClipboardList,
   Search, 
   Bell, 
   Mail, 
-  Menu,
-  Home,
-  Grid,
-  FileText,
-  Database,
-  Type
+  Menu
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,12 +27,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: Home },
-  { name: "Components", href: "/students", icon: Users },
-  { name: "UI Elements", href: "/insights", icon: Grid },
-  { name: "Form Stuff", href: "/bulk-entry", icon: FileText },
-  { name: "Data Table", href: "/students", icon: Database },
-  { name: "Icons", href: "/bulk-entry", icon: Type },
+  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "TRIMASIK", href: "/trimasik", icon: ClipboardList },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
@@ -49,7 +39,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       <Sidebar className="border-r border-sidebar-border bg-white">
         <SidebarHeader className="p-6 border-b border-sidebar-border">
           <div className="flex items-center gap-3 mb-8">
-            <span className="font-headline font-bold text-xl text-primary tracking-tight">Dashboard Admin</span>
+            <span className="font-headline font-bold text-xl text-primary tracking-tight">EduPulse Admin</span>
           </div>
           <div className="flex items-center gap-3 p-2 bg-sidebar-accent/50 rounded-xl">
             <Avatar className="w-10 h-10 border-2 border-green-500 p-0.5">
@@ -57,7 +47,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               <AvatarFallback>AD</AvatarFallback>
             </Avatar>
             <div className="flex flex-col overflow-hidden">
-              <span className="text-sm font-bold truncate">Success Awuku-Amador</span>
+              <span className="text-sm font-bold truncate">Admin User</span>
               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Online
               </span>
@@ -92,26 +82,22 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             <div className="relative w-64 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search Project"
+                placeholder="Search Dashboard..."
                 className="pl-9 border-none bg-transparent shadow-none focus-visible:ring-0"
               />
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-             <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors cursor-pointer">
+            <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors cursor-pointer">
               <Avatar className="w-8 h-8 border border-green-500 p-0.5">
                 <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
               </Avatar>
-              <span className="text-sm font-medium text-muted-foreground hidden lg:block">Success Awuku-Amador</span>
+              <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account</span>
             </div>
             <div className="flex items-center gap-2">
               <button className="p-2 hover:bg-muted rounded-full relative">
                 <Bell className="w-5 h-5 text-muted-foreground" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-pink-500 rounded-full border-2 border-white" />
-              </button>
-              <button className="p-2 hover:bg-muted rounded-full relative">
-                <Mail className="w-5 h-5 text-muted-foreground" />
                 <span className="absolute top-2 right-2 w-2 h-2 bg-pink-500 rounded-full border-2 border-white" />
               </button>
               <button className="p-2 hover:bg-muted rounded-full">
