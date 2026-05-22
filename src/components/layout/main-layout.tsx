@@ -34,7 +34,8 @@ import {
   FileText,
   Layers,
   Calculator,
-  SpellCheck
+  SpellCheck,
+  Settings2
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -49,6 +50,7 @@ const mainNavigation = [
   { name: "FLN", href: "/fln", icon: SpellCheck },
   { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
   { name: "Marks Mapping", href: "/marks-mapping", icon: Calculator },
+  { name: "Patrak-B Config", href: "/patrak-b-config", icon: Settings2 },
 ];
 
 const examinationSubItems = [

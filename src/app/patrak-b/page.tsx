@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
+import { usePatrakBStore } from "@/lib/patrak-b-store";
 import {
   Table,
   TableBody,
@@ -19,10 +20,12 @@ import { ScrollText, Calendar, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import React from "react";
 
 export default function PatrakBPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
+  const { config, isLoaded: configLoaded } = usePatrakBStore();
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
@@ -31,7 +34,7 @@ export default function PatrakBPage() {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  if (!studentsLoaded || !sessionLoaded) return null;
+  if (!studentsLoaded || !sessionLoaded || !configLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -46,6 +49,8 @@ export default function PatrakBPage() {
       description: `Internal progress data for ${academicYear} has been committed.`,
     });
   };
+
+  const dynamicFields = Array.from({ length: config.fieldCount }, (_, i) => i + 1);
 
   return (
     <MainLayout>
@@ -118,10 +123,11 @@ export default function PatrakBPage() {
                 <TableRow>
                   <TableHead className="font-bold uppercase tracking-wider text-xs w-[80px] border-r sticky left-0 bg-slate-50 z-20">Roll No</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[80px] bg-slate-50 z-20">Student Name</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field 1</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field 2</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field 3</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field 4</TableHead>
+                  
+                  {dynamicFields.map(num => (
+                    <TableHead key={num} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field {num}</TableHead>
+                  ))}
+
                   <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-blue-50/50">Sem 1 Total</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-green-50/50">Sem 2 Total</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-orange-50/50">Avg Marks</TableHead>
@@ -136,18 +142,13 @@ export default function PatrakBPage() {
                     <TableCell className="font-bold text-slate-700 border-r sticky left-[80px] bg-white z-10">
                       {s.name}
                     </TableCell>
-                    <TableCell className="p-1 border-r">
-                      <Input className="h-8 text-center" defaultValue="" />
-                    </TableCell>
-                    <TableCell className="p-1 border-r">
-                      <Input className="h-8 text-center" defaultValue="" />
-                    </TableCell>
-                    <TableCell className="p-1 border-r">
-                      <Input className="h-8 text-center" defaultValue="" />
-                    </TableCell>
-                    <TableCell className="p-1 border-r">
-                      <Input className="h-8 text-center" defaultValue="" />
-                    </TableCell>
+                    
+                    {dynamicFields.map(num => (
+                      <TableCell key={num} className="p-1 border-r">
+                        <Input className="h-8 text-center" defaultValue="" />
+                      </TableCell>
+                    ))}
+
                     <TableCell className="p-1 border-r bg-blue-50/10">
                       <Input type="number" className="h-8 text-center font-bold" defaultValue={0} />
                     </TableCell>
@@ -161,7 +162,7 @@ export default function PatrakBPage() {
                 ))}
                 {filteredStudents.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={9} className="h-24 text-center text-muted-foreground font-medium italic">
+                    <TableCell colSpan={config.fieldCount + 5} className="h-24 text-center text-muted-foreground font-medium italic">
                       No students matching criteria.
                     </TableCell>
                   </TableRow>
