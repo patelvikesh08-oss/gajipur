@@ -32,7 +32,8 @@ import {
   PieChart,
   IdCard,
   FileText,
-  Layers
+  Layers,
+  Calculator
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -45,6 +46,7 @@ const mainNavigation = [
   { name: "Students", href: "/students", icon: Users },
   { name: "Bonofide", href: "/bonofide", icon: IdCard },
   { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
+  { name: "Marks Mapping", href: "/marks-mapping", icon: Calculator },
 ];
 
 const examinationSubItems = [
