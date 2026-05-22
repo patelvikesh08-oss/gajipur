@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -67,11 +68,9 @@ const settingsSubItems = [
   { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
   { name: "Marks Mapping", href: "/marks-mapping", icon: Calculator },
   { name: "Patrak-B Config", href: "/patrak-b-config", icon: Settings2 },
+  { name: "FLN Config", href: "/fln-config", icon: SpellCheck },
 ];
 
-/**
- * Helper component that consumes useSidebar to handle auto-collapse logic
- */
 function MainLayoutContent({ children, pathname }: { children: React.ReactNode, pathname: string }) {
   const { setOpen, setOpenMobile, isMobile, open } = useSidebar();
 
@@ -171,7 +170,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuItem>
             ))}
 
-            {/* Examination Section */}
             <Collapsible 
               asChild 
               defaultOpen={examinationSubItems.some(i => pathname === i.href)}
@@ -210,7 +208,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuItem>
             </Collapsible>
 
-            {/* Settings Section */}
             <Collapsible 
               asChild 
               defaultOpen={settingsSubItems.some(i => pathname === i.href)}

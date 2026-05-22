@@ -1,9 +1,11 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
+import { useFLNConfigStore, FLNCategory } from "@/lib/fln-config-store";
 import {
   Table,
   TableBody,
@@ -29,6 +31,7 @@ const ACADEMIC_MONTHS = [
 export default function FlnPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, updateYear, isLoaded: sessionLoaded } = useSessionStore();
+  const { config, isLoaded: configLoaded } = useFLNConfigStore();
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
@@ -36,7 +39,7 @@ export default function FlnPage() {
 
   const [flnData, setFlnData] = useState<Record<string, Record<string, boolean[]>>>({});
 
-  const flnCategories = [
+  const flnCategories: { name: FLNCategory; color: string }[] = [
     { name: "FOUNDATION", color: "bg-blue-50/50" },
     { name: "LITERACY", color: "bg-emerald-50/50" },
     { name: "NUMERICY", color: "bg-amber-50/50" }
@@ -46,7 +49,7 @@ export default function FlnPage() {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  if (!studentsLoaded || !sessionLoaded) return null;
+  if (!studentsLoaded || !sessionLoaded || !configLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -84,11 +87,11 @@ export default function FlnPage() {
   const handleSaveAll = () => {
     toast({
       title: "FLN Data Saved",
-      description: `Progress for ${selectedMonth} (${academicYear}) has been recorded for ${filteredStudents.length} students.`,
+      description: `Progress for ${selectedMonth} (${academicYear}) has been recorded.`,
     });
   };
 
-  const subColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const subColumns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
     <MainLayout>
@@ -100,7 +103,7 @@ export default function FlnPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">FLN Milestone Entry</h1>
-              <p className="text-xs text-muted-foreground font-medium">Month-wise Foundational Reading, Writing and Math Tracking</p>
+              <p className="text-xs text-muted-foreground font-medium">Foundational Reading, Writing and Math Tracking</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -132,14 +135,18 @@ export default function FlnPage() {
               </Select>
             </div>
 
+            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
+              <Printer className="w-4 h-4 mr-2" />
+              Print
+            </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20">
               <Save className="w-4 h-4 mr-2" />
-              Save Milestone Records
+              Save Milestones
             </Button>
           </div>
         </div>
 
-        {/* PRINT ONLY HEADER */}
+        {/* PRINT HEADER */}
         <div className="hidden print:block text-center mb-6 space-y-2 border-b-2 border-slate-900 pb-4">
           <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
           <h2 className="text-lg font-bold uppercase">FLN Milestone Progress Report</h2>
@@ -181,7 +188,7 @@ export default function FlnPage() {
                     <TableHead 
                       key={cat.name} 
                       colSpan={11} 
-                      className={`font-black uppercase tracking-widest text-[9px] text-center border-r border-b ${cat.color} print:bg-white print:border-black`}
+                      className={`font-black uppercase tracking-widest text-[9px] text-center border-r border-b ${cat.color} print:bg-white print:border-black py-2`}
                     >
                       {cat.name}
                     </TableHead>
@@ -190,9 +197,14 @@ export default function FlnPage() {
                 <TableRow>
                   {flnCategories.map((cat) => (
                     <React.Fragment key={`${cat.name}-subs`}>
-                      {subColumns.map(num => (
-                        <TableHead key={`${cat.name}-${num}`} className="text-[8px] font-bold text-center px-0.5 border-r min-w-[24px] bg-white print:border-black">
-                          {num}
+                      {subColumns.map(idx => (
+                        <TableHead key={`${cat.name}-${idx}`} className="text-[8px] font-bold border-r min-w-[32px] h-[160px] p-0 bg-white print:border-black print:h-auto print:py-1">
+                          <div className="flex flex-col items-center justify-end h-full w-full pb-3 gap-2 print:pb-1">
+                            <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden print:writing-mode-horizontal-tb print:rotate-0 print:text-[7px]">
+                              {config.categories[cat.name][idx] || `M${idx + 1}`}
+                            </span>
+                            <span className="text-primary font-black mt-auto print:text-black">{idx + 1}</span>
+                          </div>
                         </TableHead>
                       ))}
                       <TableHead className="text-[8px] font-black text-center px-0.5 border-r min-w-[30px] bg-slate-100 text-primary print:bg-white print:text-black print:border-black">
@@ -213,12 +225,12 @@ export default function FlnPage() {
                     </TableCell>
                     {flnCategories.map((cat) => (
                       <React.Fragment key={`${s.id}-${cat.name}`}>
-                        {subColumns.map(num => (
-                          <TableCell key={`${s.id}-${cat.name}-${num}`} className="p-0 border-r text-center print:border-black">
+                        {subColumns.map(idx => (
+                          <TableCell key={`${s.id}-${cat.name}-${idx}`} className="p-0 border-r text-center print:border-black">
                             <div className="flex items-center justify-center h-10 print:h-8">
                               <Checkbox 
-                                checked={flnData[s.id]?.[cat.name]?.[num-1] || false}
-                                onCheckedChange={(val) => handleCheck(s.id, cat.name, num-1, val)}
+                                checked={flnData[s.id]?.[cat.name]?.[idx] || false}
+                                onCheckedChange={(val) => handleCheck(s.id, cat.name, idx, val)}
                                 className="h-4 w-4 border-slate-300"
                               />
                             </div>
@@ -237,26 +249,15 @@ export default function FlnPage() {
           </ScrollArea>
         </div>
 
-        <div className="flex justify-end pt-4 no-print mb-12">
-          <div className="flex gap-3">
-            <Button 
-              variant="outline" 
-              size="lg" 
-              onClick={() => window.print()} 
-              className="font-bold gap-2 shadow-sm border-slate-200"
-            >
-              <Printer className="w-4 h-4 text-slate-500" />
-              Print Milestone Records
-            </Button>
-            <Button 
-              onClick={handleSaveAll} 
-              size="lg"
-              className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 px-8"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Commit Changes
-            </Button>
-          </div>
+        <div className="flex justify-end pt-4 no-print mb-12 gap-3">
+          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
+            <Printer className="w-4 h-4" />
+            Print Milestone Records
+          </Button>
+          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 px-8">
+            <Save className="w-4 h-4 mr-2" />
+            Commit Changes
+          </Button>
         </div>
       </div>
     </MainLayout>
