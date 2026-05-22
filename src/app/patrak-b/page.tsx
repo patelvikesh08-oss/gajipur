@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollText, Calendar, Save, CheckCircle2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ScrollText, Calendar, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function PatrakBPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
@@ -112,57 +112,64 @@ export default function PatrakBPage() {
         </div>
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead className="font-bold uppercase tracking-wider text-xs w-[80px]">Roll No</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Student</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Standard</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Qualitative Observation</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs text-center w-[120px]">Grade</TableHead>
-                <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Verification</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredStudents.map((s) => (
-                <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-black text-primary">{s.rollNumber}</TableCell>
-                  <TableCell className="font-bold text-slate-700">{s.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="border-accent text-accent font-bold">{s.academicStandard}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Input placeholder="Enter observations..." className="h-8 text-sm" defaultValue="Demonstrates excellent social behavior and participation." />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Select defaultValue="A+">
-                      <SelectTrigger className="h-8 font-bold">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="A+">A+</SelectItem>
-                        <SelectItem value="A">A</SelectItem>
-                        <SelectItem value="B">B</SelectItem>
-                        <SelectItem value="C">C</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Badge className="bg-blue-500 border-none px-3 font-bold">
-                      <CheckCircle2 className="w-3 h-3 mr-1" /> Verified
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {filteredStudents.length === 0 && (
+          <ScrollArea className="w-full">
+            <Table className="border-collapse">
+              <TableHeader className="bg-slate-50">
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                    No students matching criteria.
-                  </TableCell>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs w-[80px] border-r sticky left-0 bg-slate-50 z-20">Roll No</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[80px] bg-slate-50 z-20">Student Name</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field 1</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field 2</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field 3</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px]">Field 4</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-blue-50/50">Sem 1 Total</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-green-50/50">Sem 2 Total</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-orange-50/50">Avg Marks</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredStudents.map((s) => (
+                  <TableRow key={s.id} className="hover:bg-slate-50/50">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-center">
+                      {s.rollNumber}
+                    </TableCell>
+                    <TableCell className="font-bold text-slate-700 border-r sticky left-[80px] bg-white z-10">
+                      {s.name}
+                    </TableCell>
+                    <TableCell className="p-1 border-r">
+                      <Input className="h-8 text-center" defaultValue="" />
+                    </TableCell>
+                    <TableCell className="p-1 border-r">
+                      <Input className="h-8 text-center" defaultValue="" />
+                    </TableCell>
+                    <TableCell className="p-1 border-r">
+                      <Input className="h-8 text-center" defaultValue="" />
+                    </TableCell>
+                    <TableCell className="p-1 border-r">
+                      <Input className="h-8 text-center" defaultValue="" />
+                    </TableCell>
+                    <TableCell className="p-1 border-r bg-blue-50/10">
+                      <Input type="number" className="h-8 text-center font-bold" defaultValue={0} />
+                    </TableCell>
+                    <TableCell className="p-1 border-r bg-green-50/10">
+                      <Input type="number" className="h-8 text-center font-bold" defaultValue={0} />
+                    </TableCell>
+                    <TableCell className="p-1 border-r bg-orange-50/10">
+                      <Input type="number" className="h-8 text-center font-black text-orange-600" defaultValue={0} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredStudents.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={9} className="h-24 text-center text-muted-foreground font-medium italic">
+                      No students matching criteria.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
       </div>
     </MainLayout>
