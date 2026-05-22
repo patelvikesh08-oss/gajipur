@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SpellCheck, Calendar, Save, Clock } from "lucide-react";
+import { SpellCheck, Calendar, Save, Clock, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -94,7 +94,7 @@ export default function FlnPage() {
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-emerald-100 rounded-lg">
               <SpellCheck className="w-6 h-6 text-emerald-600" />
@@ -140,7 +140,18 @@ export default function FlnPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Print Only Header */}
+        <div className="hidden print:block text-center mb-6 space-y-2 border-b-2 border-slate-900 pb-4">
+          <h1 className="text-3xl font-black uppercase">EduPulse Global Academy</h1>
+          <h2 className="text-xl font-bold uppercase">FLN Milestone Progress Report</h2>
+          <div className="flex justify-center gap-8 font-bold text-sm">
+            <span>Academic Year: {academicYear}</span>
+            <span>Month: {selectedMonth}</span>
+            <span>Standard: {selectedStandard === 'all' ? 'All Classes' : selectedStandard}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
             placeholder="Search student by name or roll number..."
             value={search}
@@ -160,19 +171,19 @@ export default function FlnPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <ScrollArea className="w-full">
             <Table className="border-collapse">
-              <TableHeader className="bg-slate-50">
+              <TableHeader className="bg-slate-50 print:bg-slate-100">
                 {/* Tier 1 Header */}
                 <TableRow>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[60px] border-r sticky left-0 bg-slate-50 z-20">Roll No</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20">Student Name</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[60px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
                   {flnCategories.map((cat) => (
                     <TableHead 
                       key={cat.name} 
                       colSpan={11} 
-                      className={`font-black uppercase tracking-widest text-xs text-center border-r border-b ${cat.color}`}
+                      className={`font-black uppercase tracking-widest text-xs text-center border-r border-b ${cat.color} print:border-slate-300`}
                     >
                       {cat.name}
                     </TableHead>
@@ -183,11 +194,11 @@ export default function FlnPage() {
                   {flnCategories.map((cat) => (
                     <React.Fragment key={`${cat.name}-subs`}>
                       {subColumns.map(num => (
-                        <TableHead key={`${cat.name}-${num}`} className="text-[9px] font-bold text-center px-1 border-r min-w-[35px] bg-white">
+                        <TableHead key={`${cat.name}-${num}`} className="text-[9px] font-bold text-center px-1 border-r min-w-[35px] bg-white print:border-slate-300">
                           {num}
                         </TableHead>
                       ))}
-                      <TableHead className="text-[9px] font-black text-center px-1 border-r min-w-[45px] bg-slate-100 text-primary">
+                      <TableHead className="text-[9px] font-black text-center px-1 border-r min-w-[45px] bg-slate-100 text-primary print:border-slate-300 print:text-black">
                         TOTAL
                       </TableHead>
                     </React.Fragment>
@@ -196,27 +207,27 @@ export default function FlnPage() {
               </TableHeader>
               <TableBody>
                 {filteredStudents.map((s) => (
-                  <TableRow key={s.id} className="hover:bg-slate-50/50 h-10">
-                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-xs text-center">
+                  <TableRow key={s.id} className="hover:bg-slate-50/50 h-10 print:h-8">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-xs text-center print:static print:text-black print:border-slate-300">
                       {s.rollNumber}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 text-xs">
+                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 text-xs print:static print:border-slate-300">
                       {s.name}
                     </TableCell>
                     {flnCategories.map((cat) => (
                       <React.Fragment key={`${s.id}-${cat.name}`}>
                         {subColumns.map(num => (
-                          <TableCell key={`${s.id}-${cat.name}-${num}`} className="p-0 border-r text-center">
-                            <div className="flex items-center justify-center h-10">
+                          <TableCell key={`${s.id}-${cat.name}-${num}`} className="p-0 border-r text-center print:border-slate-300">
+                            <div className="flex items-center justify-center h-10 print:h-8">
                               <Checkbox 
                                 checked={flnData[s.id]?.[cat.name]?.[num-1] || false}
                                 onCheckedChange={(val) => handleCheck(s.id, cat.name, num-1, val)}
-                                className="h-4 w-4 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                                className="h-4 w-4 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 print:data-[state=checked]:bg-slate-700"
                               />
                             </div>
                           </TableCell>
                         ))}
-                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[11px]">
+                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[11px] print:border-slate-300 print:text-black">
                           {getCategoryTotal(s.id, cat.name)}
                         </TableCell>
                       </React.Fragment>
@@ -232,8 +243,29 @@ export default function FlnPage() {
                 )}
               </TableBody>
             </Table>
-            <ScrollBar orientation="horizontal" />
+            <ScrollBar orientation="horizontal" className="no-print" />
           </ScrollArea>
+        </div>
+
+        {/* Action Buttons Bottom */}
+        <div className="flex justify-end pt-4 pb-12 gap-3 no-print">
+          <Button 
+            variant="outline" 
+            size="lg" 
+            onClick={() => window.print()} 
+            className="font-bold gap-2 shadow-sm border-slate-200"
+          >
+            <Printer className="w-4 h-4 text-slate-500" />
+            Print Milestone Records
+          </Button>
+          <Button 
+            onClick={handleSaveAll} 
+            size="lg"
+            className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 px-8"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            Commit Changes
+          </Button>
         </div>
       </div>
     </MainLayout>
