@@ -68,7 +68,7 @@
     display: none !important;
   }
 
-  /* Reset layout constraints to ensure content uses full width */
+  /* Reset layout constraints to ensure content starts at top and uses full width */
   :root {
     --sidebar-width: 0px !important;
     --sidebar-width-icon: 0px !important;
@@ -86,17 +86,18 @@
     overflow: visible !important;
   }
 
-  /* Remove all shadows */
+  /* Remove all shadows and decorative backgrounds */
   *, ::before, ::after {
     box-shadow: none !important;
     text-shadow: none !important;
   }
 
-  /* Target the sidebar provider wrapper to reset grid/flex layout */
+  /* Surgically reset the SidebarProvider wrapper to prevent blank pages */
   .group\/sidebar-wrapper {
     display: block !important;
     width: 100% !important;
     min-height: 0 !important;
+    height: auto !important;
   }
 
   main, 
@@ -118,7 +119,7 @@
     width: 100% !important;
   }
 
-  /* Table Specific Printing - Clear and Bold */
+  /* Table Specific Printing */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
@@ -146,51 +147,32 @@
     background: white !important;
   }
 
-  /* Force tickmarks to be visible and clear */
+  /* Force checkboxes to show as black marks */
   [role="checkbox"][data-state="checked"] {
     background-color: black !important;
     border-color: black !important;
     color: white !important;
   }
 
-  /* Kill all sticky positioning in print */
+  /* Kill sticky headers/columns in print */
   .sticky {
     position: static !important;
   }
 
-  /* Ensure scrollable containers expand to show all content */
+  /* Expand scrollable containers */
   [data-radix-scroll-area-viewport],
   .overflow-hidden,
-  .overflow-auto,
-  .max-h-\[70vh\] {
+  .overflow-auto {
     overflow: visible !important;
     display: block !important;
     width: 100% !important;
     height: auto !important;
     max-height: none !important;
-    min-height: 0 !important;
   }
 
-  /* Specific fix for extra blank page: avoid trailing margins */
+  /* Remove blank page space at the end */
   .pb-12, .pb-20, .pt-8, .p-4, .md\:p-8 {
-    padding-bottom: 0 !important;
-    padding-top: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-  
-  .space-y-8 > :last-child {
+    padding: 0 !important;
     margin-bottom: 0 !important;
-  }
-
-  /* Hide decorative spans or extra indicators */
-  .badge, [class*="Badge"], .badge * {
-    background: transparent !important;
-    border: 1px solid black !important;
-    color: black !important;
-  }
-
-  @page {
-    margin: 0.5cm;
   }
 }

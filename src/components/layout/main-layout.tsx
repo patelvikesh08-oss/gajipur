@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -134,7 +133,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-white no-print">
         <SidebarHeader className="p-4 border-b border-sidebar-border transition-all duration-300 group-data-[state=collapsed]:p-2">
-          <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center">
+          <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center overflow-hidden">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
                <GraduationCap className="w-5 h-5 text-white" />
             </div>
@@ -163,7 +162,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                   className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg"
                 >
                   <Link href={item.href}>
-                    <span className="font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold">
+                    <span className="font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold group-data-[state=collapsed]:hidden">
                       {item.name}
                     </span>
                     <item.icon className="w-4 h-4 text-muted-foreground group-data-[active=true]:text-primary" />
@@ -181,10 +180,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg">
-                    <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary">Examination</span>
+                    <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Examination</span>
                     <div className="flex items-center gap-2">
                       <GraduationCap className="w-4 h-4 text-muted-foreground group-data-[state=open]:text-primary" />
-                      <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
                     </div>
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
@@ -198,7 +197,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                           className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto"
                         >
                           <Link href={item.href}>
-                            <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold">
+                            <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
                             <item.icon className="w-3.5 h-3.5 text-muted-foreground group-data-[active=true]:text-primary" />
@@ -220,10 +219,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg">
-                    <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary">Settings</span>
+                    <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Settings</span>
                     <div className="flex items-center gap-2">
                       <Settings className="w-4 h-4 text-muted-foreground group-data-[state=open]:text-primary" />
-                      <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
                     </div>
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
@@ -237,7 +236,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                           className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto"
                         >
                           <Link href={item.href}>
-                            <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold">
+                            <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
                             <item.icon className="w-3.5 h-3.5 text-muted-foreground group-data-[active=true]:text-primary" />
