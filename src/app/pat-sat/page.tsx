@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore, Student, Gender } from "@/lib/student-store";
 import {
@@ -23,13 +24,16 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit, CheckCircle2 } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, CheckCircle2, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function PatSatPage() {
   const { students, addStudent, updateStudent, deleteStudent, isLoaded } = useStudentStore();
   const [search, setSearch] = useState("");
   const [filterGender, setFilterGender] = useState<string>("all");
+  const [academicYear, setAcademicYear] = useState("2024-25");
+  const [selectedStandard, setSelectedStandard] = useState("all");
+  const [semester, setSemester] = useState("Semester 1");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
@@ -40,13 +44,17 @@ export default function PatSatPage() {
     academicStandard: "",
   });
 
+  const standards = useMemo(() => {
+    return Array.from(new Set(students.map(s => s.academicStandard))).sort();
+  }, [students]);
+
   if (!isLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
-                          s.academicStandard.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
     const matchesGender = filterGender === "all" || s.gender === filterGender;
-    return matchesSearch && matchesGender;
+    const matchesStandard = selectedStandard === "all" || s.academicStandard === selectedStandard;
+    return matchesSearch && matchesGender && matchesStandard;
   });
 
   const handleSave = () => {
@@ -69,86 +77,119 @@ export default function PatSatPage() {
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-indigo-100 rounded-lg">
               <CheckCircle2 className="w-6 h-6 text-indigo-600" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">PAT/SAT (Periodic & Summative Assessment)</h1>
+            <h1 className="text-2xl font-bold text-slate-800">PAT/SAT (Assessments)</h1>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <Select value={academicYear} onValueChange={setAcademicYear}>
+                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2023-24">2023-24</SelectItem>
+                  <SelectItem value="2024-25">2024-25</SelectItem>
+                  <SelectItem value="2025-26">2025-26</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Select value={semester} onValueChange={setSemester}>
+              <SelectTrigger className="w-[140px] bg-white font-bold text-xs">
+                <SelectValue placeholder="Semester" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Semester 1">Semester 1</SelectItem>
+                <SelectItem value="Semester 2">Semester 2</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="relative w-full sm:w-96">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search assessment records..."
+              placeholder="Search assessments..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
             />
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Select value={filterGender} onValueChange={setFilterGender}>
-              <SelectTrigger className="w-[150px]">
-                <Filter className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Gender" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Genders</SelectItem>
-                <SelectItem value="Male">Male</SelectItem>
-                <SelectItem value="Female">Female</SelectItem>
-              </SelectContent>
-            </Select>
-            <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-              setIsAddDialogOpen(open);
-              if (!open) setEditingStudent(null);
-            }}>
-              <DialogTrigger asChild>
-                <Button className="font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20">
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Assessment
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="font-headline text-xl">{editingStudent ? "Edit Assessment Record" : "New PAT/SAT Entry"}</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
+          <Select value={selectedStandard} onValueChange={setSelectedStandard}>
+            <SelectTrigger>
+              <SelectValue placeholder="Standard" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Standards</SelectItem>
+              {standards.map(std => (
+                <SelectItem key={std} value={std}>{std}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={filterGender} onValueChange={setFilterGender}>
+            <SelectTrigger>
+              <Filter className="w-4 h-4 mr-2" />
+              <SelectValue placeholder="Gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Genders</SelectItem>
+              <SelectItem value="Male">Male</SelectItem>
+              <SelectItem value="Female">Female</SelectItem>
+            </SelectContent>
+          </Select>
+          <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+            setIsAddDialogOpen(open);
+            if (!open) setEditingStudent(null);
+          }}>
+            <DialogTrigger asChild>
+              <Button className="font-bold bg-indigo-600 hover:bg-indigo-700 w-full shadow-lg shadow-indigo-600/20">
+                <Plus className="w-4 h-4 mr-2" />
+                New Assessment
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="font-headline text-xl">{editingStudent ? "Edit Assessment Record" : "New PAT/SAT Entry"}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Student Name</Label>
+                  <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="name">Student Name</Label>
-                    <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="age">Age</Label>
-                      <Input id="age" type="number" value={formData.age} onChange={(e) => setFormData({...formData, age: parseInt(e.target.value) || 0})} />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="gender">Gender</Label>
-                      <Select value={formData.gender} onValueChange={(val: Gender) => setFormData({...formData, gender: val})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Male">Male</SelectItem>
-                          <SelectItem value="Female">Female</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <Label htmlFor="age">Age</Label>
+                    <Input id="age" type="number" value={formData.age} onChange={(e) => setFormData({...formData, age: parseInt(e.target.value) || 0})} />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="std">Academic Standard</Label>
-                    <Input id="std" value={formData.academicStandard} onChange={(e) => setFormData({...formData, academicStandard: e.target.value})} />
+                    <Label htmlFor="gender">Gender</Label>
+                    <Select value={formData.gender} onValueChange={(val: Gender) => setFormData({...formData, gender: val})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                  <Button className="bg-indigo-600 hover:bg-indigo-700" onClick={handleSave}>Save Record</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="std">Academic Standard</Label>
+                  <Input id="std" value={formData.academicStandard} onChange={(e) => setFormData({...formData, academicStandard: e.target.value})} />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
+                <Button className="bg-indigo-600 hover:bg-indigo-700" onClick={handleSave}>Save Record</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
@@ -157,8 +198,8 @@ export default function PatSatPage() {
               <TableRow>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Standard</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Test Date</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Performance</TableHead>
+                <TableHead className="font-bold uppercase tracking-wider text-xs text-center">Date</TableHead>
+                <TableHead className="font-bold uppercase tracking-wider text-xs text-center">Grade</TableHead>
                 <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -169,10 +210,10 @@ export default function PatSatPage() {
                   <TableCell>
                     <Badge variant="outline" className="border-indigo-500 text-indigo-600 font-bold">{s.academicStandard}</Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">Nov 12, 2023</TableCell>
-                  <TableCell>
+                  <TableCell className="text-center text-muted-foreground text-sm">Nov 12, 2023</TableCell>
+                  <TableCell className="text-center">
                     <Badge className="bg-indigo-500 hover:bg-indigo-600 border-none px-3 py-0.5 rounded-full font-bold">
-                      Grade A+
+                      A+
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -190,7 +231,7 @@ export default function PatSatPage() {
               {filteredStudents.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                    No periodic assessment records found.
+                    No assessment records found matching the filters.
                   </TableCell>
                 </TableRow>
               )}
