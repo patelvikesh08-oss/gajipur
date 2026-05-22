@@ -55,92 +55,80 @@
 
 @media print {
   @page {
-    size: auto;
-    margin: 10mm;
+    size: landscape;
+    margin: 5mm;
   }
 
-  /* Hide UI elements */
-  .no-print, 
-  aside, 
-  header,
-  footer,
-  [data-sidebar="trigger"],
-  [data-sidebar="sidebar"],
-  button,
-  .scroll-bar,
-  [role="scrollbar"] {
-    display: none !important;
-  }
-
-  /* CRITICAL: Reset layout to prevent blank first page */
+  /* CRITICAL: Force reset of all layout height constraints to prevent blank first page */
   html, body {
     height: auto !important;
     min-height: 0 !important;
     overflow: visible !important;
     background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
+  /* Target the Next.js and Sidebar layout wrappers specifically */
   .group\/sidebar-wrapper,
   [data-sidebar="inset"],
   main,
   .min-h-svh,
-  .min-h-screen {
+  .min-h-screen,
+  div[data-radix-popper-content-wrapper] {
     display: block !important;
     min-height: 0 !important;
     height: auto !important;
+    position: static !important;
+    overflow: visible !important;
+    width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
-    position: static !important;
-    width: 100% !important;
   }
 
-  .mx-auto {
-    max-width: none !important;
-    width: 100% !important;
+  /* Hide UI elements */
+  .no-print, 
+  aside, 
+  header, 
+  footer, 
+  nav,
+  [data-sidebar="trigger"],
+  [data-sidebar="sidebar"],
+  button,
+  .scroll-bar,
+  [role="scrollbar"],
+  .custom-scrollbar {
+    display: none !important;
   }
 
-  /* Checkbox Print Visibility Fix - SIMPLE STYLE */
+  /* Checkbox Print Visibility Fix - JUST THE TICK, NO FILL */
   [role="checkbox"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    border: 1.5px solid #000 !important;
-    background-color: #fff !important;
+    border: 1px solid #000 !important;
+    background-color: transparent !important; /* NO SOLID BOX FILL */
     opacity: 1 !important;
     visibility: visible !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 14px !important;
-    height: 14px !important;
-    border-radius: 2px !important;
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 1px !important;
+    box-shadow: none !important;
   }
 
-  [role="checkbox"][data-state="checked"] {
-    background-color: #000 !important;
-    border-color: #000 !important;
-  }
-
-  /* Ensure the check icon inside is high-contrast */
+  /* Ensure the tick mark itself is high-contrast black */
   [role="checkbox"][data-state="checked"] svg {
-    color: #fff !important;
-    stroke: #fff !important;
+    color: #000 !important;
+    stroke: #000 !important;
+    stroke-width: 3px !important; /* Make tick bolder for print */
     fill: none !important;
     opacity: 1 !important;
     visibility: visible !important;
     display: block !important;
-    width: 12px !important;
-    height: 12px !important;
-  }
-
-  /* Expand scrollable containers to show all content */
-  [data-radix-scroll-area-viewport],
-  .overflow-hidden,
-  .overflow-auto {
-    overflow: visible !important;
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
+    width: 10px !important;
+    height: 10px !important;
   }
 
   /* Table Specific Printing */
@@ -162,10 +150,10 @@
   }
 
   th, td {
-    border: 1px solid black !important;
-    padding: 2px !important;
+    border: 0.5pt solid black !important;
+    padding: 1px !important;
     color: black !important;
-    background: white !important;
+    background: transparent !important;
   }
 
   .sticky {
@@ -174,5 +162,9 @@
 
   .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl, .shadow-inner {
     box-shadow: none !important;
+  }
+
+  .bg-slate-50, .bg-muted, .bg-muted\/50, .bg-slate-100 {
+    background-color: transparent !important;
   }
 }
