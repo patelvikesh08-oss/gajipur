@@ -16,7 +16,7 @@ export default function ReportCardPage() {
   const { students, isLoaded } = useStudentStore();
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [isBulkMode, setIsBulkMode] = useState(false);
-  const [twoInOne, setTwoInOne] = useState(true); // Default to true as per landscape requirement
+  const [twoInOne, setTwoInOne] = useState(true);
 
   if (!isLoaded) return null;
 
@@ -38,16 +38,9 @@ export default function ReportCardPage() {
     window.print();
   };
 
-  const getStudentReports = () => {
-    if (!isBulkMode) {
-      const singleId = selectedStudentIds[0];
-      const single = students.find(s => s.id === singleId);
-      return single ? [single] : [];
-    }
-    return students.filter(s => selectedStudentIds.includes(s.id));
-  };
-
-  const activeReports = getStudentReports();
+  const activeReports = isBulkMode 
+    ? students.filter(s => selectedStudentIds.includes(s.id))
+    : (selectedStudentIds[0] ? [students.find(s => s.id === selectedStudentIds[0])!] : []);
 
   const mockSubjects = [
     { name: "Mathematics", marks: 92, grade: "A+" },
@@ -60,7 +53,6 @@ export default function ReportCardPage() {
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto space-y-8 pb-20 print:p-0 print:m-0 print:max-w-none print:w-full">
-        {/* Header without Print Button */}
         <div className="flex items-center justify-between print:hidden">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
@@ -71,7 +63,7 @@ export default function ReportCardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 print:block print:w-full">
-          {/* Controls Panel - Selection and Settings */}
+          {/* Configuration Sidebar */}
           <Card className="lg:col-span-1 border-none shadow-md h-fit sticky top-8 print:hidden">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -100,7 +92,7 @@ export default function ReportCardPage() {
                 {isBulkMode ? (
                   <>
                     <Button variant="outline" size="sm" className="w-full font-bold" onClick={handleSelectAll}>
-                      {selectedStudentIds.length === students.length ? "Deselect All" : "Select All Students"}
+                      {selectedStudentIds.length === students.length ? "Deselect All" : "Select All"}
                     </Button>
                     <div className="space-y-2 max-h-[400px] overflow-auto pr-2 custom-scrollbar">
                       {students.map(student => (
@@ -136,39 +128,44 @@ export default function ReportCardPage() {
             </CardContent>
           </Card>
 
-          {/* Preview Panel with Contextual Print Button */}
-          <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0 print:block print-area">
+          {/* Preview and Report Content */}
+          <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0 print:block">
             {activeReports.length > 0 && (
-              <div className="flex justify-end print:hidden sticky top-8 z-10">
+              <div className="flex justify-end print:hidden sticky top-8 z-10 mb-4">
                 <Button 
                   onClick={handlePrint}
                   className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-xl shadow-primary/30 h-11 px-6 rounded-full"
                 >
                   <Printer className="w-4 h-4" />
-                  Print Reports ({selectedStudentIds.length})
+                  Print Reports ({activeReports.length})
                 </Button>
               </div>
             )}
 
-            {activeReports.length > 0 ? (
-              <div className={`grid gap-12 print:block ${twoInOne ? "grid-cols-1" : "grid-cols-1"}`}>
-                {activeReports.map((student, index) => {
-                  const isEvenStudent = index % 2 !== 0;
-                  const parts = isEvenStudent && isBulkMode
-                    ? [
-                        { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
-                        { id: 'patrakf', title: 'PATRAK - F', pageNum: 1 }
-                      ]
-                    : [
-                        { id: 'patrakf', title: 'PATRAK - F', pageNum: 1 },
-                        { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 }
-                      ];
+            <div className="print-area space-y-8">
+              {activeReports.map((student, index) => {
+                const isEvenStudent = index % 2 !== 0;
+                // Alternating logic: Student 1 (index 0, even is false): 1,2 | Student 2 (index 1, even is true): 2,1
+                const parts = isEvenStudent && isBulkMode
+                  ? [
+                      { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
+                      { id: 'patrakf', title: 'PATRAK - F', pageNum: 1 }
+                    ]
+                  : [
+                      { id: 'patrakf', title: 'PATRAK - F', pageNum: 1 },
+                      { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 }
+                    ];
 
-                  return (
-                    <div key={student.id} className="contents print:block">
-                      {parts.map((part) => (
-                        <div key={`${student.id}-${part.id}`} className={`print-page bg-white p-10 border border-slate-200 shadow-xl rounded-sm mb-8 print:shadow-none print:border-none print:m-0 print:p-8 ${twoInOne ? "print:w-[50vw] print:h-[100vh] print:inline-block print:border-r print:border-slate-300" : "print:w-full print:h-[100vh] page-break-after"}`}>
-                          
+                return (
+                  <div key={student.id} className="report-student-group print:flex print:flex-wrap print:w-full print:page-break-after-always">
+                    {parts.map((part) => (
+                      <div 
+                        key={`${student.id}-${part.id}`} 
+                        className={`print-page bg-white p-10 border border-slate-200 shadow-xl rounded-sm mb-8 print:shadow-none print:border-none print:m-0 print:p-8 flex flex-col justify-between
+                          ${twoInOne ? "print:w-1/2 print:h-screen print:border-r print:border-slate-100" : "print:w-full print:h-screen print:page-break-after-always"}
+                        `}
+                      >
+                        <div className="report-content">
                           <div className="text-center mb-6 space-y-2">
                             <h1 className="text-xl font-black text-slate-900 uppercase tracking-tighter">EduPulse Global Academy</h1>
                             <div className="flex items-center justify-between border-y-2 border-slate-900 py-1">
@@ -199,8 +196,8 @@ export default function ReportCardPage() {
                               </div>
                               <div className="space-y-2">
                                 <h3 className="text-[9px] font-black bg-slate-900 text-white px-2 py-0.5 uppercase">Co-Curricular</h3>
-                                <div className="border p-3 rounded-sm italic text-[10px]">
-                                  Active participation in all school events. Demonstrates excellent sportsmanship.
+                                <div className="border p-3 rounded-sm italic text-[10px] bg-slate-50">
+                                  Active participation in all school events. Demonstrates excellent sportsmanship and teamwork during physical education modules.
                                 </div>
                               </div>
                             </div>
@@ -236,109 +233,113 @@ export default function ReportCardPage() {
                               </div>
                             </div>
                           )}
+                        </div>
 
-                          <div className="mt-12 flex justify-between px-2">
-                            <div className="text-center">
-                              <div className="w-20 h-px bg-slate-300 mb-1" />
-                              <p className="text-[8px] font-bold text-slate-400">CLASS TEACHER</p>
-                            </div>
-                            <div className="text-center">
-                              <div className="w-20 h-px bg-slate-300 mb-1" />
-                              <p className="text-[8px] font-bold text-slate-400">PRINCIPAL</p>
-                            </div>
+                        <div className="mt-12 flex justify-between px-2">
+                          <div className="text-center">
+                            <div className="w-20 h-px bg-slate-300 mb-1" />
+                            <p className="text-[8px] font-bold text-slate-400 uppercase">Class Teacher</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="w-20 h-px bg-slate-300 mb-1" />
+                            <p className="text-[8px] font-bold text-slate-400 uppercase">Principal</p>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-32 border-2 border-dashed rounded-2xl bg-white/50 print:hidden">
-                <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-10" />
-                <h3 className="text-xl font-bold text-slate-400">No Selection</h3>
-                <p className="text-muted-foreground font-medium">Configure selections from the left panel to preview reports.</p>
-              </div>
-            )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+
+              {activeReports.length === 0 && (
+                <div className="text-center py-32 border-2 border-dashed rounded-2xl bg-white/50 print:hidden">
+                  <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-10" />
+                  <h3 className="text-xl font-bold text-slate-400">No Selection</h3>
+                  <p className="text-muted-foreground font-medium">Configure selections from the left panel to preview reports.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <style jsx global>{`
         @media print {
-          /* Force landscape orientation */
           @page {
             size: landscape;
             margin: 0 !important;
           }
 
-          /* Hide ALL non-essential UI elements */
-          aside, 
-          [data-sidebar],
-          header, 
-          nav,
-          [data-sidebar="trigger"],
-          .print\\:hidden,
-          button,
-          .lg\\:col-span-1 {
-            display: none !important;
-            visibility: hidden !important;
-          }
-
-          /* Reset layout containers to take full page */
+          /* Completely hide all UI wrapper elements */
           html, body {
+            background: white !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
             height: 100% !important;
-            background: white !important;
+            overflow: visible !important;
           }
 
+          aside, 
+          header, 
+          nav, 
+          [data-sidebar], 
+          [data-sidebar-trigger],
+          .print\\:hidden,
+          .lg\\:col-span-1 {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            position: absolute !important;
+          }
+
+          /* Reset all containers to be full width */
           main, 
-          .mx-auto,
-          [class*="SidebarInset"] {
+          .mx-auto, 
+          [class*="SidebarInset"],
+          .lg\\:col-span-3 {
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
             max-width: none !important;
             display: block !important;
+            background: white !important;
+            border: none !important;
           }
 
-          /* The print area container */
-          .print-area {
+          .report-student-group {
+            display: flex !important;
+            flex-wrap: wrap !important;
             width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            page-break-after: always !important;
           }
 
           .print-page {
-            box-shadow: none !important;
+            box-sizing: border-box !important;
+            page-break-inside: avoid !important;
+            height: 100vh !important;
             border: none !important;
             margin: 0 !important;
-            page-break-after: always !important;
             background: white !important;
           }
 
           ${twoInOne ? `
             .print-page {
-              width: 50vw !important;
-              height: 100vh !important;
-              display: inline-block !important;
-              border-right: 1px solid #eee !important;
-              box-sizing: border-box;
-              page-break-after: auto !important;
-              padding: 40px !important;
-              vertical-align: top;
+              width: 50% !important;
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: space-between !important;
+              border-right: 1px solid #f1f5f9 !important;
             }
             .print-page:nth-child(2n) {
-              page-break-after: always !important;
               border-right: none !important;
             }
           ` : `
             .print-page {
-              width: 100vw !important;
-              height: 100vh !important;
-              display: block !important;
+              width: 100% !important;
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: space-between !important;
             }
           `}
         }
