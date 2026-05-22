@@ -218,7 +218,7 @@ export default function FlnPage() {
                               <Checkbox 
                                 checked={flnData[s.id]?.[cat.name]?.[num-1] || false}
                                 onCheckedChange={(val) => handleCheck(s.id, cat.name, num-1, val)}
-                                className="h-3 w-3 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 print:border-black print:bg-transparent print:data-[state=checked]:bg-black"
+                                className="h-4 w-4 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
                               />
                             </div>
                           </TableCell>
@@ -236,8 +236,8 @@ export default function FlnPage() {
           </ScrollArea>
         </div>
 
-        <div className="flex justify-end pt-4 pb-0 no-print">
-          <div className="flex gap-3 mb-12">
+        <div className="flex justify-end pt-4 no-print mb-12">
+          <div className="flex gap-3">
             <Button 
               variant="outline" 
               size="lg" 

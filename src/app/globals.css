@@ -86,37 +86,49 @@
     overflow: visible !important;
   }
 
-  /* Remove all shadows and decorative backgrounds */
-  *, ::before, ::after {
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-
-  /* Surgically reset the SidebarProvider wrapper to prevent blank pages */
-  .group\/sidebar-wrapper {
+  /* Surgically reset the SidebarProvider wrapper and high-level containers to prevent blank pages */
+  .group\/sidebar-wrapper,
+  main, 
+  .relative.flex.min-h-svh,
+  [data-sidebar="inset"],
+  .min-h-svh,
+  .min-h-screen {
     display: block !important;
     width: 100% !important;
     min-height: 0 !important;
     height: auto !important;
-  }
-
-  main, 
-  .relative.flex.min-h-svh,
-  [data-sidebar="inset"] {
     margin: 0 !important;
     padding: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-    overflow: visible !important;
     position: static !important;
-    min-height: 0 !important;
-    height: auto !important;
     background: white !important;
+    overflow: visible !important;
   }
 
   .mx-auto {
     max-width: none !important;
     width: 100% !important;
+  }
+
+  /* Force Checkboxes to show in Print */
+  [role="checkbox"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    border: 1px solid black !important;
+    background-color: transparent !important;
+  }
+
+  [role="checkbox"][data-state="checked"] {
+    background-color: black !important;
+    border-color: black !important;
+  }
+
+  /* Ensure the check icon inside the checkbox is visible (white) */
+  [role="checkbox"][data-state="checked"] svg {
+    color: white !important;
+    stroke: white !important;
+    fill: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Table Specific Printing */
@@ -147,13 +159,6 @@
     background: white !important;
   }
 
-  /* Force checkboxes to show as black marks */
-  [role="checkbox"][data-state="checked"] {
-    background-color: black !important;
-    border-color: black !important;
-    color: white !important;
-  }
-
   /* Kill sticky headers/columns in print */
   .sticky {
     position: static !important;
@@ -171,7 +176,7 @@
   }
 
   /* Remove blank page space at the end */
-  .pb-12, .pb-20, .pt-8, .p-4, .md\:p-8 {
+  .pb-12, .pb-20, .pt-8, .p-4, .md\:p-8, .mb-12 {
     padding: 0 !important;
     margin-bottom: 0 !important;
   }
