@@ -285,7 +285,7 @@ export default function ReportCardPage() {
             margin: 0 !important;
           }
 
-          /* Force complete removal of admin UI */
+          /* Force complete removal of admin UI including expanded/collapsed sidebars */
           [data-sidebar-wrapper],
           [data-sidebar],
           [data-sidebar-trigger],
@@ -293,9 +293,13 @@ export default function ReportCardPage() {
           header,
           nav,
           button,
-          .print\\:hidden {
+          .print\:hidden {
             display: none !important;
             visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
           }
 
           /* Reset all layout containers for printing */
@@ -303,16 +307,16 @@ export default function ReportCardPage() {
             background: white !important;
             margin: 0 !important;
             padding: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            width: 100% !important;
+            height: 100% !important;
             overflow: visible !important;
           }
 
-          /* Overwrite any SidebarInset padding or width constraints */
+          /* Overwrite any SidebarInset padding or width constraints binding to sidebar variables */
           main, 
           .mx-auto, 
           [class*="SidebarInset"],
-          .lg\\:col-span-3,
+          .lg\:col-span-3,
           .report-student-group,
           .print-area {
             margin: 0 !important;
@@ -327,6 +331,7 @@ export default function ReportCardPage() {
             transform: none !important;
             left: 0 !important;
             position: relative !important;
+            margin-left: 0 !important;
           }
 
           .report-student-group {
