@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Calendar, Save } from "lucide-react";
+import { CheckCircle2, Calendar, Save, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -61,7 +60,7 @@ export default function PatSatPage() {
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-indigo-100 rounded-lg">
               <CheckCircle2 className="w-6 h-6 text-indigo-600" />
@@ -95,6 +94,10 @@ export default function PatSatPage() {
                 <SelectItem value="Annual">Annual</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
+              <Printer className="w-4 h-4 mr-2" />
+              Print
+            </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20">
               <Save className="w-4 h-4 mr-2" />
               Save Scores
@@ -102,7 +105,18 @@ export default function PatSatPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* PRINT HEADER */}
+        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
+          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
+          <h2 className="text-lg font-bold uppercase">PAT/SAT Assessment Records</h2>
+          <div className="flex justify-center gap-8 font-bold text-xs">
+            <span>Academic Year: {academicYear}</span>
+            <span>Semester: {semester}</span>
+            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
             placeholder="Quick search student name or roll number..."
             value={search}
@@ -122,29 +136,29 @@ export default function PatSatPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <Table>
-            <TableHeader className="bg-slate-50">
+            <TableHeader className="bg-slate-50 print:bg-white">
               <TableRow>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px]">Roll No</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name</TableHead>
                 {activeSubjects.map((subject) => (
                   <TableHead 
                     key={subject} 
                     colSpan={isAnnual ? 2 : 1} 
-                    className="font-bold uppercase tracking-wider text-xs text-center border-l"
+                    className="font-bold uppercase tracking-wider text-xs text-center border-l print:border-black"
                   >
                     {subject}
                   </TableHead>
                 ))}
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l">Grade</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l print:border-black no-print">Grade</TableHead>
               </TableRow>
               {isAnnual && (
                 <TableRow>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${subject}-sem-header`}>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[80px]">Sem 1</TableHead>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[80px]">Sem 2</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[80px] print:border-black">Sem 1</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[80px] print:border-black">Sem 2</TableHead>
                     </React.Fragment>
                   ))}
                 </TableRow>
@@ -152,55 +166,57 @@ export default function PatSatPage() {
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
-                <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-black text-primary">{s.rollNumber}</TableCell>
-                  <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
+                <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
+                  <TableCell className="font-black text-primary print:text-black print:border-black">{s.rollNumber}</TableCell>
+                  <TableCell className="font-bold text-slate-700 whitespace-nowrap print:text-black print:border-black">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${s.id}-${subject}`}>
                       {isAnnual ? (
                         <>
-                          <TableCell className="border-l p-1">
+                          <TableCell className="border-l p-1 print:border-black">
                             <Input 
                               type="number" 
-                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14" 
-                              defaultValue={Math.floor(Math.random() * 20) + 30} 
+                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none" 
+                              defaultValue={42} 
                             />
                           </TableCell>
-                          <TableCell className="border-l p-1">
+                          <TableCell className="border-l p-1 print:border-black">
                             <Input 
                               type="number" 
-                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14" 
-                              defaultValue={Math.floor(Math.random() * 20) + 30} 
+                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none" 
+                              defaultValue={45} 
                             />
                           </TableCell>
                         </>
                       ) : (
-                        <TableCell className="border-l">
+                        <TableCell className="border-l print:border-black">
                           <Input 
                             type="number" 
-                            className="h-8 text-center font-bold focus:ring-primary mx-auto w-16" 
-                            defaultValue={Math.floor(Math.random() * 20) + 30} 
+                            className="h-8 text-center font-bold focus:ring-primary mx-auto w-16 print:border-none" 
+                            defaultValue={40} 
                           />
                         </TableCell>
                       )}
                     </React.Fragment>
                   ))}
-                  <TableCell className="text-right border-l">
+                  <TableCell className="text-right border-l print:border-black no-print">
                     <Badge className="bg-indigo-600 font-bold px-3">A+</Badge>
                   </TableCell>
                 </TableRow>
               ))}
-              {(selectedStandard === "all" || activeSubjects.length === 0) && (
-                <TableRow>
-                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 3} className="h-32 text-center text-muted-foreground">
-                    {selectedStandard === "all" 
-                      ? "Please select an academic standard to view subject columns." 
-                      : "No subjects mapped for this standard in " + semester + "."}
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
+          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
+            <Printer className="w-4 h-4" />
+            Print Scores
+          </Button>
+          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 px-8">
+            <Save className="w-4 h-4 mr-2" />
+            Commit Changes
+          </Button>
         </div>
       </div>
     </MainLayout>

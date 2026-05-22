@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Calendar, Save } from "lucide-react";
+import { BookOpen, Calendar, Save, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import React from "react";
@@ -60,7 +59,7 @@ export default function SvadhyayPage() {
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-pink-100 rounded-lg">
               <BookOpen className="w-6 h-6 text-pink-600" />
@@ -94,6 +93,10 @@ export default function SvadhyayPage() {
                 <SelectItem value="Annual">Annual</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
+              <Printer className="w-4 h-4 mr-2" />
+              Print
+            </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-600/20">
               <Save className="w-4 h-4 mr-2" />
               Save Study Logs
@@ -101,7 +104,18 @@ export default function SvadhyayPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* PRINT HEADER */}
+        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
+          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
+          <h2 className="text-lg font-bold uppercase">SVADHYAY (Self-Study Records)</h2>
+          <div className="flex justify-center gap-8 font-bold text-xs">
+            <span>Academic Year: {academicYear}</span>
+            <span>Semester: {semester}</span>
+            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
             placeholder="Find students by name or roll number..."
             value={search}
@@ -121,17 +135,17 @@ export default function SvadhyayPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <Table>
-            <TableHeader className="bg-slate-50">
+            <TableHeader className="bg-slate-50 print:bg-white">
               <TableRow>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px]">Roll No</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name</TableHead>
                 {activeSubjects.map((subject) => (
                   <TableHead 
                     key={subject} 
                     colSpan={isAnnual ? 2 : 1} 
-                    className="font-bold uppercase tracking-wider text-xs text-center border-l"
+                    className="font-bold uppercase tracking-wider text-xs text-center border-l print:border-black"
                   >
                     {subject} (Units)
                   </TableHead>
@@ -141,8 +155,8 @@ export default function SvadhyayPage() {
                 <TableRow>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${subject}-sem-header`}>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[100px]">Sem 1</TableHead>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[100px]">Sem 2</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[100px] print:border-black">Sem 1</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[100px] print:border-black">Sem 2</TableHead>
                     </React.Fragment>
                   ))}
                 </TableRow>
@@ -150,32 +164,32 @@ export default function SvadhyayPage() {
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
-                <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-black text-primary">{s.rollNumber}</TableCell>
-                  <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
+                <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
+                  <TableCell className="font-black text-primary print:text-black print:border-black">{s.rollNumber}</TableCell>
+                  <TableCell className="font-bold text-slate-700 whitespace-nowrap print:text-black print:border-black">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${s.id}-${subject}`}>
                       {isAnnual ? (
                         <>
-                          <TableCell className="border-l p-1">
+                          <TableCell className="border-l p-1 print:border-black">
                             <div className="flex items-center justify-center">
-                              <Input type="number" className="h-8 w-14 text-center" defaultValue={8} />
+                              <Input type="number" className="h-8 w-14 text-center print:border-none" defaultValue={8} />
                             </div>
                           </TableCell>
-                          <TableCell className="border-l p-1">
+                          <TableCell className="border-l p-1 print:border-black">
                             <div className="flex items-center justify-center">
-                              <Input type="number" className="h-8 w-14 text-center" defaultValue={9} />
+                              <Input type="number" className="h-8 w-14 text-center print:border-none" defaultValue={9} />
                             </div>
                           </TableCell>
                         </>
                       ) : (
-                        <TableCell className="border-l">
+                        <TableCell className="border-l print:border-black">
                           <div className="flex items-center justify-center">
                             <Input 
                               type="number" 
                               max={10} 
                               min={0} 
-                              className="h-8 w-20 font-bold text-center" 
+                              className="h-8 w-20 font-bold text-center print:border-none" 
                               defaultValue={7} 
                             />
                           </div>
@@ -185,17 +199,19 @@ export default function SvadhyayPage() {
                   ))}
                 </TableRow>
               ))}
-              {(selectedStandard === "all" || activeSubjects.length === 0) && (
-                <TableRow>
-                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 2} className="h-32 text-center text-muted-foreground">
-                    {selectedStandard === "all" 
-                      ? "Select a standard to view subject-wise self-study columns." 
-                      : "No subjects mapped for this standard in " + semester + "."}
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
+          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
+            <Printer className="w-4 h-4" />
+            Print Status
+          </Button>
+          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-600/20 px-8">
+            <Save className="w-4 h-4 mr-2" />
+            Commit Changes
+          </Button>
         </div>
       </div>
     </MainLayout>

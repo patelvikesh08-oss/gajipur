@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -7,7 +6,7 @@ import { useStudentStore } from "@/lib/student-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, GraduationCap, Layers, Users, Calendar } from "lucide-react";
+import { FileText, GraduationCap, Layers, Users, Calendar, Printer } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -61,7 +60,7 @@ export default function ReportCardPage() {
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto space-y-8 pb-20">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <GraduationCap className="w-6 h-6 text-primary" />
@@ -92,12 +91,15 @@ export default function ReportCardPage() {
                 <SelectItem value="Annual">Annual</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
+              <Printer className="w-4 h-4 mr-2" />
+              Print
+            </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Configuration Sidebar */}
-          <Card className="lg:col-span-1 border-none shadow-md h-fit sticky top-8">
+          <Card className="lg:col-span-1 border-none shadow-md h-fit sticky top-8 no-print">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Users className="w-5 h-5 text-primary" />
@@ -171,7 +173,6 @@ export default function ReportCardPage() {
             </CardContent>
           </Card>
 
-          {/* Preview and Report Content */}
           <div className="lg:col-span-3 space-y-8">
             <div className="space-y-8">
               {activeReports.map((student) => {
@@ -181,27 +182,27 @@ export default function ReportCardPage() {
                 ];
 
                 return (
-                  <div key={student.id} className="flex flex-col gap-8">
+                  <div key={student.id} className="flex flex-col gap-8 print:gap-0">
                     {parts.map((part) => (
                       <div 
                         key={`${student.id}-${part.id}`} 
-                        className="bg-white p-10 border border-slate-200 shadow-xl rounded-sm flex flex-col justify-between min-h-[800px]"
+                        className="bg-white p-10 border border-slate-200 shadow-xl rounded-sm flex flex-col justify-between min-h-[800px] print:shadow-none print:border-black print:mb-0 print:page-break-after-always"
                       >
                         <div className="report-content">
                           <div className="text-center mb-8 space-y-2">
                             <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">EduPulse Global Academy</h1>
-                            <div className="flex items-center justify-center gap-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            <div className="flex items-center justify-center gap-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest print:text-black">
                               <span>Academic Year: {academicYear}</span>
-                              <span className="w-1 h-1 rounded-full bg-slate-300" />
+                              <span className="w-1 h-1 rounded-full bg-slate-300 print:bg-black" />
                               <span>Semester: {semester}</span>
                             </div>
-                            <div className="flex items-center justify-between border-y-2 border-slate-900 py-1.5 mt-4">
+                            <div className="flex items-center justify-between border-y-2 border-slate-900 py-1.5 mt-4 print:border-black">
                               <span className="text-xs font-black px-2">{part.title}</span>
                               <span className="text-xs font-black px-2">PAGE NO: {part.pageNum}</span>
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-6 mb-8 bg-slate-50 p-6 border-l-4 border-primary rounded-r-lg">
+                          <div className="grid grid-cols-2 gap-6 mb-8 bg-slate-50 p-6 border-l-4 border-primary rounded-r-lg print:bg-white print:border-black">
                             <div className="space-y-1">
                               <p className="text-[9px] font-bold text-slate-400 uppercase">Student Full Name</p>
                               <p className="text-sm font-black text-slate-900 uppercase">{student.name}</p>
@@ -215,52 +216,52 @@ export default function ReportCardPage() {
                           {part.id === 'patrakf' ? (
                             <div className="space-y-8">
                               <div className="space-y-3">
-                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-block">Personal Qualities & Conduct</h3>
-                                <Table className="border text-xs">
+                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-block print:bg-black">Personal Qualities & Conduct</h3>
+                                <Table className="border text-xs print:border-black">
                                   <TableBody>
                                     {["Punctuality", "Cleanliness", "Social Behavior", "Leadership Skill", "Discipline"].map(t => (
-                                      <TableRow key={t} className="h-10">
-                                        <TableCell className="py-2 font-bold text-slate-700">{t}</TableCell>
-                                        <TableCell className="py-2 text-center font-black text-primary text-sm">A+</TableCell>
+                                      <TableRow key={t} className="h-10 print:border-black">
+                                        <TableCell className="py-2 font-bold text-slate-700 print:text-black print:border-black">{t}</TableCell>
+                                        <TableCell className="py-2 text-center font-black text-primary text-sm print:text-black">A+</TableCell>
                                       </TableRow>
                                     ))}
                                   </TableBody>
                                 </Table>
                               </div>
                               <div className="space-y-3">
-                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-block">Co-Curricular Observations</h3>
-                                <div className="border p-4 rounded-md italic text-xs bg-slate-50 leading-relaxed text-slate-600">
+                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-block print:bg-black">Co-Curricular Observations</h3>
+                                <div className="border p-4 rounded-md italic text-xs bg-slate-50 leading-relaxed text-slate-600 print:bg-white print:text-black print:border-black">
                                   Shows keen interest in artistic expression and demonstrates consistent leadership in group activities.
                                 </div>
                               </div>
                             </div>
                           ) : (
                             <div className="space-y-6">
-                              <Table className="border-2 border-slate-900 text-xs">
-                                <TableHeader className="bg-slate-900">
-                                  <TableRow className="hover:bg-slate-900 border-none">
-                                    <TableHead className="text-white h-10">Academic Subject</TableHead>
-                                    <TableHead className="text-white h-10 text-center">Marks Obtain</TableHead>
-                                    <TableHead className="text-white h-10 text-right">Grade</TableHead>
+                              <Table className="border-2 border-slate-900 text-xs print:border-black">
+                                <TableHeader className="bg-slate-900 print:bg-white">
+                                  <TableRow className="hover:bg-slate-900 border-none print:border-black">
+                                    <TableHead className="text-white h-10 print:text-black print:border-black">Academic Subject</TableHead>
+                                    <TableHead className="text-white h-10 text-center print:text-black print:border-black">Marks Obtain</TableHead>
+                                    <TableHead className="text-white h-10 text-right print:text-black print:border-black">Grade</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                   {mockSubjects.map(sub => (
-                                    <TableRow key={sub.name} className="h-10 border-slate-200">
-                                      <TableCell className="py-2 font-bold text-slate-700">{sub.name}</TableCell>
-                                      <TableCell className="py-2 text-center font-black">{sub.marks}</TableCell>
-                                      <TableCell className="py-2 text-right font-black text-primary">{sub.grade}</TableCell>
+                                    <TableRow key={sub.name} className="h-10 border-slate-200 print:border-black">
+                                      <TableCell className="py-2 font-bold text-slate-700 print:text-black print:border-black">{sub.name}</TableCell>
+                                      <TableCell className="py-2 text-center font-black print:text-black print:border-black">{sub.marks}</TableCell>
+                                      <TableCell className="py-2 text-right font-black text-primary print:text-black print:border-black">{sub.grade}</TableCell>
                                     </TableRow>
                                   ))}
                                 </TableBody>
                               </Table>
                               <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-slate-900 text-white p-4 text-center rounded-lg shadow-inner">
-                                  <p className="text-[9px] font-bold opacity-70 mb-1 uppercase tracking-widest">Aggregate Marks</p>
+                                <div className="bg-slate-900 text-white p-4 text-center rounded-lg shadow-inner print:bg-white print:text-black print:border-black print:border-2">
+                                  <p className="text-[9px] font-bold opacity-70 mb-1 uppercase tracking-widest print:opacity-100">Aggregate Marks</p>
                                   <p className="text-xl font-black">449 / 500</p>
                                 </div>
-                                <div className="bg-primary text-white p-4 text-center rounded-lg shadow-inner">
-                                  <p className="text-[9px] font-bold opacity-70 mb-1 uppercase tracking-widest">Final Assessment</p>
+                                <div className="bg-primary text-white p-4 text-center rounded-lg shadow-inner print:bg-white print:text-black print:border-black print:border-2">
+                                  <p className="text-[9px] font-bold opacity-70 mb-1 uppercase tracking-widest print:opacity-100">Final Assessment</p>
                                   <p className="text-xl font-black uppercase">PASSED (A+)</p>
                                 </div>
                               </div>
@@ -270,12 +271,12 @@ export default function ReportCardPage() {
 
                         <div className="mt-16 flex justify-between px-4">
                           <div className="text-center space-y-2">
-                            <div className="w-32 h-px bg-slate-300 mx-auto" />
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Class Teacher</p>
+                            <div className="w-32 h-px bg-slate-300 mx-auto print:bg-black" />
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest print:text-black">Class Teacher</p>
                           </div>
                           <div className="text-center space-y-2">
-                            <div className="w-32 h-px bg-slate-300 mx-auto" />
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Principal</p>
+                            <div className="w-32 h-px bg-slate-300 mx-auto print:bg-black" />
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest print:text-black">Principal</p>
                           </div>
                         </div>
                       </div>
@@ -285,12 +286,19 @@ export default function ReportCardPage() {
               })}
 
               {activeReports.length === 0 && (
-                <div className="text-center py-40 border-2 border-dashed rounded-2xl bg-white/50">
+                <div className="text-center py-40 border-2 border-dashed rounded-2xl bg-white/50 no-print">
                   <FileText className="w-20 h-20 text-muted-foreground mx-auto mb-6 opacity-10" />
                   <h3 className="text-xl font-bold text-slate-400">Select Students to Preview</h3>
                   <p className="text-muted-foreground font-medium max-w-xs mx-auto">Use the sidebar to choose individual students or enable Bulk Mode.</p>
                 </div>
               )}
+            </div>
+            
+            <div className="flex justify-end pt-6 no-print">
+               <Button size="lg" onClick={() => window.print()} className="font-bold gap-2 px-12">
+                 <Printer className="w-5 h-5" />
+                 Print Generated Reports
+               </Button>
             </div>
           </div>
         </div>

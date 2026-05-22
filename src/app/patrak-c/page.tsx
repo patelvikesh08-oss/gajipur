@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileSpreadsheet, Calendar, Save, Trophy } from "lucide-react";
+import { FileSpreadsheet, Calendar, Save, Trophy, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -63,7 +62,7 @@ export default function PatrakCPage() {
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-orange-100 rounded-lg">
               <FileSpreadsheet className="w-6 h-6 text-orange-600" />
@@ -97,6 +96,10 @@ export default function PatrakCPage() {
                 <SelectItem value="Annual">Annual</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
+              <Printer className="w-4 h-4 mr-2" />
+              Print
+            </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-orange-600 hover:bg-orange-700 shadow-lg shadow-orange-600/20">
               <Save className="w-4 h-4 mr-2" />
               Save Results
@@ -104,7 +107,18 @@ export default function PatrakCPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* PRINT HEADER */}
+        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
+          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
+          <h2 className="text-lg font-bold uppercase">PATRAK-C (Final Results)</h2>
+          <div className="flex justify-center gap-8 font-bold text-xs">
+            <span>Academic Year: {academicYear}</span>
+            <span>Semester: {semester}</span>
+            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
             placeholder="Search by student name or roll number..."
             value={search}
@@ -124,91 +138,83 @@ export default function PatrakCPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <ScrollArea className="w-full">
             <Table className="border-collapse">
-              <TableHeader className="bg-slate-50">
-                {/* Tier 1 Header */}
+              <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[80px]">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[80px] print:static print:border-black">
                     Roll No
                   </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[80px] bg-slate-50 z-20 min-w-[180px]">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[80px] bg-slate-50 z-20 min-w-[180px] print:static print:border-black">
                     Student Name
                   </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px]">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black">
                     G.R. No.
                   </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[120px]">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[120px] print:border-black">
                     Birthdate
                   </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] text-center">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] text-center print:border-black">
                     Atten.
                   </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px]">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black">
                     Caste
                   </TableHead>
                   
                   {activeSubjects.map((subject) => (
-                    <TableHead key={subject} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-slate-100/50">
+                    <TableHead key={subject} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-slate-100/50 print:border-black print:bg-white">
                       {subject}
                     </TableHead>
                   ))}
 
-                  {/* PATRAK B SECTION */}
-                  <TableHead colSpan={1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50">
+                  <TableHead colSpan={1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50 print:border-black print:bg-white">
                     PATRAK-B
                   </TableHead>
 
-                  <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l">Avg %</TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px]">Outcome</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l print:border-black">Avg %</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px] print:static print:border-black">Outcome</TableHead>
                 </TableRow>
 
-                {/* Tier 2 Header (Conditional for Annual) */}
                 {isAnnual ? (
                   <TableRow>
                     {activeSubjects.map((subject) => (
                       <React.Fragment key={`${subject}-sem-row`}>
-                        <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-blue-50/50">Semester 1</TableHead>
-                        <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-green-50/50">Semester 2</TableHead>
-                        <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-orange-50">Total</TableHead>
-                        <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b">Grade</TableHead>
+                        <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-blue-50/50 print:border-black print:bg-white">Semester 1</TableHead>
+                        <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-green-50/50 print:border-black print:bg-white">Semester 2</TableHead>
+                        <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-orange-50 print:border-black print:bg-white">Total</TableHead>
+                        <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b print:border-black">Grade</TableHead>
                       </React.Fragment>
                     ))}
-                    {/* Patrak B Tier 2 for Annual - Only Avg */}
-                    <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-indigo-100">Avg</TableHead>
+                    <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-indigo-100 print:border-black print:bg-white">Avg</TableHead>
                   </TableRow>
                 ) : (
                   <TableRow>
                     {activeSubjects.map((subject) => (
                       <React.Fragment key={`${subject}-sub`}>
-                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px]">Sva.</TableHead>
-                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px]">Tri.</TableHead>
-                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px]">
+                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">Sva.</TableHead>
+                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">Tri.</TableHead>
+                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">
                           {semester === "Semester 1" ? "PAT" : semester === "Semester 2" ? "SAT" : "PAT/SAT"}
                         </TableHead>
-                        <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50">Total</TableHead>
-                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px]">Grd.</TableHead>
+                        <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50 print:border-black print:bg-white">Total</TableHead>
+                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Grd.</TableHead>
                       </React.Fragment>
                     ))}
-                    {/* Patrak B Tier 2 for Single Semester */}
-                    <TableHead className="text-[10px] font-black text-center border-r bg-indigo-50/50">Total</TableHead>
+                    <TableHead className="text-[10px] font-black text-center border-r bg-indigo-50/50 print:border-black print:bg-white">Total</TableHead>
                   </TableRow>
                 )}
 
-                {/* Tier 3 Header (Only for Annual) */}
                 {isAnnual && (
                   <TableRow>
                     {activeSubjects.map((subject) => (
                       <React.Fragment key={`${subject}-annual-data-row`}>
-                        {/* Sem 1 Columns */}
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px]">Trimasik</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px]">Svadhyay</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px]">PAT/SAT</TableHead>
-                        {/* Sem 2 Columns */}
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px]">Trimasik</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px]">Svadhyay</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px]">PAT/SAT</TableHead>
+                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Trimasik</TableHead>
+                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Svadhyay</TableHead>
+                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">PAT/SAT</TableHead>
+                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Trimasik</TableHead>
+                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Svadhyay</TableHead>
+                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">PAT/SAT</TableHead>
                       </React.Fragment>
                     ))}
                   </TableRow>
@@ -217,65 +223,62 @@ export default function PatrakCPage() {
 
               <TableBody>
                 {filteredStudents.map((s) => (
-                  <TableRow key={s.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10">
+                  <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 print:text-black print:border-black">
                       {s.rollNumber}
                     </TableCell>
-                    <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[80px] bg-white z-10">
+                    <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[80px] bg-white z-10 print:text-black print:border-black">
                       {s.name}
                     </TableCell>
-                    <TableCell className="text-slate-500 font-medium border-r">{s.grNumber}</TableCell>
-                    <TableCell className="text-slate-600 border-r">{s.birthday}</TableCell>
-                    <TableCell className="text-center font-bold text-primary border-r">{s.attendance}%</TableCell>
-                    <TableCell className="text-slate-600 border-r">{s.caste}</TableCell>
+                    <TableCell className="text-slate-500 font-medium border-r print:text-black print:border-black">{s.grNumber}</TableCell>
+                    <TableCell className="text-slate-600 border-r print:text-black print:border-black">{s.birthday}</TableCell>
+                    <TableCell className="text-center font-bold text-primary border-r print:text-black print:border-black">{s.attendance}%</TableCell>
+                    <TableCell className="text-slate-600 border-r print:text-black print:border-black">{s.caste}</TableCell>
                     
                     {activeSubjects.map((subject) => (
                       <React.Fragment key={`${s.id}-${subject}`}>
                         {isAnnual ? (
                           <>
-                            {/* Semester 1 Inputs */}
-                            <TableCell className="p-1 border-r bg-blue-50/10">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium" defaultValue={15} />
+                            <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
+                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={15} />
                             </TableCell>
-                            <TableCell className="p-1 border-r bg-blue-50/10">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium" defaultValue={10} />
+                            <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
+                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={10} />
                             </TableCell>
-                            <TableCell className="p-1 border-r bg-blue-50/10">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium" defaultValue={25} />
+                            <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
+                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={25} />
                             </TableCell>
-                            {/* Semester 2 Inputs */}
-                            <TableCell className="p-1 border-r bg-green-50/10">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium" defaultValue={18} />
+                            <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
+                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={18} />
                             </TableCell>
-                            <TableCell className="p-1 border-r bg-green-50/10">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium" defaultValue={12} />
+                            <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
+                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={12} />
                             </TableCell>
-                            <TableCell className="p-1 border-r bg-green-50/10">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium" defaultValue={22} />
+                            <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
+                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={22} />
                             </TableCell>
-                            {/* Summary Columns */}
-                            <TableCell className="p-1 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20">
+                            <TableCell className="p-1 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20 print:text-black print:border-black">
                               102
                             </TableCell>
-                            <TableCell className="p-1 border-r text-center font-black text-primary text-[10px]">
+                            <TableCell className="p-1 border-r text-center font-black text-primary text-[10px] print:text-black print:border-black">
                               A+
                             </TableCell>
                           </>
                         ) : (
                           <>
-                            <TableCell className="p-1 border-r">
-                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium" defaultValue={8} />
+                            <TableCell className="p-1 border-r print:border-black">
+                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={8} />
                             </TableCell>
-                            <TableCell className="p-1 border-r">
-                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium" defaultValue={72} />
+                            <TableCell className="p-1 border-r print:border-black">
+                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={72} />
                             </TableCell>
-                            <TableCell className="p-1 border-r">
-                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium" defaultValue={22} />
+                            <TableCell className="p-1 border-r print:border-black">
+                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={22} />
                             </TableCell>
-                            <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs">
+                            <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs print:text-black print:border-black">
                               102
                             </TableCell>
-                            <TableCell className="p-1 border-r text-center font-black text-primary text-[10px]">
+                            <TableCell className="p-1 border-r text-center font-black text-primary text-[10px] print:text-black print:border-black">
                               A+
                             </TableCell>
                           </>
@@ -283,32 +286,33 @@ export default function PatrakCPage() {
                       </React.Fragment>
                     ))}
 
-                    {/* PATRAK B DATA CELLS */}
-                    <TableCell className={`p-1 border-r text-center font-bold text-xs ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700' : 'bg-indigo-50/20'}`}>
-                      {isAnnual ? "86.5" : <Input type="number" className="h-7 text-xs text-center font-bold" defaultValue={85} />}
+                    <TableCell className={`p-1 border-r text-center font-bold text-xs print:border-black ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700 print:text-black' : 'bg-indigo-50/20'}`}>
+                      {isAnnual ? "86.5" : <Input type="number" className="h-7 text-xs text-center font-bold print:border-none" defaultValue={85} />}
                     </TableCell>
 
-                    <TableCell className="text-center font-black text-orange-600 border-l">84.5%</TableCell>
-                    <TableCell className="text-right sticky right-0 bg-white z-10 border-l">
+                    <TableCell className="text-center font-black text-orange-600 border-l print:text-black print:border-black">84.5%</TableCell>
+                    <TableCell className="text-right sticky right-0 bg-white z-10 border-l print:static print:border-black no-print">
                       <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
                         <Trophy className="w-3 h-3" /> PASS
                       </Badge>
                     </TableCell>
                   </TableRow>
                 ))}
-                {(selectedStandard === "all" || (activeSubjects.length === 0)) && (
-                  <TableRow>
-                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + (isAnnual ? 9 : 9)} className="h-32 text-center text-muted-foreground">
-                      {selectedStandard === "all" 
-                        ? "Select a standard to begin direct results entry." 
-                        : "No subjects mapped for this standard in " + semester + "."}
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
-            <ScrollBar orientation="horizontal" />
+            <ScrollBar orientation="horizontal" className="no-print" />
           </ScrollArea>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
+          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
+            <Printer className="w-4 h-4" />
+            Print Results
+          </Button>
+          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-orange-600 hover:bg-orange-700 shadow-lg shadow-orange-600/20 px-8">
+            <Save className="w-4 h-4 mr-2" />
+            Commit Changes
+          </Button>
         </div>
       </div>
     </MainLayout>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ClipboardList, Calendar, Save, CheckCircle } from "lucide-react";
+import { ClipboardList, Calendar, Save, CheckCircle, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import React from "react";
@@ -37,8 +36,6 @@ export default function TrimasikPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    // If Annual, we might want to show all subjects mapped for both sem 1 and 2, or a specific annual map
-    // For simplicity, we'll try to find mappings for the current semester
     const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
     return mapping ? mapping.subjects : [];
   }, [selectedStandard, semester, mappings]);
@@ -62,7 +59,7 @@ export default function TrimasikPage() {
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
               <ClipboardList className="w-6 h-6 text-primary" />
@@ -96,6 +93,10 @@ export default function TrimasikPage() {
                 <SelectItem value="Annual">Annual</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
+              <Printer className="w-4 h-4 mr-2" />
+              Print
+            </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-primary shadow-lg shadow-primary/20">
               <Save className="w-4 h-4 mr-2" />
               Save All
@@ -103,7 +104,18 @@ export default function TrimasikPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* PRINT HEADER */}
+        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
+          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
+          <h2 className="text-lg font-bold uppercase">TRIMASIK (Quarterly Records)</h2>
+          <div className="flex justify-center gap-8 font-bold text-xs">
+            <span>Academic Year: {academicYear}</span>
+            <span>Term: {semester}</span>
+            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
             placeholder="Search student names or roll number..."
             value={search}
@@ -123,30 +135,30 @@ export default function TrimasikPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <Table>
-            <TableHeader className="bg-slate-50">
+            <TableHeader className="bg-slate-50 print:bg-white">
               <TableRow>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px]">Roll No</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name</TableHead>
                 {activeSubjects.map((subject) => (
                   <TableHead 
                     key={subject} 
                     colSpan={isAnnual ? 2 : 1} 
-                    className="font-bold uppercase tracking-wider text-xs text-center border-l"
+                    className="font-bold uppercase tracking-wider text-xs text-center border-l print:border-black"
                   >
                     {subject}
                   </TableHead>
                 ))}
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs text-center w-[80px] border-l">Total</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l">Status</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs text-center w-[80px] border-l print:border-black">Total</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l print:border-black no-print">Status</TableHead>
               </TableRow>
               {isAnnual && (
                 <TableRow>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${subject}-sem-header`}>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[60px]">Sem 1</TableHead>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[60px]">Sem 2</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[60px] print:border-black">Sem 1</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[60px] print:border-black">Sem 2</TableHead>
                     </React.Fragment>
                   ))}
                 </TableRow>
@@ -154,43 +166,43 @@ export default function TrimasikPage() {
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
-                <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-black text-primary">{s.rollNumber}</TableCell>
-                  <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
+                <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
+                  <TableCell className="font-black text-primary print:text-black print:border-black">{s.rollNumber}</TableCell>
+                  <TableCell className="font-bold text-slate-700 whitespace-nowrap print:text-black print:border-black">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${s.id}-${subject}`}>
                       {isAnnual ? (
                         <>
-                          <TableCell className="border-l p-1">
+                          <TableCell className="border-l p-1 print:border-black">
                             <Input 
                               type="number" 
-                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14" 
+                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none print:bg-transparent" 
                               defaultValue={75} 
                             />
                           </TableCell>
-                          <TableCell className="border-l p-1">
+                          <TableCell className="border-l p-1 print:border-black">
                             <Input 
                               type="number" 
-                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14" 
+                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none print:bg-transparent" 
                               defaultValue={82} 
                             />
                           </TableCell>
                         </>
                       ) : (
-                        <TableCell className="border-l">
+                        <TableCell className="border-l print:border-black">
                           <Input 
                             type="number" 
-                            className="h-8 text-center font-bold focus:ring-primary mx-auto w-16" 
+                            className="h-8 text-center font-bold focus:ring-primary mx-auto w-16 print:border-none print:bg-transparent" 
                             defaultValue={80} 
                           />
                         </TableCell>
                       )}
                     </React.Fragment>
                   ))}
-                  <TableCell className="text-center border-l">
-                    <span className="font-black text-primary">88</span>
+                  <TableCell className="text-center border-l print:border-black">
+                    <span className="font-black text-primary print:text-black">88</span>
                   </TableCell>
-                  <TableCell className="text-right border-l">
+                  <TableCell className="text-right border-l print:border-black no-print">
                     <div className="flex items-center justify-end gap-2 text-green-600 font-bold text-[10px] uppercase">
                       <CheckCircle className="w-3 h-3" />
                       Ready
@@ -209,6 +221,17 @@ export default function TrimasikPage() {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
+          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
+            <Printer className="w-4 h-4" />
+            Print Report
+          </Button>
+          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-primary shadow-lg shadow-primary/20 px-8">
+            <Save className="w-4 h-4 mr-2" />
+            Commit Changes
+          </Button>
         </div>
       </div>
     </MainLayout>

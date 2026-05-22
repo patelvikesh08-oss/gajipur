@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollText, Calendar, Save } from "lucide-react";
+import { ScrollText, Calendar, Save, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -56,7 +56,7 @@ export default function PatrakBPage() {
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-accent/10 rounded-lg">
               <ScrollText className="w-6 h-6 text-accent" />
@@ -90,6 +90,10 @@ export default function PatrakBPage() {
                 <SelectItem value="Annual">Annual</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
+              <Printer className="w-4 h-4 mr-2" />
+              Print
+            </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-accent hover:bg-accent/90 shadow-lg shadow-accent/20">
               <Save className="w-4 h-4 mr-2" />
               Save Progress
@@ -97,7 +101,18 @@ export default function PatrakBPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* PRINT HEADER */}
+        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
+          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
+          <h2 className="text-lg font-bold uppercase">PATRAK-B (Internal Progress)</h2>
+          <div className="flex justify-center gap-8 font-bold text-xs">
+            <span>Academic Year: {academicYear}</span>
+            <span>Semester: {semester}</span>
+            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
             placeholder="Filter students by name or roll number..."
             value={search}
@@ -117,30 +132,28 @@ export default function PatrakBPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <ScrollArea className="w-full">
-            <Table className="border-collapse">
-              <TableHeader className="bg-slate-50">
-                {/* Tier 1 Header */}
+            <Table className="border-collapse print:table-fixed">
+              <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center">Roll No</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20">Student Name</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center print:border-black">Roll No</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name</TableHead>
                   
                   {isAnnual && (
-                    <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[60px] bg-muted/20">Sem</TableHead>
+                    <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[60px] bg-muted/20 print:border-black">Sem</TableHead>
                   )}
 
                   {config.fields.map(field => (
-                    <TableHead key={field.id} colSpan={field.subColumnCount} className="font-black uppercase tracking-wider text-[10px] text-center border-r bg-muted/30 py-2">
+                    <TableHead key={field.id} colSpan={field.subColumnCount} className="font-black uppercase tracking-wider text-[10px] text-center border-r bg-muted/30 py-2 print:border-black">
                       {field.title}
                     </TableHead>
                   ))}
 
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-blue-50/50">Sem 1 Total</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-green-50/50">Sem 2 Total</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-orange-50/50">Avg Marks</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-blue-50/50 print:border-black">Sem 1 Total</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-green-50/50 print:border-black">Sem 2 Total</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-orange-50/50 print:border-black">Avg Marks</TableHead>
                 </TableRow>
-                {/* Tier 2 Header */}
                 <TableRow>
                   {(() => {
                     let subColIndex = 0;
@@ -148,12 +161,12 @@ export default function PatrakBPage() {
                       Array.from({ length: field.subColumnCount }).map((_, i) => {
                         subColIndex++;
                         return (
-                          <TableHead key={`${field.id}-${i}`} className="text-[9px] font-bold border-r min-w-[45px] h-[160px] p-0 bg-white">
-                            <div className="flex flex-col items-center justify-end h-full w-full pb-3 gap-2">
-                              <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden">
+                          <TableHead key={`${field.id}-${i}`} className="text-[9px] font-bold border-r min-w-[45px] h-[160px] p-0 bg-white print:border-black print:h-auto print:py-1">
+                            <div className="flex flex-col items-center justify-end h-full w-full pb-3 gap-2 print:pb-1">
+                              <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden print:writing-mode-horizontal-tb print:rotate-0 print:text-[8px]">
                                 {field.subColumnLabels[i] || `Milestone ${i+1}`}
                               </span>
-                              <span className="text-primary font-black mt-auto">{subColIndex}</span>
+                              <span className="text-primary font-black mt-auto print:text-black">{subColIndex}</span>
                             </div>
                           </TableHead>
                         );
@@ -165,44 +178,44 @@ export default function PatrakBPage() {
               <TableBody>
                 {filteredStudents.map((s) => (
                   <React.Fragment key={s.id}>
-                    <TableRow className="hover:bg-slate-50/50 h-10">
-                      <TableCell rowSpan={isAnnual ? 2 : 1} className="font-black text-primary border-r sticky left-0 bg-white z-10 text-center text-xs">
+                    <TableRow className="hover:bg-slate-50/50 h-10 print:h-auto print:bg-white">
+                      <TableCell rowSpan={isAnnual ? 2 : 1} className="font-black text-primary border-r sticky left-0 bg-white z-10 text-center text-xs print:text-black print:border-black">
                         {s.rollNumber}
                       </TableCell>
-                      <TableCell rowSpan={isAnnual ? 2 : 1} className="font-bold text-slate-700 border-r sticky left-[60px] bg-white z-10 text-xs">
+                      <TableCell rowSpan={isAnnual ? 2 : 1} className="font-bold text-slate-700 border-r sticky left-[60px] bg-white z-10 text-xs print:text-black print:border-black">
                         {s.name}
                       </TableCell>
                       
                       {isAnnual && (
-                        <TableCell className="bg-blue-50/20 text-center text-[9px] font-black text-primary border-r">S1</TableCell>
+                        <TableCell className="bg-blue-50/20 text-center text-[9px] font-black text-primary border-r print:text-black print:border-black">S1</TableCell>
                       )}
 
                       {config.fields.map(field => (
                         Array.from({ length: field.subColumnCount }).map((_, i) => (
-                          <TableCell key={`${s.id}-${field.id}-${i}-s1`} className="p-1 border-r">
-                            <Input className="h-7 text-center text-xs" defaultValue="" />
+                          <TableCell key={`${s.id}-${field.id}-${i}-s1`} className="p-1 border-r print:border-black">
+                            <Input className="h-7 text-center text-xs print:border-none print:h-5" defaultValue="" />
                           </TableCell>
                         ))
                       ))}
 
-                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-blue-50/10">
-                        <Input type="number" className="h-7 text-center font-bold text-xs" defaultValue={0} />
+                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-blue-50/10 print:border-black">
+                        <Input type="number" className="h-7 text-center font-bold text-xs print:border-none" defaultValue={0} />
                       </TableCell>
-                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-green-50/10">
-                        <Input type="number" className="h-7 text-center font-bold text-xs" defaultValue={0} />
+                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-green-50/10 print:border-black">
+                        <Input type="number" className="h-7 text-center font-bold text-xs print:border-none" defaultValue={0} />
                       </TableCell>
-                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-orange-50/10">
-                        <Input type="number" className="h-7 text-center font-black text-orange-600 text-xs" defaultValue={0} />
+                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-orange-50/10 print:border-black">
+                        <Input type="number" className="h-7 text-center font-black text-orange-600 text-xs print:border-none print:text-black" defaultValue={0} />
                       </TableCell>
                     </TableRow>
                     
                     {isAnnual && (
-                      <TableRow className="hover:bg-slate-50/50 h-10 bg-slate-50/20">
-                        <TableCell className="bg-green-50/20 text-center text-[9px] font-black text-primary border-r">S2</TableCell>
+                      <TableRow className="hover:bg-slate-50/50 h-10 bg-slate-50/20 print:h-auto print:bg-white">
+                        <TableCell className="bg-green-50/20 text-center text-[9px] font-black text-primary border-r print:text-black print:border-black">S2</TableCell>
                         {config.fields.map(field => (
                           Array.from({ length: field.subColumnCount }).map((_, i) => (
-                            <TableCell key={`${s.id}-${field.id}-${i}-s2`} className="p-1 border-r">
-                              <Input className="h-7 text-center text-xs" defaultValue="" />
+                            <TableCell key={`${s.id}-${field.id}-${i}-s2`} className="p-1 border-r print:border-black">
+                              <Input className="h-7 text-center text-xs print:border-none print:h-5" defaultValue="" />
                             </TableCell>
                           ))
                         ))}
@@ -210,17 +223,21 @@ export default function PatrakBPage() {
                     )}
                   </React.Fragment>
                 ))}
-                {filteredStudents.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={config.fields.reduce((acc, f) => acc + f.subColumnCount, 0) + (isAnnual ? 6 : 5)} className="h-24 text-center text-muted-foreground font-medium italic text-xs">
-                      No students matching criteria.
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
-            <ScrollBar orientation="horizontal" />
+            <ScrollBar orientation="horizontal" className="no-print" />
           </ScrollArea>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
+          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
+            <Printer className="w-4 h-4" />
+            Print Layout
+          </Button>
+          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-accent hover:bg-accent/90 shadow-lg shadow-accent/20 px-8">
+            <Save className="w-4 h-4 mr-2" />
+            Commit Changes
+          </Button>
         </div>
       </div>
     </MainLayout>
