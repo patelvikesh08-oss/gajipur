@@ -27,7 +27,8 @@ import {
   CheckCircle2,
   FileSpreadsheet,
   ChevronRight,
-  GraduationCap
+  GraduationCap,
+  Trophy
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -46,6 +47,7 @@ const examinationSubItems = [
   { name: "PATRAK-C", href: "/patrak-c", icon: FileSpreadsheet },
   { name: "SVADHYAY", href: "/svadhyay", icon: BookOpen },
   { name: "PAT/SAT", href: "/pat-sat", icon: CheckCircle2 },
+  { name: "Top Performers", href: "/top-performers", icon: Trophy },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
