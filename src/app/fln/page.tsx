@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SpellCheck, Calendar, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import React from "react";
 
 export default function FlnPage() {
@@ -27,14 +28,15 @@ export default function FlnPage() {
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
 
-  const isAnnual = semester === "Annual";
-
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  // FLN Assessment Categories
-  const flnCategories = ["Literacy", "Numeracy"];
+  const flnCategories = [
+    { name: "FOUNDATION", color: "bg-blue-50/50" },
+    { name: "LITERACY", color: "bg-emerald-50/50" },
+    { name: "NUMERICY", color: "bg-amber-50/50" }
+  ];
 
   if (!studentsLoaded || !sessionLoaded) return null;
 
@@ -48,9 +50,11 @@ export default function FlnPage() {
   const handleSaveAll = () => {
     toast({
       title: "FLN Data Saved",
-      description: `Literacy and Numeracy levels updated for ${selectedStandard}.`,
+      description: `Foundation, Literacy, and Numeracy records updated for ${selectedStandard}.`,
     });
   };
+
+  const subColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   return (
     <MainLayout>
@@ -61,8 +65,8 @@ export default function FlnPage() {
               <SpellCheck className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">FLN (Literacy & Numeracy)</h1>
-              <p className="text-xs text-muted-foreground font-medium">Foundational Reading, Writing and Math Levels</p>
+              <h1 className="text-2xl font-bold text-slate-800">FLN Milestone Entry</h1>
+              <p className="text-xs text-muted-foreground font-medium">Foundational Reading, Writing and Math Skills Tracking</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -79,19 +83,9 @@ export default function FlnPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
-              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
-                <SelectValue placeholder="Semester" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
-              </SelectContent>
-            </Select>
             <Button onClick={handleSaveAll} className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20">
               <Save className="w-4 h-4 mr-2" />
-              Save FLN Scores
+              Save Milestone Records
             </Button>
           </div>
         </div>
@@ -117,96 +111,77 @@ export default function FlnPage() {
         </div>
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px]">Roll No</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
-                {flnCategories.map((cat) => (
-                  <TableHead 
-                    key={cat} 
-                    colSpan={isAnnual ? 2 : 1} 
-                    className="font-bold uppercase tracking-wider text-xs text-center border-l"
-                  >
-                    {cat} Level
-                  </TableHead>
-                ))}
-              </TableRow>
-              {isAnnual && (
+          <ScrollArea className="w-full">
+            <Table className="border-collapse">
+              <TableHeader className="bg-slate-50">
+                {/* Tier 1 Header */}
+                <TableRow>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[60px] border-r sticky left-0 bg-slate-50 z-20">Roll No</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20">Student Name</TableHead>
+                  {flnCategories.map((cat) => (
+                    <TableHead 
+                      key={cat.name} 
+                      colSpan={11} 
+                      className={`font-black uppercase tracking-widest text-xs text-center border-r border-b ${cat.color}`}
+                    >
+                      {cat.name}
+                    </TableHead>
+                  ))}
+                </TableRow>
+                {/* Tier 2 Header */}
                 <TableRow>
                   {flnCategories.map((cat) => (
-                    <React.Fragment key={`${cat}-sem-header`}>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[100px]">Sem 1</TableHead>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[100px]">Sem 2</TableHead>
+                    <React.Fragment key={`${cat.name}-subs`}>
+                      {subColumns.map(num => (
+                        <TableHead key={`${cat.name}-${num}`} className="text-[9px] font-bold text-center px-1 border-r min-w-[35px] bg-white">
+                          {num}
+                        </TableHead>
+                      ))}
+                      <TableHead className="text-[9px] font-black text-center px-1 border-r min-w-[45px] bg-slate-100 text-primary">
+                        TOTAL
+                      </TableHead>
                     </React.Fragment>
                   ))}
                 </TableRow>
-              )}
-            </TableHeader>
-            <TableBody>
-              {filteredStudents.map((s) => (
-                <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-black text-primary">{s.rollNumber}</TableCell>
-                  <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
-                  {flnCategories.map((cat) => (
-                    <React.Fragment key={`${s.id}-${cat}`}>
-                      {isAnnual ? (
-                        <>
-                          <TableCell className="border-l p-1">
-                            <Select defaultValue="L3">
-                              <SelectTrigger className="h-8 w-20 mx-auto text-xs font-bold">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="L1">Level 1</SelectItem>
-                                <SelectItem value="L2">Level 2</SelectItem>
-                                <SelectItem value="L3">Level 3</SelectItem>
-                                <SelectItem value="L4">Level 4</SelectItem>
-                              </SelectContent>
-                            </Select>
+              </TableHeader>
+              <TableBody>
+                {filteredStudents.map((s) => (
+                  <TableRow key={s.id} className="hover:bg-slate-50/50">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-xs">
+                      {s.rollNumber}
+                    </TableCell>
+                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 text-xs">
+                      {s.name}
+                    </TableCell>
+                    {flnCategories.map((cat) => (
+                      <React.Fragment key={`${s.id}-${cat.name}`}>
+                        {subColumns.map(num => (
+                          <TableCell key={`${s.id}-${cat.name}-${num}`} className="p-0 border-r">
+                            <Input 
+                              type="number" 
+                              className="h-8 border-none text-center text-[10px] font-medium p-0 focus-visible:ring-0 focus-visible:bg-muted/50 rounded-none w-full" 
+                              defaultValue={Math.floor(Math.random() * 5)}
+                            />
                           </TableCell>
-                          <TableCell className="border-l p-1">
-                            <Select defaultValue="L4">
-                              <SelectTrigger className="h-8 w-20 mx-auto text-xs font-bold">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="L1">Level 1</SelectItem>
-                                <SelectItem value="L2">Level 2</SelectItem>
-                                <SelectItem value="L3">Level 3</SelectItem>
-                                <SelectItem value="L4">Level 4</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                        </>
-                      ) : (
-                        <TableCell className="border-l">
-                          <Select defaultValue="L3">
-                            <SelectTrigger className="h-8 w-24 mx-auto text-xs font-bold">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="L1">Level 1</SelectItem>
-                              <SelectItem value="L2">Level 2</SelectItem>
-                              <SelectItem value="L3">Level 3</SelectItem>
-                              <SelectItem value="L4">Level 4</SelectItem>
-                            </SelectContent>
-                          </Select>
+                        ))}
+                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[10px]">
+                          24
                         </TableCell>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </TableRow>
-              ))}
-              {filteredStudents.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={flnCategories.length * (isAnnual ? 2 : 1) + 2} className="h-32 text-center text-muted-foreground">
-                    No student records found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                      </React.Fragment>
+                    ))}
+                  </TableRow>
+                ))}
+                {filteredStudents.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={35} className="h-32 text-center text-muted-foreground italic">
+                      No student records found matching your criteria.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
       </div>
     </MainLayout>

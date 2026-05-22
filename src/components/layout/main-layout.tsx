@@ -46,6 +46,7 @@ const mainNavigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Students", href: "/students", icon: Users },
   { name: "Bonofide", href: "/bonofide", icon: IdCard },
+  { name: "FLN", href: "/fln", icon: SpellCheck },
   { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
   { name: "Marks Mapping", href: "/marks-mapping", icon: Calculator },
 ];
@@ -55,7 +56,6 @@ const examinationSubItems = [
   { name: "PATRAK-B", href: "/patrak-b", icon: ScrollText },
   { name: "PATRAK-C", href: "/patrak-c", icon: FileSpreadsheet },
   { name: "SVADHYAY", href: "/svadhyay", icon: BookOpen },
-  { name: "FLN", href: "/fln", icon: SpellCheck },
   { name: "PAT/SAT", href: "/pat-sat", icon: CheckCircle2 },
   { name: "Top Performers", href: "/top-performers", icon: Trophy },
   { name: "Report Card", href: "/report-card", icon: FileText },
