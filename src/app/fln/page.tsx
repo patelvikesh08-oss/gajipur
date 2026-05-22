@@ -142,9 +142,9 @@ export default function FlnPage() {
 
         {/* Print Only Header */}
         <div className="hidden print:block text-center mb-6 space-y-2 border-b-2 border-slate-900 pb-4">
-          <h1 className="text-3xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-xl font-bold uppercase">FLN Milestone Progress Report</h2>
-          <div className="flex justify-center gap-8 font-bold text-sm">
+          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
+          <h2 className="text-lg font-bold uppercase">FLN Milestone Progress Report</h2>
+          <div className="flex justify-center gap-8 font-bold text-xs">
             <span>Academic Year: {academicYear}</span>
             <span>Month: {selectedMonth}</span>
             <span>Standard: {selectedStandard === 'all' ? 'All Classes' : selectedStandard}</span>
@@ -177,8 +177,8 @@ export default function FlnPage() {
               <TableHeader className="bg-slate-50 print:bg-slate-100">
                 {/* Tier 1 Header */}
                 <TableRow>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[60px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[150px] border-r sticky left-[60px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[50px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-[50px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
                   {flnCategories.map((cat) => (
                     <TableHead 
                       key={cat.name} 
@@ -194,11 +194,11 @@ export default function FlnPage() {
                   {flnCategories.map((cat) => (
                     <React.Fragment key={`${cat.name}-subs`}>
                       {subColumns.map(num => (
-                        <TableHead key={`${cat.name}-${num}`} className="text-[8px] font-bold text-center px-0.5 border-r min-w-[28px] bg-white print:border-slate-300">
+                        <TableHead key={`${cat.name}-${num}`} className="text-[8px] font-bold text-center px-0.5 border-r min-w-[24px] bg-white print:border-slate-300">
                           {num}
                         </TableHead>
                       ))}
-                      <TableHead className="text-[8px] font-black text-center px-0.5 border-r min-w-[35px] bg-slate-100 text-primary print:border-slate-300 print:text-black">
+                      <TableHead className="text-[8px] font-black text-center px-0.5 border-r min-w-[30px] bg-slate-100 text-primary print:border-slate-300 print:text-black">
                         TOT
                       </TableHead>
                     </React.Fragment>
@@ -211,7 +211,7 @@ export default function FlnPage() {
                     <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-[10px] text-center print:static print:text-black print:border-slate-300">
                       {s.rollNumber}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 text-[10px] print:static print:border-slate-300">
+                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[50px] bg-white z-10 text-[10px] print:static print:border-slate-300">
                       {s.name}
                     </TableCell>
                     {flnCategories.map((cat) => (
@@ -222,7 +222,7 @@ export default function FlnPage() {
                               <Checkbox 
                                 checked={flnData[s.id]?.[cat.name]?.[num-1] || false}
                                 onCheckedChange={(val) => handleCheck(s.id, cat.name, num-1, val)}
-                                className="h-4 w-4 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 print:border-black print:bg-transparent print:data-[state=checked]:bg-slate-800"
+                                className="h-3 w-3 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 print:border-black print:bg-transparent print:data-[state=checked]:bg-slate-800"
                               />
                             </div>
                           </TableCell>
