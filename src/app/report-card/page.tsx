@@ -60,6 +60,7 @@ export default function ReportCardPage() {
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto space-y-8 pb-20 print:p-0 print:m-0 print:max-w-none print:w-full">
+        {/* Header without Print Button */}
         <div className="flex items-center justify-between print:hidden">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
@@ -67,15 +68,6 @@ export default function ReportCardPage() {
             </div>
             <h1 className="text-2xl font-bold text-slate-800">Advanced Report Generation</h1>
           </div>
-          
-          <Button 
-            disabled={selectedStudentIds.length === 0} 
-            onClick={handlePrint}
-            className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20 h-11"
-          >
-            <Printer className="w-4 h-4" />
-            Print Selected ({selectedStudentIds.length})
-          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 print:block print:w-full">
@@ -144,13 +136,24 @@ export default function ReportCardPage() {
             </CardContent>
           </Card>
 
-          {/* Preview Panel */}
+          {/* Preview Panel with Contextual Print Button */}
           <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0 print:block print-area">
+            {activeReports.length > 0 && (
+              <div className="flex justify-end print:hidden sticky top-8 z-10">
+                <Button 
+                  onClick={handlePrint}
+                  className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-xl shadow-primary/30 h-11 px-6 rounded-full"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print Reports ({selectedStudentIds.length})
+                </Button>
+              </div>
+            )}
+
             {activeReports.length > 0 ? (
               <div className={`grid gap-12 print:block ${twoInOne ? "grid-cols-1" : "grid-cols-1"}`}>
                 {activeReports.map((student, index) => {
                   const isEvenStudent = index % 2 !== 0;
-                  // Alternating logic for specific bulk requirements
                   const parts = isEvenStudent && isBulkMode
                     ? [
                         { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
