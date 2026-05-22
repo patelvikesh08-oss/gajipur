@@ -3,11 +3,18 @@
 
 import { MainLayout } from "@/components/layout/main-layout";
 import { StatCard } from "@/components/dashboard/stat-card";
-import { GenderChart } from "@/components/dashboard/gender-chart";
-import { StandardChart } from "@/components/dashboard/standard-chart";
-import { AgeChart } from "@/components/dashboard/age-chart";
 import { useStudentStore } from "@/lib/student-store";
-import { Users, UserCheck, GraduationCap, Calendar } from "lucide-react";
+import { Users, CreditCard, UserPlus, Monitor } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
   const { students, isLoaded } = useStudentStore();
@@ -15,78 +22,70 @@ export default function Dashboard() {
   if (!isLoaded) return null;
 
   const totalStudents = students.length;
-  const maleCount = students.filter(s => s.gender === 'Male').length;
-  const femaleCount = students.filter(s => s.gender === 'Female').length;
-  const otherCount = students.filter(s => s.gender === 'Other').length;
-
-  const genderData = [
-    { name: "Male", value: maleCount },
-    { name: "Female", value: femaleCount },
-    { name: "Other", value: otherCount },
-  ];
-
-  const standardMap = students.reduce((acc, s) => {
-    acc[s.academicStandard] = (acc[s.academicStandard] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const standardData = Object.entries(standardMap).map(([name, students]) => ({
-    name,
-    students,
-  })).sort((a, b) => a.name.localeCompare(b.name));
-
-  const ageMap = students.reduce((acc, s) => {
-    const ageLabel = `${s.age} Yrs`;
-    acc[ageLabel] = (acc[ageLabel] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const ageData = Object.entries(ageMap).map(([age, count]) => ({
-    age,
-    count,
-  })).sort((a, b) => parseInt(a.age) - parseInt(b.age));
 
   return (
     <MainLayout>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Enrollment"
-          value={totalStudents}
-          description="Active students"
-          icon={Users}
-          trend={{ value: 4.5, isPositive: true }}
-        />
-        <StatCard
-          title="Gender Balance"
-          value={`${Math.round((femaleCount / totalStudents) * 100)}%`}
-          description="Female participation"
-          icon={UserCheck}
-        />
-        <StatCard
-          title="Avg. Grade Load"
-          value={Math.round(totalStudents / (standardData.length || 1))}
-          description="Students per standard"
-          icon={GraduationCap}
-        />
-        <StatCard
-          title="Median Age"
-          value={12}
-          description="Years old"
-          icon={Calendar}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <GenderChart data={genderData} />
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800 mb-6">Dashboard</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <StatCard
+              title="Stock Total"
+              value="GH₵150,000"
+              description="Increased by 50%"
+              icon={Monitor}
+              variant="purple"
+            />
+            <StatCard
+              title="Total Profit"
+              value="GH₵25,000"
+              description="Increased by 50%"
+              icon={CreditCard}
+              variant="blue"
+            />
+            <StatCard
+              title="Unique Visitors"
+              value="250000"
+              description="Increased by 30%"
+              icon={UserPlus}
+              variant="orange"
+            />
+          </div>
         </div>
-        <div className="lg:col-span-2">
-          <StandardChart data={standardData} />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <AgeChart data={ageData} />
+        <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
+          <CardHeader className="bg-white px-8 py-6">
+            <CardTitle className="text-xl font-bold text-slate-700">Standard Data Table</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader className="bg-slate-50/50">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="px-8 font-bold text-slate-500">Name</TableHead>
+                  <TableHead className="font-bold text-slate-500">Email</TableHead>
+                  <TableHead className="font-bold text-slate-500">Usertype</TableHead>
+                  <TableHead className="font-bold text-slate-500">Joined</TableHead>
+                  <TableHead className="px-8 font-bold text-slate-500 text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="bg-white">
+                {students.slice(0, 5).map((student) => (
+                  <TableRow key={student.id} className="hover:bg-slate-50 transition-colors">
+                    <TableCell className="px-8 font-medium text-slate-700">{student.name}</TableCell>
+                    <TableCell className="text-slate-500">{student.name.toLowerCase().replace(' ', '.')}@gmail.com</TableCell>
+                    <TableCell className="text-slate-500">Admin</TableCell>
+                    <TableCell className="text-slate-500">9th April, 2020</TableCell>
+                    <TableCell className="px-8 text-right">
+                      <Badge className="bg-green-500 hover:bg-green-600 border-none px-4 py-1 rounded-full font-bold">
+                        Pending
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </MainLayout>
   );
