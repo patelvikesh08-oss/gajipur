@@ -20,7 +20,8 @@ import {
   Menu,
   Users,
   ScrollText,
-  BookOpen
+  BookOpen,
+  CheckCircle2
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,6 +34,7 @@ const navigation = [
   { name: "TRIMASIK", href: "/trimasik", icon: ClipboardList },
   { name: "PATRAK-B", href: "/patrak-b", icon: ScrollText },
   { name: "SVADHYAY", href: "/svadhyay", icon: BookOpen },
+  { name: "PAT/SAT", href: "/pat-sat", icon: CheckCircle2 },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
