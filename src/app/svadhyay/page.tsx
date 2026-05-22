@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
+import React from "react";
 
 export default function SvadhyayPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
@@ -29,6 +30,8 @@ export default function SvadhyayPage() {
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
+
+  const isAnnual = semester === "Annual";
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
@@ -123,41 +126,74 @@ export default function SvadhyayPage() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
                 {activeSubjects.map((subject) => (
-                  <TableHead key={subject} className="font-bold uppercase tracking-wider text-xs text-center min-w-[120px]">
+                  <TableHead 
+                    key={subject} 
+                    colSpan={isAnnual ? 2 : 1} 
+                    className="font-bold uppercase tracking-wider text-xs text-center border-l"
+                  >
                     {subject} (Units)
                   </TableHead>
                 ))}
-                <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Status</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l">Status</TableHead>
               </TableRow>
+              {isAnnual && (
+                <TableRow>
+                  {activeSubjects.map((subject) => (
+                    <React.Fragment key={`${subject}-sem-header`}>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[100px]">Sem 1</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[100px]">Sem 2</TableHead>
+                    </React.Fragment>
+                  ))}
+                </TableRow>
+              )}
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50">
                   <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
-                    <TableCell key={`${s.id}-${subject}`}>
-                      <div className="flex items-center justify-center gap-3">
-                        <Input 
-                          type="number" 
-                          max={10} 
-                          min={0} 
-                          className="h-8 w-16 font-bold text-center" 
-                          defaultValue={Math.floor(Math.random() * 5) + 5} 
-                        />
-                        <Switch defaultChecked className="data-[state=checked]:bg-pink-500 scale-75" />
-                      </div>
-                    </TableCell>
+                    <React.Fragment key={`${s.id}-${subject}`}>
+                      {isAnnual ? (
+                        <>
+                          <TableCell className="border-l p-1">
+                            <div className="flex items-center justify-center gap-2">
+                              <Input type="number" className="h-8 w-14 text-center" defaultValue={8} />
+                              <Switch defaultChecked className="scale-75" />
+                            </div>
+                          </TableCell>
+                          <TableCell className="border-l p-1">
+                            <div className="flex items-center justify-center gap-2">
+                              <Input type="number" className="h-8 w-14 text-center" defaultValue={9} />
+                              <Switch defaultChecked className="scale-75" />
+                            </div>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <TableCell className="border-l">
+                          <div className="flex items-center justify-center gap-3">
+                            <Input 
+                              type="number" 
+                              max={10} 
+                              min={0} 
+                              className="h-8 w-16 font-bold text-center" 
+                              defaultValue={7} 
+                            />
+                            <Switch defaultChecked className="data-[state=checked]:bg-pink-500 scale-75" />
+                          </div>
+                        </TableCell>
+                      )}
+                    </React.Fragment>
                   ))}
-                  <TableCell className="text-right">
+                  <TableCell className="text-right border-l">
                     <Badge className="bg-pink-500 font-bold px-3 text-[10px]">VERIFIED</Badge>
                   </TableCell>
                 </TableRow>
               ))}
               {selectedStandard === "all" && (
                 <TableRow>
-                  <TableCell colSpan={activeSubjects.length + 2} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 2} className="h-32 text-center text-muted-foreground">
                     Select a standard to view subject-wise self-study columns.
                   </TableCell>
                 </TableRow>
@@ -169,4 +205,3 @@ export default function SvadhyayPage() {
     </MainLayout>
   );
 }
-

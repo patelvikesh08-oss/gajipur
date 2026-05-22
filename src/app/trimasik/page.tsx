@@ -20,6 +20,7 @@ import { ClipboardList, Calendar, Save, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import React from "react";
 
 export default function TrimasikPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
@@ -28,6 +29,8 @@ export default function TrimasikPage() {
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
+
+  const isAnnual = semester === "Annual";
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
@@ -122,34 +125,68 @@ export default function TrimasikPage() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
                 {activeSubjects.map((subject) => (
-                  <TableHead key={subject} className="font-bold uppercase tracking-wider text-xs text-center min-w-[100px]">
+                  <TableHead 
+                    key={subject} 
+                    colSpan={isAnnual ? 2 : 1} 
+                    className="font-bold uppercase tracking-wider text-xs text-center border-l"
+                  >
                     {subject}
                   </TableHead>
                 ))}
-                <TableHead className="font-bold uppercase tracking-wider text-xs text-center w-[80px]">Total</TableHead>
-                <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Status</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs text-center w-[80px] border-l">Total</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l">Status</TableHead>
               </TableRow>
+              {isAnnual && (
+                <TableRow>
+                  {activeSubjects.map((subject) => (
+                    <React.Fragment key={`${subject}-sem-header`}>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[60px]">Sem 1</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[60px]">Sem 2</TableHead>
+                    </React.Fragment>
+                  ))}
+                </TableRow>
+              )}
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50">
                   <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
-                    <TableCell key={`${s.id}-${subject}`}>
-                      <Input 
-                        type="number" 
-                        placeholder="00" 
-                        className="h-8 text-center font-bold focus:ring-primary mx-auto w-16" 
-                        defaultValue={Math.floor(Math.random() * 20) + 75} 
-                      />
-                    </TableCell>
+                    <React.Fragment key={`${s.id}-${subject}`}>
+                      {isAnnual ? (
+                        <>
+                          <TableCell className="border-l p-1">
+                            <Input 
+                              type="number" 
+                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14" 
+                              defaultValue={75} 
+                            />
+                          </TableCell>
+                          <TableCell className="border-l p-1">
+                            <Input 
+                              type="number" 
+                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14" 
+                              defaultValue={82} 
+                            />
+                          </TableCell>
+                        </>
+                      ) : (
+                        <TableCell className="border-l">
+                          <Input 
+                            type="number" 
+                            className="h-8 text-center font-bold focus:ring-primary mx-auto w-16" 
+                            defaultValue={80} 
+                          />
+                        </TableCell>
+                      )}
+                    </React.Fragment>
                   ))}
-                  <TableCell className="text-center">
+                  <TableCell className="text-center border-l">
                     <span className="font-black text-primary">88</span>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right border-l">
                     <div className="flex items-center justify-end gap-2 text-green-600 font-bold text-[10px] uppercase">
                       <CheckCircle className="w-3 h-3" />
                       Ready
@@ -159,14 +196,14 @@ export default function TrimasikPage() {
               ))}
               {selectedStandard === "all" && (
                 <TableRow>
-                  <TableCell colSpan={activeSubjects.length + 3} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 3} className="h-32 text-center text-muted-foreground">
                     Please select a specific academic standard to view subject columns and enter marks.
                   </TableCell>
                 </TableRow>
               )}
               {selectedStandard !== "all" && filteredStudents.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={activeSubjects.length + 3} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 3} className="h-32 text-center text-muted-foreground">
                     No students found in this standard.
                   </TableCell>
                 </TableRow>
@@ -178,4 +215,3 @@ export default function TrimasikPage() {
     </MainLayout>
   );
 }
-
