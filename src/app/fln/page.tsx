@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -15,19 +14,25 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SpellCheck, Calendar, Save } from "lucide-react";
+import { SpellCheck, Calendar, Save, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 
+const ACADEMIC_MONTHS = [
+  "June", "July", "August", "September", "October", "November",
+  "December", "January", "February", "March", "April", "May"
+];
+
 export default function FlnPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
-  const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
+  const { academicYear, updateYear, isLoaded: sessionLoaded } = useSessionStore();
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
+  const [selectedMonth, setSelectedMonth] = useState("June");
 
   // State to track ticks: { [studentId]: { [category]: boolean[] } }
   const [flnData, setFlnData] = useState<Record<string, Record<string, boolean[]>>>({});
@@ -80,7 +85,7 @@ export default function FlnPage() {
   const handleSaveAll = () => {
     toast({
       title: "FLN Data Saved",
-      description: `Foundation, Literacy, and Numeracy records updated for ${filteredStudents.length} students.`,
+      description: `Progress for ${selectedMonth} (${academicYear}) has been recorded for ${filteredStudents.length} students.`,
     });
   };
 
@@ -96,14 +101,14 @@ export default function FlnPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">FLN Milestone Entry</h1>
-              <p className="text-xs text-muted-foreground font-medium">Foundational Reading, Writing and Math Skills Tracking</p>
+              <p className="text-xs text-muted-foreground font-medium">Month-wise Foundational Reading, Writing and Math Tracking</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
               <Calendar className="w-4 h-4 text-muted-foreground" />
               <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
-                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
+                <SelectTrigger className="w-[100px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
                   <SelectValue placeholder="Year" />
                 </SelectTrigger>
                 <SelectContent>
@@ -113,6 +118,21 @@ export default function FlnPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
+                  <SelectValue placeholder="Month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACADEMIC_MONTHS.map(month => (
+                    <SelectItem key={month} value={month}>{month}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <Button onClick={handleSaveAll} className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20">
               <Save className="w-4 h-4 mr-2" />
               Save Milestone Records
