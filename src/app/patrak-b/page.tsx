@@ -29,18 +29,20 @@ export default function PatrakBPage() {
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
 
+  const filteredStudents = useMemo(() => {
+    return students.filter((s) => {
+      const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
+                            (s.rollNumber || "").includes(search.toLowerCase());
+      const matchesStandard = selectedStandard === "all" || s.academicStandard === selectedStandard;
+      return matchesSearch && matchesStandard;
+    }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
+  }, [students, search, selectedStandard]);
+
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
   if (!studentsLoaded || !sessionLoaded || !configLoaded) return null;
-
-  const filteredStudents = students.filter((s) => {
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
-                          (s.rollNumber || "").includes(search.toLowerCase());
-    const matchesStandard = selectedStandard === "all" || s.academicStandard === selectedStandard;
-    return matchesSearch && matchesStandard;
-  }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
   const handleSaveAll = () => {
     toast({
@@ -119,8 +121,8 @@ export default function PatrakBPage() {
               <TableHeader className="bg-slate-50">
                 {/* Tier 1 Header */}
                 <TableRow>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs w-[80px] border-r sticky left-0 bg-slate-50 z-20 text-center">Roll No</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[80px] bg-slate-50 z-20">Student Name</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center">Roll No</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20">Student Name</TableHead>
                   
                   {config.fields.map(field => (
                     <TableHead key={field.id} colSpan={field.subColumnCount} className="font-bold uppercase tracking-wider text-[10px] text-center border-r bg-muted/30">
@@ -128,19 +130,25 @@ export default function PatrakBPage() {
                     </TableHead>
                   ))}
 
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-blue-50/50">Sem 1 Total</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-green-50/50">Sem 2 Total</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[100px] bg-orange-50/50">Avg Marks</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-blue-50/50">Sem 1</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-green-50/50">Sem 2</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-orange-50/50">Avg</TableHead>
                 </TableRow>
-                {/* Tier 2 Header (Sub-columns) */}
+                {/* Tier 2 Header (Sub-columns with Continuous Numbering) */}
                 <TableRow>
-                  {config.fields.map(field => (
-                    Array.from({ length: field.subColumnCount }).map((_, i) => (
-                      <TableHead key={`${field.id}-${i}`} className="text-[9px] font-bold text-center border-r min-w-[50px] bg-white">
-                        {i + 1}
-                      </TableHead>
-                    ))
-                  ))}
+                  {(() => {
+                    let subColIndex = 0;
+                    return config.fields.map(field => (
+                      Array.from({ length: field.subColumnCount }).map((_, i) => {
+                        subColIndex++;
+                        return (
+                          <TableHead key={`${field.id}-${i}`} className="text-[9px] font-bold text-center border-r min-w-[45px] bg-white">
+                            {subColIndex}
+                          </TableHead>
+                        );
+                      })
+                    ));
+                  })()}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -149,7 +157,7 @@ export default function PatrakBPage() {
                     <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-center text-xs">
                       {s.rollNumber}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-700 border-r sticky left-[80px] bg-white z-10 text-xs">
+                    <TableCell className="font-bold text-slate-700 border-r sticky left-[60px] bg-white z-10 text-xs">
                       {s.name}
                     </TableCell>
                     

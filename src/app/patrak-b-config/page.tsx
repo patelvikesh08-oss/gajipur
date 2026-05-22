@@ -6,43 +6,75 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Settings2, Save, Layers, ListPlus } from "lucide-react";
+import { Settings2, Save, Layers, ListPlus, ShieldCheck } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 
 export default function PatrakBConfigPage() {
-  const { config, setFieldCount, updateSubColumnCount, isLoaded } = usePatrakBStore();
+  const { config, setFieldCount, updateSubColumnCount, setMaxTotalSubColumns, isLoaded } = usePatrakBStore();
   const [localFieldCount, setLocalFieldCount] = useState<string>("4");
+  const [localMaxSubCols, setLocalMaxSubCols] = useState<string>("40");
 
   useEffect(() => {
     if (isLoaded) {
       setLocalFieldCount(config.fields.length.toString());
+      setLocalMaxSubCols(config.maxTotalSubColumns.toString());
     }
-  }, [isLoaded, config.fields.length]);
+  }, [isLoaded, config.fields.length, config.maxTotalSubColumns]);
 
   if (!isLoaded) return null;
 
-  const handleUpdateFieldCount = () => {
-    const count = parseInt(localFieldCount);
-    if (isNaN(count) || count < 1 || count > 30) {
+  const currentTotalSubCols = config.fields.reduce((sum, f) => sum + f.subColumnCount, 0);
+
+  const handleUpdateMaxLimit = () => {
+    const max = parseInt(localMaxSubCols);
+    if (isNaN(max) || max < currentTotalSubCols) {
       toast({ 
-        title: "Invalid Field Count", 
-        description: "Please enter a number between 1 and 30.",
+        title: "Invalid Limit", 
+        description: `Maximum sub-columns cannot be less than current total (${currentTotalSubCols}).`,
         variant: "destructive"
       });
       return;
     }
+    setMaxTotalSubColumns(max);
+    toast({
+      title: "Capacity Updated",
+      description: `Global limit set to ${max} sub-columns.`,
+    });
+  };
+
+  const handleUpdateFieldCount = () => {
+    const count = parseInt(localFieldCount);
+    if (isNaN(count) || count < 1) {
+      toast({ title: "Invalid Field Count", variant: "destructive" });
+      return;
+    }
+    
+    // Simple validation before calling store
+    const currentFields = config.fields.length;
+    if (count > currentFields) {
+      const added = count - currentFields;
+      if (currentTotalSubCols + added > config.maxTotalSubColumns) {
+        toast({ 
+          title: "Limit Exceeded", 
+          description: "Adding these fields would exceed the global sub-column limit.",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
     setFieldCount(count);
     toast({
-      title: "Field Count Updated",
-      description: `Patrak-B now has ${count} main fields. Configure sub-columns below.`,
+      title: "Fields Updated",
+      description: `Layout now has ${count} main categories.`,
     });
   };
 
   const handleSave = () => {
     toast({
-      title: "Configuration Saved",
-      description: "Patrak-B grid layout has been successfully updated.",
+      title: "Settings Saved",
+      description: "Grid configuration successfully committed.",
     });
   };
 
@@ -56,54 +88,77 @@ export default function PatrakBConfigPage() {
           <h1 className="text-2xl font-bold text-slate-800">Patrak-B Grid Configuration</h1>
         </div>
 
-        <Card className="border-primary/20 shadow-md">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Layers className="w-5 h-5 text-primary" />
-              General Setup
-            </CardTitle>
-            <CardDescription>Enter the total number of main categories/fields for the assessment.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-end gap-4">
-              <div className="flex-1 space-y-2">
-                <Label htmlFor="fieldCount">Number of Main Fields</Label>
-                <Input 
-                  id="fieldCount"
-                  type="number" 
-                  value={localFieldCount} 
-                  onChange={(e) => setLocalFieldCount(e.target.value)}
-                  className="font-bold text-lg"
-                  min="1"
-                  max="30"
-                />
-              </div>
-              <Button onClick={handleUpdateFieldCount} variant="secondary" className="font-bold">
-                Update Fields
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="border-primary/20 shadow-md">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-primary" />
+                Capacity Limit
+              </CardTitle>
+              <CardDescription>Set the global maximum allowed sub-columns.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Max Total Sub-columns</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    type="number" 
+                    value={localMaxSubCols} 
+                    onChange={(e) => setLocalMaxSubCols(e.target.value)}
+                    className="font-bold"
+                  />
+                  <Button onClick={handleUpdateMaxLimit} variant="outline" className="font-bold">Set</Button>
+                </div>
+                <p className="text-[10px] text-muted-foreground">Current total: {currentTotalSubCols} / {config.maxTotalSubColumns}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/20 shadow-md">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Layers className="w-5 h-5 text-primary" />
+                Main Categories
+              </CardTitle>
+              <CardDescription>Number of primary progress fields.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Total Main Fields</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    type="number" 
+                    value={localFieldCount} 
+                    onChange={(e) => setLocalFieldCount(e.target.value)}
+                    className="font-bold"
+                  />
+                  <Button onClick={handleUpdateFieldCount} variant="outline" className="font-bold">Update</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {config.fields.map((field) => (
             <Card key={field.id} className="border-l-4 border-l-primary shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-black text-primary uppercase tracking-widest">
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-xs font-black text-primary uppercase">
                   Field {field.id}
                 </CardTitle>
-                <CardDescription>Configure sub-columns for this category</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold text-muted-foreground uppercase">Sub-columns Count</Label>
+              <CardContent className="p-4 pt-0">
+                <div className="space-y-1">
+                  <Label className="text-[10px] font-bold text-muted-foreground uppercase">Sub-cols</Label>
                   <Input 
                     type="number" 
                     min="1"
-                    max="10"
                     value={field.subColumnCount}
-                    onChange={(e) => updateSubColumnCount(field.id, parseInt(e.target.value) || 1)}
-                    className="font-bold"
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value) || 1;
+                      updateSubColumnCount(field.id, val);
+                    }}
+                    className="h-8 font-bold"
                   />
                 </div>
               </CardContent>
@@ -112,9 +167,9 @@ export default function PatrakBConfigPage() {
         </div>
 
         <div className="flex justify-end pt-4">
-          <Button onClick={handleSave} size="lg" className="font-bold px-12 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+          <Button onClick={handleSave} size="lg" className="font-bold px-12 shadow-lg shadow-primary/20">
             <Save className="w-5 h-5 mr-2" />
-            Save All Settings
+            Commit Configuration
           </Button>
         </div>
       </div>
