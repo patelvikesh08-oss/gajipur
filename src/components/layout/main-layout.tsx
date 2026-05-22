@@ -133,16 +133,19 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-white no-print">
-        <SidebarHeader className="p-6 border-b border-sidebar-border">
-          <div className="flex items-center gap-3 mb-8">
-            <span className="font-headline font-bold text-xl text-primary tracking-tight">EduPulse Admin</span>
+        <SidebarHeader className="p-4 border-b border-sidebar-border transition-all duration-300 group-data-[state=collapsed]:p-2">
+          <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
+               <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-headline font-bold text-xl text-primary tracking-tight truncate group-data-[state=collapsed]:hidden">EduPulse Admin</span>
           </div>
-          <div className="flex items-center gap-3 p-2 bg-sidebar-accent/50 rounded-xl">
-            <Avatar className="w-10 h-10 border-2 border-green-500 p-0.5">
+          <div className="flex items-center gap-3 p-2 bg-sidebar-accent/50 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300">
+            <Avatar className="w-10 h-10 border-2 border-green-500 p-0.5 shrink-0">
               <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
               <AvatarFallback>AD</AvatarFallback>
             </Avatar>
-            <div className="flex flex-col overflow-hidden">
+            <div className="flex flex-col overflow-hidden group-data-[state=collapsed]:hidden">
               <span className="text-sm font-bold truncate">Admin User</span>
               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Online
