@@ -19,6 +19,7 @@ import { SpellCheck, Calendar, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 
 export default function FlnPage() {
@@ -28,15 +29,18 @@ export default function FlnPage() {
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
 
-  const standards = useMemo(() => {
-    return Array.from(new Set(students.map(s => s.academicStandard))).sort();
-  }, [students]);
+  // State to track ticks: { [studentId]: { [category]: boolean[] } }
+  const [flnData, setFlnData] = useState<Record<string, Record<string, boolean[]>>>({});
 
   const flnCategories = [
     { name: "FOUNDATION", color: "bg-blue-50/50" },
     { name: "LITERACY", color: "bg-emerald-50/50" },
     { name: "NUMERICY", color: "bg-amber-50/50" }
   ];
+
+  const standards = useMemo(() => {
+    return Array.from(new Set(students.map(s => s.academicStandard))).sort();
+  }, [students]);
 
   if (!studentsLoaded || !sessionLoaded) return null;
 
@@ -47,10 +51,36 @@ export default function FlnPage() {
     return matchesSearch && matchesStandard;
   }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
+  const handleCheck = (studentId: string, category: string, index: number, checked: boolean | 'indeterminate') => {
+    setFlnData(prev => {
+      const studentData = prev[studentId] || { 
+        FOUNDATION: Array(10).fill(false), 
+        LITERACY: Array(10).fill(false), 
+        NUMERICY: Array(10).fill(false) 
+      };
+      
+      const currentCategoryData = studentData[category as keyof typeof studentData] || Array(10).fill(false);
+      const updatedCategoryData = [...currentCategoryData];
+      updatedCategoryData[index] = !!checked;
+
+      return {
+        ...prev,
+        [studentId]: {
+          ...studentData,
+          [category]: updatedCategoryData
+        }
+      };
+    });
+  };
+
+  const getCategoryTotal = (studentId: string, category: string) => {
+    return flnData[studentId]?.[category]?.filter(Boolean).length || 0;
+  };
+
   const handleSaveAll = () => {
     toast({
       title: "FLN Data Saved",
-      description: `Foundation, Literacy, and Numeracy records updated for ${selectedStandard}.`,
+      description: `Foundation, Literacy, and Numeracy records updated for ${filteredStudents.length} students.`,
     });
   };
 
@@ -146,8 +176,8 @@ export default function FlnPage() {
               </TableHeader>
               <TableBody>
                 {filteredStudents.map((s) => (
-                  <TableRow key={s.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-xs">
+                  <TableRow key={s.id} className="hover:bg-slate-50/50 h-10">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-xs text-center">
                       {s.rollNumber}
                     </TableCell>
                     <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 text-xs">
@@ -156,16 +186,18 @@ export default function FlnPage() {
                     {flnCategories.map((cat) => (
                       <React.Fragment key={`${s.id}-${cat.name}`}>
                         {subColumns.map(num => (
-                          <TableCell key={`${s.id}-${cat.name}-${num}`} className="p-0 border-r">
-                            <Input 
-                              type="number" 
-                              className="h-8 border-none text-center text-[10px] font-medium p-0 focus-visible:ring-0 focus-visible:bg-muted/50 rounded-none w-full" 
-                              defaultValue={Math.floor(Math.random() * 5)}
-                            />
+                          <TableCell key={`${s.id}-${cat.name}-${num}`} className="p-0 border-r text-center">
+                            <div className="flex items-center justify-center h-10">
+                              <Checkbox 
+                                checked={flnData[s.id]?.[cat.name]?.[num-1] || false}
+                                onCheckedChange={(val) => handleCheck(s.id, cat.name, num-1, val)}
+                                className="h-4 w-4 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                              />
+                            </div>
                           </TableCell>
                         ))}
-                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[10px]">
-                          24
+                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[11px]">
+                          {getCategoryTotal(s.id, cat.name)}
                         </TableCell>
                       </React.Fragment>
                     ))}
