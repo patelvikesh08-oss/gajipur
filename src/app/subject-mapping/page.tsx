@@ -7,19 +7,35 @@ import { useSubjectStore } from "@/lib/subject-store";
 import { useStudentStore } from "@/lib/student-store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Layers, Plus, Trash2, Check, Book } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 
+const AVAILABLE_SUBJECTS = [
+  "Mathematics",
+  "Science",
+  "English",
+  "Social Studies",
+  "Environmental Studies",
+  "Gujarati",
+  "Hindi",
+  "Sanskrit",
+  "Computer Science",
+  "Physical Education",
+  "Art & Craft",
+  "Music",
+  "General Knowledge",
+  "Moral Science"
+];
+
 export default function SubjectMappingPage() {
   const { mappings, saveMapping, deleteMapping, isLoaded: subjectsLoaded } = useSubjectStore();
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   
   const [selectedStandard, setSelectedStandard] = useState("");
-  const [newSubject, setNewSubject] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
   const [currentSubjects, setCurrentSubjects] = useState<string[]>([]);
 
   if (!subjectsLoaded || !studentsLoaded) return null;
@@ -31,16 +47,17 @@ export default function SubjectMappingPage() {
     setSelectedStandard(val);
     const existing = mappings.find(m => m.standard === val);
     setCurrentSubjects(existing ? existing.subjects : []);
+    setSelectedSubject("");
   };
 
   const addSubject = () => {
-    if (!newSubject.trim()) return;
-    if (currentSubjects.includes(newSubject.trim())) {
-      toast({ title: "Subject already exists", variant: "destructive" });
+    if (!selectedSubject) return;
+    if (currentSubjects.includes(selectedSubject)) {
+      toast({ title: "Subject already added", variant: "destructive" });
       return;
     }
-    setCurrentSubjects([...currentSubjects, newSubject.trim()]);
-    setNewSubject("");
+    setCurrentSubjects([...currentSubjects, selectedSubject]);
+    setSelectedSubject("");
   };
 
   const removeSubject = (subject: string) => {
@@ -93,25 +110,28 @@ export default function SubjectMappingPage() {
 
               {selectedStandard && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <Label htmlFor="subject">Add Subject</Label>
-                      <Input 
-                        id="subject" 
-                        value={newSubject} 
-                        onChange={(e) => setNewSubject(e.target.value)}
-                        placeholder="e.g. Mathematics"
-                        onKeyDown={(e) => e.key === 'Enter' && addSubject()}
-                      />
+                  <div className="flex items-end gap-2">
+                    <div className="flex-1 space-y-2">
+                      <Label>Add Subject</Label>
+                      <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose a subject..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {AVAILABLE_SUBJECTS.map(sub => (
+                            <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <Button onClick={addSubject} className="mt-6">
+                    <Button onClick={addSubject} disabled={!selectedSubject}>
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
 
                   <div className="space-y-3">
-                    <Label>Active Subjects for {selectedStandard}</Label>
-                    <div className="flex flex-wrap gap-2 min-h-[100px] p-4 border-2 border-dashed rounded-xl bg-muted/20">
+                    <Label className="text-xs font-bold uppercase text-muted-foreground">Active Subjects for {selectedStandard}</Label>
+                    <div className="flex flex-wrap gap-2 min-h-[120px] p-4 border-2 border-dashed rounded-xl bg-muted/20">
                       {currentSubjects.map(sub => (
                         <Badge key={sub} variant="secondary" className="px-3 py-1 text-sm flex items-center gap-2 group">
                           {sub}
@@ -121,12 +141,15 @@ export default function SubjectMappingPage() {
                         </Badge>
                       ))}
                       {currentSubjects.length === 0 && (
-                        <p className="text-sm text-muted-foreground italic w-full text-center mt-8">No subjects mapped yet.</p>
+                        <div className="flex flex-col items-center justify-center w-full mt-4 text-muted-foreground opacity-50">
+                          <Book className="w-6 h-6 mb-2" />
+                          <p className="text-xs font-medium">No subjects mapped yet.</p>
+                        </div>
                       )}
                     </div>
                   </div>
 
-                  <Button onClick={handleSave} className="w-full font-bold">
+                  <Button onClick={handleSave} className="w-full font-bold shadow-lg shadow-primary/20">
                     <Check className="w-4 h-4 mr-2" />
                     Save Configuration
                   </Button>
@@ -138,34 +161,36 @@ export default function SubjectMappingPage() {
           {/* List of existing mappings */}
           <div className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Current Mappings</h3>
-            {mappings.map(m => (
-              <Card key={m.id} className="border-l-4 border-l-primary">
-                <CardHeader className="p-4 pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-sm font-bold">{m.standard}</CardTitle>
-                    <button onClick={() => deleteMapping(m.id)} className="text-muted-foreground hover:text-destructive">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="flex flex-wrap gap-1">
-                    {m.subjects.slice(0, 3).map(s => (
-                      <Badge key={s} variant="outline" className="text-[10px] py-0">{s}</Badge>
-                    ))}
-                    {m.subjects.length > 3 && (
-                      <Badge variant="outline" className="text-[10px] py-0">+{m.subjects.length - 3} more</Badge>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-            {mappings.length === 0 && (
-              <div className="text-center py-8 opacity-20">
-                <Book className="w-8 h-8 mx-auto mb-2" />
-                <p className="text-xs font-medium">No mappings configured</p>
-              </div>
-            )}
+            <div className="space-y-3">
+              {mappings.map(m => (
+                <Card key={m.id} className="border-l-4 border-l-primary overflow-hidden transition-all hover:shadow-md">
+                  <CardHeader className="p-4 pb-2">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-sm font-bold">{m.standard}</CardTitle>
+                      <button onClick={() => deleteMapping(m.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <div className="flex flex-wrap gap-1">
+                      {m.subjects.slice(0, 4).map(s => (
+                        <Badge key={s} variant="outline" className="text-[10px] py-0 px-1.5 border-slate-200">{s}</Badge>
+                      ))}
+                      {m.subjects.length > 4 && (
+                        <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-slate-50">+{m.subjects.length - 4}</Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {mappings.length === 0 && (
+                <div className="text-center py-12 border-2 border-dashed rounded-2xl opacity-40">
+                  <Book className="w-8 h-8 mx-auto mb-2" />
+                  <p className="text-xs font-medium">No mappings configured</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
