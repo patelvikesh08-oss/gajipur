@@ -33,7 +33,8 @@ import {
   IdCard,
   FileText,
   Layers,
-  Calculator
+  Calculator,
+  SpellCheck
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -54,6 +55,7 @@ const examinationSubItems = [
   { name: "PATRAK-B", href: "/patrak-b", icon: ScrollText },
   { name: "PATRAK-C", href: "/patrak-c", icon: FileSpreadsheet },
   { name: "SVADHYAY", href: "/svadhyay", icon: BookOpen },
+  { name: "FLN", href: "/fln", icon: SpellCheck },
   { name: "PAT/SAT", href: "/pat-sat", icon: CheckCircle2 },
   { name: "Top Performers", href: "/top-performers", icon: Trophy },
   { name: "Report Card", href: "/report-card", icon: FileText },
