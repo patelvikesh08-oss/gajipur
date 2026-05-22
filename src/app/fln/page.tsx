@@ -64,7 +64,7 @@ export default function FlnPage() {
         NUMERICY: Array(10).fill(false) 
       };
       
-      const currentCategoryData = studentData[category as keyof typeof studentData] || Array(10).fill(false);
+      const currentCategoryData = (studentData[category as keyof typeof studentData] as boolean[]) || Array(10).fill(false);
       const updatedCategoryData = [...currentCategoryData];
       updatedCategoryData[index] = !!checked;
 
@@ -178,12 +178,12 @@ export default function FlnPage() {
                 {/* Tier 1 Header */}
                 <TableRow>
                   <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[60px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[150px] border-r sticky left-[60px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
                   {flnCategories.map((cat) => (
                     <TableHead 
                       key={cat.name} 
                       colSpan={11} 
-                      className={`font-black uppercase tracking-widest text-xs text-center border-r border-b ${cat.color} print:border-slate-300`}
+                      className={`font-black uppercase tracking-widest text-[9px] text-center border-r border-b ${cat.color} print:border-slate-300`}
                     >
                       {cat.name}
                     </TableHead>
@@ -194,12 +194,12 @@ export default function FlnPage() {
                   {flnCategories.map((cat) => (
                     <React.Fragment key={`${cat.name}-subs`}>
                       {subColumns.map(num => (
-                        <TableHead key={`${cat.name}-${num}`} className="text-[9px] font-bold text-center px-1 border-r min-w-[35px] bg-white print:border-slate-300">
+                        <TableHead key={`${cat.name}-${num}`} className="text-[8px] font-bold text-center px-0.5 border-r min-w-[28px] bg-white print:border-slate-300">
                           {num}
                         </TableHead>
                       ))}
-                      <TableHead className="text-[9px] font-black text-center px-1 border-r min-w-[45px] bg-slate-100 text-primary print:border-slate-300 print:text-black">
-                        TOTAL
+                      <TableHead className="text-[8px] font-black text-center px-0.5 border-r min-w-[35px] bg-slate-100 text-primary print:border-slate-300 print:text-black">
+                        TOT
                       </TableHead>
                     </React.Fragment>
                   ))}
@@ -208,10 +208,10 @@ export default function FlnPage() {
               <TableBody>
                 {filteredStudents.map((s) => (
                   <TableRow key={s.id} className="hover:bg-slate-50/50 h-10 print:h-8">
-                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-xs text-center print:static print:text-black print:border-slate-300">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-[10px] text-center print:static print:text-black print:border-slate-300">
                       {s.rollNumber}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 text-xs print:static print:border-slate-300">
+                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 text-[10px] print:static print:border-slate-300">
                       {s.name}
                     </TableCell>
                     {flnCategories.map((cat) => (
@@ -222,12 +222,12 @@ export default function FlnPage() {
                               <Checkbox 
                                 checked={flnData[s.id]?.[cat.name]?.[num-1] || false}
                                 onCheckedChange={(val) => handleCheck(s.id, cat.name, num-1, val)}
-                                className="h-4 w-4 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 print:data-[state=checked]:bg-slate-700"
+                                className="h-4 w-4 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 print:border-black print:bg-transparent print:data-[state=checked]:bg-slate-800"
                               />
                             </div>
                           </TableCell>
                         ))}
-                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[11px] print:border-slate-300 print:text-black">
+                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[10px] print:border-slate-300 print:text-black">
                           {getCategoryTotal(s.id, cat.name)}
                         </TableCell>
                       </React.Fragment>

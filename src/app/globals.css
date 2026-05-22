@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -62,7 +61,8 @@
   [data-sidebar="trigger"],
   [data-sidebar="sidebar"],
   button,
-  .scroll-bar {
+  .scroll-bar,
+  [role="scrollbar"] {
     display: none !important;
   }
 
@@ -99,19 +99,38 @@
     width: 100% !important;
   }
 
+  /* Table Specific Printing */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
-    font-size: 8pt !important;
+    font-size: 7pt !important; /* Smaller font to fit many columns */
+    table-layout: auto !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
   }
 
   th, td {
-    border: 1px solid #ddd !important;
-    padding: 4px !important;
+    border: 1px solid #000 !important;
+    padding: 2px !important;
+    overflow: visible !important;
+    white-space: normal !important;
   }
 
+  /* Kill all sticky positioning in print */
   .sticky {
     position: static !important;
+  }
+
+  /* Ensure scrollable containers expand to show all content */
+  [data-radix-scroll-area-viewport] {
+    overflow: visible !important;
+    display: block !important;
   }
 
   .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
@@ -124,6 +143,6 @@
 
   @page {
     size: landscape;
-    margin: 1cm;
+    margin: 0.5cm;
   }
 }
