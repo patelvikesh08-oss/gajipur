@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
@@ -20,6 +20,7 @@ import { FileSpreadsheet, Calendar, Save, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function PatrakCPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
@@ -38,6 +39,12 @@ export default function PatrakCPage() {
     const mapping = mappings.find(m => m.standard === selectedStandard);
     return mapping ? mapping.subjects : [];
   }, [selectedStandard, mappings]);
+
+  const assessmentType = useMemo(() => {
+    if (semester === "Semester 1") return "PAT";
+    if (semester === "Semester 2") return "SAT";
+    return "PAT/SAT";
+  }, [semester]);
 
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
@@ -119,53 +126,86 @@ export default function PatrakCPage() {
         </div>
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Student</TableHead>
-                {activeSubjects.map((subject) => (
-                  <TableHead key={subject} className="font-bold uppercase tracking-wider text-xs text-center min-w-[100px]">
-                    {subject}
-                  </TableHead>
-                ))}
-                <TableHead className="font-bold uppercase tracking-wider text-xs w-[100px] text-center">Avg %</TableHead>
-                <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Outcome</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredStudents.map((s) => (
-                <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-black text-slate-700 whitespace-nowrap">{s.name}</TableCell>
-                  {activeSubjects.map((subject) => (
-                    <TableCell key={`${s.id}-${subject}`}>
-                      <Input 
-                        type="number" 
-                        step="0.1" 
-                        className="h-8 font-bold text-center mx-auto w-16" 
-                        defaultValue={(Math.random() * 15 + 80).toFixed(1)} 
-                      />
-                    </TableCell>
-                  ))}
-                  <TableCell className="text-center font-black text-orange-600">84.5%</TableCell>
-                  <TableCell className="text-right">
-                    <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
-                      <Trophy className="w-3 h-3" /> PASS
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {selectedStandard === "all" && (
+          <ScrollArea className="w-full">
+            <Table className="border-collapse">
+              <TableHeader className="bg-slate-50">
                 <TableRow>
-                  <TableCell colSpan={activeSubjects.length + 3} className="h-32 text-center text-muted-foreground">
-                    Select a standard to begin direct results entry for all mapped subjects.
-                  </TableCell>
+                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[180px]">
+                    Student Name
+                  </TableHead>
+                  {activeSubjects.map((subject) => (
+                    <TableHead key={subject} colSpan={5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b">
+                      {subject}
+                    </TableHead>
+                  ))}
+                  <TableHead rowSpan={2} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l">Avg %</TableHead>
+                  <TableHead rowSpan={2} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px]">Outcome</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                <TableRow>
+                  {activeSubjects.map((subject) => (
+                    <React.Fragment key={`${subject}-sub`}>
+                      <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px]">Sva.</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px]">Tri.</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px]">{assessmentType}</TableHead>
+                      <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50">Total</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px]">Grd.</TableHead>
+                    </React.Fragment>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredStudents.map((s) => (
+                  <TableRow key={s.id} className="hover:bg-slate-50/50">
+                    <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-0 bg-white z-10">
+                      {s.name}
+                    </TableCell>
+                    {activeSubjects.map((subject) => (
+                      <React.Fragment key={`${s.id}-${subject}`}>
+                        <TableCell className="p-1 border-r">
+                          <Input type="number" className="h-7 text-xs text-center px-1 font-medium" defaultValue={8} />
+                        </TableCell>
+                        <TableCell className="p-1 border-r">
+                          <Input type="number" className="h-7 text-xs text-center px-1 font-medium" defaultValue={72} />
+                        </TableCell>
+                        <TableCell className="p-1 border-r">
+                          <Input type="number" className="h-7 text-xs text-center px-1 font-medium" defaultValue={22} />
+                        </TableCell>
+                        <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs">
+                          102
+                        </TableCell>
+                        <TableCell className="p-1 border-r text-center font-black text-primary text-[10px]">
+                          A+
+                        </TableCell>
+                      </React.Fragment>
+                    ))}
+                    <TableCell className="text-center font-black text-orange-600 border-l">84.5%</TableCell>
+                    <TableCell className="text-right sticky right-0 bg-white z-10 border-l">
+                      <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
+                        <Trophy className="w-3 h-3" /> PASS
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {selectedStandard === "all" && (
+                  <TableRow>
+                    <TableCell colSpan={(activeSubjects.length * 5) + 3} className="h-32 text-center text-muted-foreground">
+                      Select a standard to begin direct results entry for all mapped subjects.
+                    </TableCell>
+                  </TableRow>
+                )}
+                {selectedStandard !== "all" && filteredStudents.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={(activeSubjects.length * 5) + 3} className="h-32 text-center text-muted-foreground">
+                      No students found in this standard.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
       </div>
     </MainLayout>
   );
 }
-
