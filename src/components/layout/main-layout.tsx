@@ -11,6 +11,9 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { 
   LayoutDashboard,
@@ -22,16 +25,22 @@ import {
   ScrollText,
   BookOpen,
   CheckCircle2,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ChevronRight,
+  GraduationCap
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-const navigation = [
+const mainNavigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Students", href: "/students", icon: Users },
+];
+
+const examinationSubItems = [
   { name: "TRIMASIK", href: "/trimasik", icon: ClipboardList },
   { name: "PATRAK-B", href: "/patrak-b", icon: ScrollText },
   { name: "PATRAK-C", href: "/patrak-c", icon: FileSpreadsheet },
@@ -64,7 +73,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent className="px-2 py-4">
           <SidebarMenu>
-            {navigation.map((item) => (
+            {mainNavigation.map((item) => (
               <SidebarMenuItem key={item.name}>
                 <SidebarMenuButton
                   asChild
@@ -80,6 +89,44 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
+
+            <Collapsible 
+              asChild 
+              defaultOpen={examinationSubItems.some(i => pathname === i.href)}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg">
+                    <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary">Examination</span>
+                    <div className="flex items-center gap-2">
+                      <GraduationCap className="w-4 h-4 text-muted-foreground group-data-[state=open]:text-primary" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                    </div>
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub className="mx-0 px-0 border-l-0 space-y-1 mt-1">
+                    {examinationSubItems.map((item) => (
+                      <SidebarMenuSubItem key={item.name} className="px-2">
+                        <SidebarMenuSubButton 
+                          asChild 
+                          isActive={pathname === item.href}
+                          className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto"
+                        >
+                          <Link href={item.href}>
+                            <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold">
+                              {item.name}
+                            </span>
+                            <item.icon className="w-3.5 h-3.5 text-muted-foreground group-data-[active=true]:text-primary" />
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
