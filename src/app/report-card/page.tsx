@@ -40,7 +40,8 @@ export default function ReportCardPage() {
 
   const getStudentReports = () => {
     if (!isBulkMode) {
-      const single = students.find(s => s.id === selectedStudentIds[0]);
+      const singleId = selectedStudentIds[0];
+      const single = students.find(s => s.id === singleId);
       return single ? [single] : [];
     }
     return students.filter(s => selectedStudentIds.includes(s.id));
@@ -66,15 +67,24 @@ export default function ReportCardPage() {
             </div>
             <h1 className="text-2xl font-bold text-slate-800">Advanced Report Generation</h1>
           </div>
+          
+          <Button 
+            disabled={selectedStudentIds.length === 0} 
+            onClick={handlePrint}
+            className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20 h-11"
+          >
+            <Printer className="w-4 h-4" />
+            Print Selected ({selectedStudentIds.length})
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 print:block print:w-full">
-          {/* Controls Panel - Hidden on Print */}
+          {/* Controls Panel - Selection and Settings */}
           <Card className="lg:col-span-1 border-none shadow-md h-fit sticky top-8 print:hidden">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Users className="w-5 h-5 text-primary" />
-                Selection
+                Configuration
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -83,7 +93,7 @@ export default function ReportCardPage() {
                   setIsBulkMode(val);
                   if (!val && selectedStudentIds.length > 1) setSelectedStudentIds([selectedStudentIds[0]]);
                 }} />
-                <Label htmlFor="bulk-mode" className="text-sm font-bold cursor-pointer">Enable Bulk Mode</Label>
+                <Label htmlFor="bulk-mode" className="text-sm font-bold cursor-pointer">Bulk Mode</Label>
               </div>
 
               <div className="flex items-center space-x-2 pt-2">
@@ -131,17 +141,6 @@ export default function ReportCardPage() {
                   </div>
                 )}
               </div>
-
-              <div className="pt-4 border-t">
-                <Button 
-                  disabled={selectedStudentIds.length === 0} 
-                  onClick={handlePrint}
-                  className="w-full bg-primary hover:bg-primary/90 font-bold gap-2 shadow-lg shadow-primary/20 h-11"
-                >
-                  <Printer className="w-4 h-4" />
-                  Print Selected ({selectedStudentIds.length})
-                </Button>
-              </div>
             </CardContent>
           </Card>
 
@@ -151,7 +150,7 @@ export default function ReportCardPage() {
               <div className={`grid gap-12 print:block ${twoInOne && !isBulkMode ? "print:grid-cols-2 print:gap-0" : "grid-cols-1"}`}>
                 {activeReports.map((student, index) => {
                   const isEvenStudent = index % 2 !== 0;
-                  // If bulk print and even student, alternate pages 2, 1 as requested
+                  // Alternating page logic for specific bulk printing requirements
                   const parts = isEvenStudent && isBulkMode
                     ? [
                         { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
@@ -255,7 +254,7 @@ export default function ReportCardPage() {
               <div className="text-center py-32 border-2 border-dashed rounded-2xl bg-white/50 print:hidden">
                 <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-10" />
                 <h3 className="text-xl font-bold text-slate-400">No Selection</h3>
-                <p className="text-muted-foreground font-medium">Select students from the left panel to preview reports.</p>
+                <p className="text-muted-foreground font-medium">Configure selections from the left panel to preview reports.</p>
               </div>
             )}
           </div>
@@ -264,7 +263,6 @@ export default function ReportCardPage() {
 
       <style jsx global>{`
         @media print {
-          /* AGGRESSIVE HIDING OF UI COMPONENTS */
           aside, 
           [data-sidebar],
           header, 
@@ -273,12 +271,8 @@ export default function ReportCardPage() {
           .print\\:hidden,
           .lg\\:col-span-1 {
             display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            width: 0 !important;
           }
 
-          /* Reset all layout containers */
           html, body {
             margin: 0 !important;
             padding: 0 !important;
@@ -287,19 +281,13 @@ export default function ReportCardPage() {
             background: white !important;
           }
 
-          /* Target the specific SidebarInset layout wrapper */
           main, 
           .mx-auto,
-          [class*="SidebarInset"],
-          div[class*="SidebarProvider"],
-          div[class*="max-w-7xl"] {
+          [class*="SidebarInset"] {
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
             max-width: none !important;
-            background: white !important;
-            border: none !important;
-            box-shadow: none !important;
           }
 
           .print-page {
@@ -307,7 +295,6 @@ export default function ReportCardPage() {
             border: none !important;
             margin: 0 !important;
             page-break-after: always !important;
-            visibility: visible !important;
           }
 
           ${twoInOne ? `
