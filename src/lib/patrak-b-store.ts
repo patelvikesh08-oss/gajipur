@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 export interface PatrakBField {
   id: number;
+  title: string;
   subColumnCount: number;
+  subColumnLabels: string[];
 }
 
 export interface PatrakBConfig {
@@ -15,32 +17,27 @@ export interface PatrakBConfig {
 export function usePatrakBStore() {
   const [config, setConfig] = useState<PatrakBConfig>({ 
     fields: [
-      { id: 1, subColumnCount: 1 },
-      { id: 2, subColumnCount: 1 },
-      { id: 3, subColumnCount: 1 },
-      { id: 4, subColumnCount: 1 }
+      { id: 1, title: 'Field 1', subColumnCount: 1, subColumnLabels: ['Milestone 1'] },
+      { id: 2, title: 'Field 2', subColumnCount: 1, subColumnLabels: ['Milestone 1'] },
+      { id: 3, title: 'Field 3', subColumnCount: 1, subColumnLabels: ['Milestone 1'] },
+      { id: 4, title: 'Field 4', subColumnCount: 1, subColumnLabels: ['Milestone 1'] }
     ],
     maxTotalSubColumns: 40
   });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('edupulse_patrak_b_config_v3');
+    const saved = localStorage.getItem('edupulse_patrak_b_config_v4');
     if (saved) {
       setConfig(JSON.parse(saved));
     }
     setIsLoaded(true);
   }, []);
 
-  const saveToStorage = (newConfig: PatrakBConfig) => {
-    setConfig(newConfig);
-    localStorage.setItem('edupulse_patrak_b_config_v3', JSON.stringify(newConfig));
-  };
-
   const setMaxTotalSubColumns = useCallback((max: number) => {
     setConfig(prev => {
       const newConfig = { ...prev, maxTotalSubColumns: max };
-      localStorage.setItem('edupulse_patrak_b_config_v3', JSON.stringify(newConfig));
+      localStorage.setItem('edupulse_patrak_b_config_v4', JSON.stringify(newConfig));
       return newConfig;
     });
   }, []);
@@ -52,16 +49,16 @@ export function usePatrakBStore() {
       
       if (count > currentFields.length) {
         const additionalCount = count - currentFields.length;
-        // Check if adding 'additionalCount' (assuming at least 1 sub-col each) exceeds total max
         const currentTotalSubCols = currentFields.reduce((sum, f) => sum + f.subColumnCount, 0);
         if (currentTotalSubCols + additionalCount > prev.maxTotalSubColumns) {
-          // Cannot add this many fields without exceeding global max
           return prev;
         }
 
         const additional = Array.from({ length: additionalCount }, (_, i) => ({
           id: currentFields.length + i + 1,
-          subColumnCount: 1
+          title: `Field ${currentFields.length + i + 1}`,
+          subColumnCount: 1,
+          subColumnLabels: ['Milestone 1']
         }));
         updatedFields = [...currentFields, ...additional];
       } else {
@@ -69,32 +66,44 @@ export function usePatrakBStore() {
       }
       
       const newConfig = { ...prev, fields: updatedFields };
-      localStorage.setItem('edupulse_patrak_b_config_v3', JSON.stringify(newConfig));
+      localStorage.setItem('edupulse_patrak_b_config_v4', JSON.stringify(newConfig));
       return newConfig;
     });
   }, []);
 
-  const updateSubColumnCount = useCallback((fieldId: number, subCount: number) => {
+  const updateField = useCallback((fieldId: number, updates: Partial<PatrakBField>) => {
     setConfig(prev => {
-      const field = prev.fields.find(f => f.id === fieldId);
-      if (!field) return prev;
+      const updatedFields = prev.fields.map(f => {
+        if (f.id === fieldId) {
+          const newField = { ...f, ...updates };
+          
+          // Sync subColumnLabels array size if subColumnCount changed
+          if (updates.subColumnCount !== undefined) {
+            const currentTotal = prev.fields.reduce((sum, field) => sum + field.subColumnCount, 0);
+            const diff = updates.subColumnCount - f.subColumnCount;
+            if (currentTotal + diff > prev.maxTotalSubColumns) {
+              return f; // Revert change if it exceeds total max
+            }
 
-      const currentTotal = prev.fields.reduce((sum, f) => sum + f.subColumnCount, 0);
-      const diff = subCount - field.subColumnCount;
-
-      if (currentTotal + diff > prev.maxTotalSubColumns) {
-        // Exceeds global limit
-        return prev;
-      }
-
-      const updatedFields = prev.fields.map(f => 
-        f.id === fieldId ? { ...f, subColumnCount: subCount } : f
-      );
+            const newLabels = [...(newField.subColumnLabels || [])];
+            if (updates.subColumnCount > newLabels.length) {
+              for (let i = newLabels.length; i < updates.subColumnCount; i++) {
+                newLabels.push(`Milestone ${i + 1}`);
+              }
+            } else {
+              newField.subColumnLabels = newLabels.slice(0, updates.subColumnCount);
+            }
+            newField.subColumnLabels = newLabels.slice(0, updates.subColumnCount);
+          }
+          return newField;
+        }
+        return f;
+      });
       const newConfig = { ...prev, fields: updatedFields };
-      localStorage.setItem('edupulse_patrak_b_config_v3', JSON.stringify(newConfig));
+      localStorage.setItem('edupulse_patrak_b_config_v4', JSON.stringify(newConfig));
       return newConfig;
     });
   }, []);
 
-  return { config, setMaxTotalSubColumns, setFieldCount, updateSubColumnCount, isLoaded };
+  return { config, setMaxTotalSubColumns, setFieldCount, updateField, isLoaded };
 }

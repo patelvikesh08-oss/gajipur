@@ -67,3 +67,9 @@
     @apply font-headline;
   }
 }
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}

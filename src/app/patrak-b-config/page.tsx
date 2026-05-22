@@ -6,12 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Settings2, Save, Layers, ListPlus, ShieldCheck } from "lucide-react";
+import { Settings2, Save, Layers, ListPlus, ShieldCheck, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function PatrakBConfigPage() {
-  const { config, setFieldCount, updateSubColumnCount, setMaxTotalSubColumns, isLoaded } = usePatrakBStore();
+  const { config, setFieldCount, updateField, setMaxTotalSubColumns, isLoaded } = usePatrakBStore();
   const [localFieldCount, setLocalFieldCount] = useState<string>("4");
   const [localMaxSubCols, setLocalMaxSubCols] = useState<string>("40");
 
@@ -50,7 +51,6 @@ export default function PatrakBConfigPage() {
       return;
     }
     
-    // Simple validation before calling store
     const currentFields = config.fields.length;
     if (count > currentFields) {
       const added = count - currentFields;
@@ -139,34 +139,74 @@ export default function PatrakBConfigPage() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {config.fields.map((field) => (
-            <Card key={field.id} className="border-l-4 border-l-primary shadow-sm">
-              <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-xs font-black text-primary uppercase">
-                  Field {field.id}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <div className="space-y-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground uppercase">Sub-cols</Label>
-                  <Input 
-                    type="number" 
-                    min="1"
-                    value={field.subColumnCount}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value) || 1;
-                      updateSubColumnCount(field.id, val);
-                    }}
-                    className="h-8 font-bold"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-slate-700 px-1">Field & Sub-column Setup</h2>
+          <Accordion type="multiple" className="w-full space-y-4">
+            {config.fields.map((field) => (
+              <AccordionItem key={field.id} value={`field-${field.id}`} className="border rounded-xl bg-white shadow-sm overflow-hidden border-primary/10">
+                <AccordionTrigger className="px-6 hover:no-underline hover:bg-slate-50">
+                  <div className="flex flex-col items-start text-left gap-1">
+                    <span className="text-xs font-black text-primary uppercase">Field {field.id}</span>
+                    <span className="text-sm font-bold text-slate-700">{field.title}</span>
+                  </div>
+                  <div className="ml-auto mr-4">
+                    <span className="text-xs font-bold text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                      {field.subColumnCount} Sub-cols
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6 pt-2 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase">Field Name</Label>
+                      <Input 
+                        value={field.title}
+                        onChange={(e) => updateField(field.id, { title: e.target.value })}
+                        className="font-medium"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold uppercase">Number of Sub-columns</Label>
+                      <Input 
+                        type="number"
+                        min="1"
+                        value={field.subColumnCount}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value) || 1;
+                          updateField(field.id, { subColumnCount: val });
+                        }}
+                        className="font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Sub-column Labels (Descriptions)</Label>
+                    <div className="grid grid-cols-1 gap-3">
+                      {Array.from({ length: field.subColumnCount }).map((_, idx) => (
+                        <div key={idx} className="flex items-center gap-3">
+                          <span className="text-xs font-black text-slate-400 w-8">{idx + 1}.</span>
+                          <Input 
+                            placeholder={`Enter milestone description for sub-column ${idx + 1}`}
+                            value={field.subColumnLabels[idx] || ""}
+                            onChange={(e) => {
+                              const newLabels = [...field.subColumnLabels];
+                              newLabels[idx] = e.target.value;
+                              updateField(field.id, { subColumnLabels: newLabels });
+                            }}
+                            className="text-sm font-medium"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
 
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end pt-4 pb-12">
           <Button onClick={handleSave} size="lg" className="font-bold px-12 shadow-lg shadow-primary/20">
             <Save className="w-5 h-5 mr-2" />
             Commit Configuration

@@ -125,8 +125,8 @@ export default function PatrakBPage() {
                   <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20">Student Name</TableHead>
                   
                   {config.fields.map(field => (
-                    <TableHead key={field.id} colSpan={field.subColumnCount} className="font-bold uppercase tracking-wider text-[10px] text-center border-r bg-muted/30">
-                      Field {field.id}
+                    <TableHead key={field.id} colSpan={field.subColumnCount} className="font-black uppercase tracking-wider text-[10px] text-center border-r bg-muted/30 py-2">
+                      {field.title}
                     </TableHead>
                   ))}
 
@@ -134,7 +134,7 @@ export default function PatrakBPage() {
                   <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-green-50/50">Sem 2</TableHead>
                   <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-orange-50/50">Avg</TableHead>
                 </TableRow>
-                {/* Tier 2 Header (Sub-columns with Continuous Numbering) */}
+                {/* Tier 2 Header (Sub-columns with Labels and Continuous Numbering) */}
                 <TableRow>
                   {(() => {
                     let subColIndex = 0;
@@ -142,8 +142,13 @@ export default function PatrakBPage() {
                       Array.from({ length: field.subColumnCount }).map((_, i) => {
                         subColIndex++;
                         return (
-                          <TableHead key={`${field.id}-${i}`} className="text-[9px] font-bold text-center border-r min-w-[45px] bg-white">
-                            {subColIndex}
+                          <TableHead key={`${field.id}-${i}`} className="text-[9px] font-bold border-r min-w-[45px] h-[160px] p-0 bg-white">
+                            <div className="flex flex-col items-center justify-end h-full w-full pb-3 gap-2">
+                              <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden">
+                                {field.subColumnLabels[i] || `Milestone ${i+1}`}
+                              </span>
+                              <span className="text-primary font-black mt-auto">{subColIndex}</span>
+                            </div>
                           </TableHead>
                         );
                       })
