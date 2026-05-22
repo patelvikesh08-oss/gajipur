@@ -57,6 +57,8 @@ export default function PatrakCPage() {
     });
   };
 
+  const commonRowSpan = isAnnual ? 3 : 2;
+
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
@@ -127,16 +129,29 @@ export default function PatrakCPage() {
               <TableHeader className="bg-slate-50">
                 {/* Tier 1 Header */}
                 <TableRow>
-                  <TableHead rowSpan={isAnnual ? 3 : 2} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[180px]">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[180px]">
                     Student Name
                   </TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px]">
+                    G.R. No.
+                  </TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[120px]">
+                    Birthdate
+                  </TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] text-center">
+                    Atten.
+                  </TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px]">
+                    Caste
+                  </TableHead>
+                  
                   {activeSubjects.map((subject) => (
                     <TableHead key={subject} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-slate-100/50">
                       {subject}
                     </TableHead>
                   ))}
-                  <TableHead rowSpan={isAnnual ? 3 : 2} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l">Avg %</TableHead>
-                  <TableHead rowSpan={isAnnual ? 3 : 2} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px]">Outcome</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l">Avg %</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px]">Outcome</TableHead>
                 </TableRow>
 
                 {/* Tier 2 Header (Conditional for Annual) */}
@@ -192,6 +207,11 @@ export default function PatrakCPage() {
                     <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-0 bg-white z-10">
                       {s.name}
                     </TableCell>
+                    <TableCell className="text-slate-500 font-medium border-r">{s.grNumber}</TableCell>
+                    <TableCell className="text-slate-600 border-r">{s.birthday}</TableCell>
+                    <TableCell className="text-center font-bold text-primary border-r">{s.attendance}%</TableCell>
+                    <TableCell className="text-slate-600 border-r">{s.caste}</TableCell>
+                    
                     {activeSubjects.map((subject) => (
                       <React.Fragment key={`${s.id}-${subject}`}>
                         {isAnnual ? (
@@ -255,14 +275,14 @@ export default function PatrakCPage() {
                 ))}
                 {selectedStandard === "all" && (
                   <TableRow>
-                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 3} className="h-32 text-center text-muted-foreground">
+                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 7} className="h-32 text-center text-muted-foreground">
                       Select a standard to begin direct results entry for all mapped subjects.
                     </TableCell>
                   </TableRow>
                 )}
                 {selectedStandard !== "all" && filteredStudents.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 3} className="h-32 text-center text-muted-foreground">
+                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 7} className="h-32 text-center text-muted-foreground">
                       No students found in this standard.
                     </TableCell>
                   </TableRow>
