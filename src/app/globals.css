@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -66,5 +65,60 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline;
+  }
+}
+
+@media print {
+  /* Global reset for all layout wrappers */
+  html, body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Force hide sidebar and administrative UI */
+  header, 
+  nav, 
+  aside, 
+  [data-sidebar],
+  [data-sidebar-trigger],
+  [data-sidebar-rail],
+  [class*="SidebarHeader"],
+  [class*="SidebarContent"],
+  button {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    opacity: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Zero out ShadCN sidebar variables */
+  :root {
+    --sidebar-width: 0px !important;
+    --sidebar-width-mobile: 0px !important;
+  }
+
+  /* Flatten all layout containers */
+  [data-sidebar-wrapper],
+  [class*="SidebarProvider"],
+  [class*="SidebarInset"],
+  main,
+  .mx-auto {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: white !important;
+    position: static !important;
+    transform: none !important;
   }
 }

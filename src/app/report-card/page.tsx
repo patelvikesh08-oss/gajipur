@@ -148,9 +148,12 @@ export default function ReportCardPage() {
               </div>
             )}
 
-            <div className="print-area space-y-8 print:space-y-0">
+            <div className="print-area space-y-8 print:space-y-0 print:w-full">
               {activeReports.map((student, index) => {
                 const isEvenStudent = index % 2 !== 0;
+                // Alternate order for 2-in-1 filing requirement
+                // Student 1 (index 0, even in logic): 1,2
+                // Student 2 (index 1, odd in logic): 2,1
                 const parts = isEvenStudent && isBulkMode
                   ? [
                       { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
@@ -162,7 +165,7 @@ export default function ReportCardPage() {
                     ];
 
                 return (
-                  <div key={student.id} className="report-student-group print:flex print:flex-wrap print:w-full print:page-break-after-always print:h-screen">
+                  <div key={student.id} className="report-student-group print:flex print:flex-row print:w-full print:page-break-after-always print:h-screen print:m-0 print:p-0">
                     {parts.map((part) => (
                       <div 
                         key={`${student.id}-${part.id}`} 
@@ -282,42 +285,27 @@ export default function ReportCardPage() {
             margin: 0 !important;
           }
 
-          /* Hard reset for all UI elements that should NOT print */
-          header, 
-          nav, 
-          aside, 
-          button, 
-          [data-sidebar], 
-          [data-sidebar-trigger], 
-          [data-sidebar-rail],
-          .print\:hidden {
+          /* Extreme reset to force full width landscape */
+          :root {
+            --sidebar-width: 0px !important;
+            --sidebar-width-mobile: 0px !important;
+          }
+
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            -webkit-print-color-adjust: exact !important;
+          }
+
+          /* Hide ALL layout administrative wrappers */
+          aside, header, nav, [data-sidebar], [data-sidebar-rail], [data-sidebar-trigger], .print\\:hidden {
             display: none !important;
             visibility: hidden !important;
-            height: 0 !important;
-            width: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            opacity: 0 !important;
           }
 
-          /* Force root layout containers to be clean for printing */
-          html, body {
-            background: white !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: visible !important;
-          }
-
-          /* Aggressively target the SidebarProvider and SidebarInset to remove margins/paddings */
-          [data-sidebar-wrapper], 
-          [class*="SidebarProvider"],
-          [class*="SidebarInset"],
-          main, 
-          .mx-auto,
-          .lg\:col-span-3,
-          .print-area {
+          /* Force main area to be full screen for landscape */
+          main, .mx-auto, .lg\\:col-span-3, .print-area, [data-sidebar-inset], [class*="SidebarProvider"] {
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
@@ -325,12 +313,8 @@ export default function ReportCardPage() {
             border: none !important;
             box-shadow: none !important;
             background: white !important;
-            /* Reset CSS variables used by Sidebar system */
-            --sidebar-width: 0px !important;
-            --sidebar-width-mobile: 0px !important;
-            transform: none !important;
-            position: static !important;
             display: block !important;
+            position: static !important;
           }
 
           .report-student-group {
@@ -361,8 +345,8 @@ export default function ReportCardPage() {
           ${twoInOne ? `
             .print-page {
               width: 50vw !important;
-              border-right: 1px solid #f1f5f9 !important;
-              padding: 3rem !important;
+              padding: 3.5rem !important;
+              border-right: 1px solid #eee !important;
             }
             .print-page:nth-child(2n) {
               border-right: none !important;
