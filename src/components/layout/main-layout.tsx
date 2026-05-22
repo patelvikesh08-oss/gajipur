@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -29,7 +28,8 @@ import {
   ChevronRight,
   GraduationCap,
   Trophy,
-  PieChart
+  PieChart,
+  IdCard
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -40,6 +40,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 const mainNavigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Students", href: "/students", icon: Users },
+  { name: "Bonofide", href: "/bonofide", icon: IdCard },
 ];
 
 const examinationSubItems = [
@@ -138,7 +139,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 bg-white px-6 shadow-sm border-b">
           <div className="flex items-center gap-4 flex-1">
             <SidebarTrigger />
-            <div className="relative w-64 max-w-sm">
+            <div className="relative w-64 max-sm:hidden">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search Dashboard..."
