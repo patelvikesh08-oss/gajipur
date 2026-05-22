@@ -59,7 +59,7 @@
     margin: 5mm;
   }
 
-  /* CRITICAL: Force reset of all layout height constraints to prevent blank first page */
+  /* CRITICAL: Force reset of all layout height constraints to prevent blank pages */
   html, body {
     height: auto !important;
     min-height: 0 !important;
@@ -69,14 +69,13 @@
     margin: 0 !important;
   }
 
-  /* Target the Next.js and Sidebar layout wrappers specifically to prevent blank page bug */
+  /* Flatten all parent containers to block and visible height */
+  div, main, section, article, 
   .group\/sidebar-wrapper,
   [data-sidebar="inset"],
-  main,
+  [data-sidebar="wrapper"],
   .min-h-svh,
-  .min-h-screen,
-  div[data-sidebar="inset"],
-  div[data-sidebar="wrapper"] {
+  .min-h-screen {
     display: block !important;
     min-height: 0 !important;
     height: auto !important;
@@ -85,6 +84,13 @@
     width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
+  }
+
+  /* Bypass ScrollArea constraints */
+  [data-radix-scroll-area-viewport] {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
   }
 
   /* Hide UI elements */
@@ -101,11 +107,11 @@
     display: none !important;
   }
 
-  /* Checkbox Print Visibility Fix - JUST THE TICK, NO BOX, NO FILL */
+  /* Checkbox Print Style: Just the Tick mark */
   [role="checkbox"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    border: none !important; /* REMOVE THE BOX */
+    border: none !important;
     background: transparent !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -117,11 +123,10 @@
     box-shadow: none !important;
   }
 
-  /* Ensure the tick mark itself is high-contrast black and bold */
   [role="checkbox"][data-state="checked"] svg {
     color: #000 !important;
     stroke: #000 !important;
-    stroke-width: 4px !important; /* Make tick extra bold for visibility */
+    stroke-width: 4px !important;
     fill: none !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -153,6 +158,7 @@
     padding: 1px !important;
     color: black !important;
     background: transparent !important;
+    white-space: nowrap !important;
   }
 
   .sticky {

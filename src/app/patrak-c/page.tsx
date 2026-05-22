@@ -138,7 +138,7 @@ export default function PatrakCPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
+        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:overflow-visible print:border-none print:shadow-none">
           <ScrollArea className="w-full">
             <Table className="border-collapse">
               <TableHeader className="bg-slate-50 print:bg-white">
