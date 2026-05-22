@@ -6,11 +6,12 @@ import { useStudentStore, Student } from "@/lib/student-store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Printer, GraduationCap, Layers, Users } from "lucide-react";
+import { FileText, Printer, GraduationCap, Layers, Users, CheckCircle2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 export default function ReportCardPage() {
   const { students, isLoaded } = useStudentStore();
@@ -131,19 +132,27 @@ export default function ReportCardPage() {
           {/* Preview and Report Content */}
           <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0 print:block">
             {activeReports.length > 0 && (
-              <div className="flex justify-end print:hidden sticky top-8 z-10 mb-4">
+              <div className="flex justify-between items-center bg-white p-4 rounded-xl border shadow-sm print:hidden sticky top-8 z-10">
+                <div className="flex items-center gap-3">
+                  <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none font-bold">
+                    {activeReports.length} Reports Ready
+                  </Badge>
+                </div>
                 <Button 
                   onClick={handlePrint}
-                  className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-xl shadow-primary/30 h-11 px-6 rounded-full"
+                  className="bg-primary hover:bg-primary/90 font-bold gap-2 shadow-xl shadow-primary/30 h-11 px-8 rounded-full"
                 >
                   <Printer className="w-4 h-4" />
-                  Print Reports ({activeReports.length})
+                  Print Reports
                 </Button>
               </div>
             )}
 
             <div className="print-area space-y-8 print:space-y-0">
               {activeReports.map((student, index) => {
+                // Alternating page logic: 
+                // Student 1 (index 0, 2, 4...) -> Patrak-F (1), Marksheet (2)
+                // Student 2 (index 1, 3, 5...) -> Marksheet (2), Patrak-F (1)
                 const isEvenStudent = index % 2 !== 0;
                 const parts = isEvenStudent && isBulkMode
                   ? [
@@ -160,88 +169,95 @@ export default function ReportCardPage() {
                     {parts.map((part) => (
                       <div 
                         key={`${student.id}-${part.id}`} 
-                        className={`print-page bg-white p-10 border border-slate-200 shadow-xl rounded-sm mb-8 print:shadow-none print:border-none print:m-0 print:p-8 flex flex-col justify-between
+                        className={`print-page bg-white p-10 border border-slate-200 shadow-xl rounded-sm mb-8 print:shadow-none print:border-none print:m-0 print:p-10 flex flex-col justify-between
                           ${twoInOne ? "print:w-1/2 print:h-screen print:border-r print:border-slate-100" : "print:w-full print:h-screen print:page-break-after-always"}
                         `}
                       >
                         <div className="report-content">
-                          <div className="text-center mb-6 space-y-2">
-                            <h1 className="text-xl font-black text-slate-900 uppercase tracking-tighter">EduPulse Global Academy</h1>
-                            <div className="flex items-center justify-between border-y-2 border-slate-900 py-1">
-                              <span className="text-[10px] font-black">{part.title}</span>
-                              <span className="text-[10px] font-black">PAGE: {part.pageNum}</span>
+                          <div className="text-center mb-8 space-y-2">
+                            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">EduPulse Global Academy</h1>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Quarterly Performance Evaluation Record</p>
+                            <div className="flex items-center justify-between border-y-2 border-slate-900 py-1.5 mt-4">
+                              <span className="text-xs font-black px-2">{part.title}</span>
+                              <span className="text-xs font-black px-2">PAGE NO: {part.pageNum}</span>
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4 mb-6 bg-slate-50 p-4 border-l-4 border-primary">
-                            <div className="text-[10px] font-bold">NAME: <span className="text-slate-900 uppercase ml-2">{student.name}</span></div>
-                            <div className="text-[10px] font-bold">STD: <span className="text-slate-900 uppercase ml-2">{student.academicStandard}</span></div>
+                          <div className="grid grid-cols-2 gap-6 mb-8 bg-slate-50 p-6 border-l-4 border-primary rounded-r-lg">
+                            <div className="space-y-1">
+                              <p className="text-[9px] font-bold text-slate-400 uppercase">Student Full Name</p>
+                              <p className="text-sm font-black text-slate-900 uppercase">{student.name}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-[9px] font-bold text-slate-400 uppercase">Academic Standard</p>
+                              <p className="text-sm font-black text-slate-900 uppercase">{student.academicStandard}</p>
+                            </div>
                           </div>
 
                           {part.id === 'patrakf' ? (
-                            <div className="space-y-6">
-                              <div className="space-y-2">
-                                <h3 className="text-[9px] font-black bg-slate-900 text-white px-2 py-0.5 uppercase">Personal Qualities</h3>
-                                <Table className="border text-[10px]">
+                            <div className="space-y-8">
+                              <div className="space-y-3">
+                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-block">Personal Qualities & Conduct</h3>
+                                <Table className="border text-xs">
                                   <TableBody>
-                                    {["Punctuality", "Cleanliness", "Behavior", "Leadership"].map(t => (
-                                      <TableRow key={t} className="h-8">
-                                        <TableCell className="py-1 font-bold">{t}</TableCell>
-                                        <TableCell className="py-1 text-center font-black text-primary">A+</TableCell>
+                                    {["Punctuality", "Cleanliness", "Social Behavior", "Leadership Skill", "Discipline"].map(t => (
+                                      <TableRow key={t} className="h-10">
+                                        <TableCell className="py-2 font-bold text-slate-700">{t}</TableCell>
+                                        <TableCell className="py-2 text-center font-black text-primary text-sm">A+</TableCell>
                                       </TableRow>
                                     ))}
                                   </TableBody>
                                 </Table>
                               </div>
-                              <div className="space-y-2">
-                                <h3 className="text-[9px] font-black bg-slate-900 text-white px-2 py-0.5 uppercase">Co-Curricular</h3>
-                                <div className="border p-3 rounded-sm italic text-[10px] bg-slate-50">
-                                  Active participation in all school events. Demonstrates excellent sportsmanship and teamwork during physical education modules.
+                              <div className="space-y-3">
+                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-block">Co-Curricular Observations</h3>
+                                <div className="border p-4 rounded-md italic text-xs bg-slate-50 leading-relaxed text-slate-600">
+                                  Shows keen interest in artistic expression and demonstrates consistent leadership in group activities. Highly collaborative and follows school values diligently.
                                 </div>
                               </div>
                             </div>
                           ) : (
-                            <div className="space-y-4">
-                              <Table className="border-2 border-slate-900 text-[10px]">
+                            <div className="space-y-6">
+                              <Table className="border-2 border-slate-900 text-xs">
                                 <TableHeader className="bg-slate-900">
                                   <TableRow className="hover:bg-slate-900 border-none">
-                                    <TableHead className="text-white h-8">Subject</TableHead>
-                                    <TableHead className="text-white h-8 text-center">Marks</TableHead>
-                                    <TableHead className="text-white h-8 text-right">Grade</TableHead>
+                                    <TableHead className="text-white h-10">Academic Subject</TableHead>
+                                    <TableHead className="text-white h-10 text-center">Marks Obtain</TableHead>
+                                    <TableHead className="text-white h-10 text-right">Grade</TableHead>
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                   {mockSubjects.map(sub => (
-                                    <TableRow key={sub.name} className="h-8 border-slate-200">
-                                      <TableCell className="py-1 font-bold">{sub.name}</TableCell>
-                                      <TableCell className="py-1 text-center font-black">{sub.marks}</TableCell>
-                                      <TableCell className="py-1 text-right font-black">{sub.grade}</TableCell>
+                                    <TableRow key={sub.name} className="h-10 border-slate-200">
+                                      <TableCell className="py-2 font-bold text-slate-700">{sub.name}</TableCell>
+                                      <TableCell className="py-2 text-center font-black">{sub.marks}</TableCell>
+                                      <TableCell className="py-2 text-right font-black text-primary">{sub.grade}</TableCell>
                                     </TableRow>
                                   ))}
                                 </TableBody>
                               </Table>
-                              <div className="grid grid-cols-2 gap-2">
-                                <div className="bg-slate-900 text-white p-2 text-center rounded-sm">
-                                  <p className="text-[8px] opacity-70">TOTAL</p>
-                                  <p className="text-sm font-black">449 / 500</p>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-slate-900 text-white p-4 text-center rounded-lg shadow-inner">
+                                  <p className="text-[9px] font-bold opacity-70 mb-1 uppercase tracking-widest">Aggregate Marks</p>
+                                  <p className="text-xl font-black">449 / 500</p>
                                 </div>
-                                <div className="bg-primary text-white p-2 text-center rounded-sm">
-                                  <p className="text-[8px] opacity-70">RESULT</p>
-                                  <p className="text-sm font-black uppercase">Passed (A+)</p>
+                                <div className="bg-primary text-white p-4 text-center rounded-lg shadow-inner">
+                                  <p className="text-[9px] font-bold opacity-70 mb-1 uppercase tracking-widest">Final Assessment</p>
+                                  <p className="text-xl font-black uppercase">PASSED (A+)</p>
                                 </div>
                               </div>
                             </div>
                           )}
                         </div>
 
-                        <div className="mt-12 flex justify-between px-2">
-                          <div className="text-center">
-                            <div className="w-20 h-px bg-slate-300 mb-1" />
-                            <p className="text-[8px] font-bold text-slate-400 uppercase">Class Teacher</p>
+                        <div className="mt-16 flex justify-between px-4">
+                          <div className="text-center space-y-2">
+                            <div className="w-32 h-px bg-slate-300 mx-auto" />
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Class Teacher</p>
                           </div>
-                          <div className="text-center">
-                            <div className="w-20 h-px bg-slate-300 mb-1" />
-                            <p className="text-[8px] font-bold text-slate-400 uppercase">Principal</p>
+                          <div className="text-center space-y-2">
+                            <div className="w-32 h-px bg-slate-300 mx-auto" />
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Principal</p>
                           </div>
                         </div>
                       </div>
@@ -251,10 +267,10 @@ export default function ReportCardPage() {
               })}
 
               {activeReports.length === 0 && (
-                <div className="text-center py-32 border-2 border-dashed rounded-2xl bg-white/50 print:hidden">
-                  <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-10" />
-                  <h3 className="text-xl font-bold text-slate-400">No Selection</h3>
-                  <p className="text-muted-foreground font-medium">Configure selections from the left panel to preview reports.</p>
+                <div className="text-center py-40 border-2 border-dashed rounded-2xl bg-white/50 print:hidden">
+                  <FileText className="w-20 h-20 text-muted-foreground mx-auto mb-6 opacity-10" />
+                  <h3 className="text-xl font-bold text-slate-400">Select Students to Preview</h3>
+                  <p className="text-muted-foreground font-medium max-w-xs mx-auto">Use the sidebar to choose individual students or enable Bulk Mode for class reports.</p>
                 </div>
               )}
             </div>
@@ -269,24 +285,20 @@ export default function ReportCardPage() {
             margin: 0 !important;
           }
 
-          /* Force hide the sidebar system completely */
+          /* Force complete removal of admin UI */
           [data-sidebar-wrapper],
           [data-sidebar],
           [data-sidebar-trigger],
           aside,
           header,
           nav,
-          .print\\:hidden,
-          .lg\\:col-span-1 {
+          button,
+          .print\\:hidden {
             display: none !important;
             visibility: hidden !important;
-            width: 0 !important;
-            height: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
           }
 
-          /* Reset all potential UI wrappers to take full width */
+          /* Reset all layout containers for printing */
           html, body {
             background: white !important;
             margin: 0 !important;
@@ -296,11 +308,13 @@ export default function ReportCardPage() {
             overflow: visible !important;
           }
 
+          /* Overwrite any SidebarInset padding or width constraints */
           main, 
           .mx-auto, 
           [class*="SidebarInset"],
           .lg\\:col-span-3,
-          .report-student-group {
+          .report-student-group,
+          .print-area {
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
@@ -309,10 +323,10 @@ export default function ReportCardPage() {
             background: white !important;
             border: none !important;
             box-shadow: none !important;
-            /* Reset shadcn sidebar-specific push variables */
             --sidebar-width: 0px !important;
-            --sidebar-width-icon: 0px !important;
             transform: none !important;
+            left: 0 !important;
+            position: relative !important;
           }
 
           .report-student-group {
@@ -342,7 +356,7 @@ export default function ReportCardPage() {
             .print-page {
               width: 50vw !important;
               border-right: 1px solid #f1f5f9 !important;
-              padding: 2.5rem !important;
+              padding: 3rem !important;
             }
             .print-page:nth-child(2n) {
               border-right: none !important;
@@ -350,10 +364,11 @@ export default function ReportCardPage() {
           ` : `
             .print-page {
               width: 100vw !important;
-              padding: 4rem !important;
+              padding: 5rem !important;
             }
           `}
         }
+
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
         }
