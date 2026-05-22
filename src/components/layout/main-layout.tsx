@@ -13,13 +13,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { 
-  Home,
   LayoutDashboard,
   ClipboardList,
   Search, 
   Bell, 
-  Mail, 
-  Menu
+  Menu,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,6 +27,7 @@ import { Input } from "@/components/ui/input";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Students", href: "/students", icon: Users },
   { name: "TRIMASIK", href: "/trimasik", icon: ClipboardList },
 ];
 
