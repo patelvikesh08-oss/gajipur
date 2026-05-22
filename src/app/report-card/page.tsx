@@ -150,9 +150,6 @@ export default function ReportCardPage() {
 
             <div className="print-area space-y-8 print:space-y-0">
               {activeReports.map((student, index) => {
-                // Alternating page logic: 
-                // Student 1 (index 0, 2, 4...) -> Patrak-F (1), Marksheet (2)
-                // Student 2 (index 1, 3, 5...) -> Marksheet (2), Patrak-F (1)
                 const isEvenStudent = index % 2 !== 0;
                 const parts = isEvenStudent && isBulkMode
                   ? [
@@ -285,24 +282,25 @@ export default function ReportCardPage() {
             margin: 0 !important;
           }
 
-          /* Force complete removal of admin UI including expanded/collapsed sidebars */
-          [data-sidebar-wrapper],
-          [data-sidebar],
-          [data-sidebar-trigger],
-          aside,
-          header,
-          nav,
-          button,
+          /* Hard reset for all UI elements that should NOT print */
+          header, 
+          nav, 
+          aside, 
+          button, 
+          [data-sidebar], 
+          [data-sidebar-trigger], 
+          [data-sidebar-rail],
           .print\:hidden {
             display: none !important;
             visibility: hidden !important;
-            width: 0 !important;
             height: 0 !important;
+            width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
             opacity: 0 !important;
-            pointer-events: none !important;
           }
 
-          /* Reset all layout containers for printing */
+          /* Force root layout containers to be clean for printing */
           html, body {
             background: white !important;
             margin: 0 !important;
@@ -312,26 +310,27 @@ export default function ReportCardPage() {
             overflow: visible !important;
           }
 
-          /* Overwrite any SidebarInset padding or width constraints binding to sidebar variables */
-          main, 
-          .mx-auto, 
+          /* Aggressively target the SidebarProvider and SidebarInset to remove margins/paddings */
+          [data-sidebar-wrapper], 
+          [class*="SidebarProvider"],
           [class*="SidebarInset"],
+          main, 
+          .mx-auto,
           .lg\:col-span-3,
-          .report-student-group,
           .print-area {
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
             max-width: none !important;
-            display: block !important;
-            background: white !important;
             border: none !important;
             box-shadow: none !important;
+            background: white !important;
+            /* Reset CSS variables used by Sidebar system */
             --sidebar-width: 0px !important;
+            --sidebar-width-mobile: 0px !important;
             transform: none !important;
-            left: 0 !important;
-            position: relative !important;
-            margin-left: 0 !important;
+            position: static !important;
+            display: block !important;
           }
 
           .report-student-group {
@@ -342,6 +341,8 @@ export default function ReportCardPage() {
             height: 100vh !important;
             page-break-after: always !important;
             box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
 
           .print-page {
