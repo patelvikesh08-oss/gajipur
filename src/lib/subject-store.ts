@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface SubjectMapping {
   id: string;
@@ -30,24 +30,28 @@ export function useSubjectStore() {
     setIsLoaded(true);
   }, []);
 
-  const saveMapping = (standard: string, semester: string, subjects: string[]) => {
-    const existingIndex = mappings.findIndex(m => m.standard === standard && m.semester === semester);
-    let updated;
-    if (existingIndex > -1) {
-      updated = [...mappings];
-      updated[existingIndex] = { ...updated[existingIndex], subjects };
-    } else {
-      updated = [...mappings, { id: Math.random().toString(36).substr(2, 9), standard, semester, subjects }];
-    }
-    setMappings(updated);
-    localStorage.setItem('edupulse_subject_mappings', JSON.stringify(updated));
-  };
+  const saveMapping = useCallback((standard: string, semester: string, subjects: string[]) => {
+    setMappings(prev => {
+      const existingIndex = prev.findIndex(m => m.standard === standard && m.semester === semester);
+      let updated;
+      if (existingIndex > -1) {
+        updated = [...prev];
+        updated[existingIndex] = { ...updated[existingIndex], subjects };
+      } else {
+        updated = [...prev, { id: Math.random().toString(36).substr(2, 9), standard, semester, subjects }];
+      }
+      localStorage.setItem('edupulse_subject_mappings', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
-  const deleteMapping = (id: string) => {
-    const updated = mappings.filter(m => m.id !== id);
-    setMappings(updated);
-    localStorage.setItem('edupulse_subject_mappings', JSON.stringify(updated));
-  };
+  const deleteMapping = useCallback((id: string) => {
+    setMappings(prev => {
+      const updated = prev.filter(m => m.id !== id);
+      localStorage.setItem('edupulse_subject_mappings', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   return { mappings, saveMapping, deleteMapping, isLoaded };
 }

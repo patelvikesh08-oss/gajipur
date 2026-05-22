@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export type AcademicYear = '2023-24' | '2024-25' | '2025-26';
 export type Semester = 'Semester 1' | 'Semester 2' | 'Annual';
@@ -21,15 +21,15 @@ export function useSessionStore() {
     setIsLoaded(true);
   }, []);
 
-  const updateYear = (year: AcademicYear) => {
+  const updateYear = useCallback((year: AcademicYear) => {
     setAcademicYear(year);
     localStorage.setItem('edupulse_year', year);
-  };
+  }, []);
 
-  const updateSemester = (sem: Semester) => {
+  const updateSemester = useCallback((sem: Semester) => {
     setSemester(sem);
     localStorage.setItem('edupulse_semester', sem);
-  };
+  }, []);
 
   return { academicYear, semester, updateYear, updateSemester, isLoaded };
 }

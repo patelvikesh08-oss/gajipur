@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export type Gender = 'Male' | 'Female' | 'Other';
 
@@ -96,26 +96,32 @@ export function useStudentStore() {
     setIsLoaded(true);
   }, []);
 
-  const addStudent = (student: Omit<Student, 'id'>) => {
+  const addStudent = useCallback((student: Omit<Student, 'id'>) => {
     const newStudent = { ...student, id: Math.random().toString(36).substr(2, 9) };
-    const updated = [...students, newStudent];
-    setStudents(updated);
-    localStorage.setItem('edupulse_students', JSON.stringify(updated));
-  };
+    setStudents(prev => {
+      const updated = [...prev, newStudent];
+      localStorage.setItem('edupulse_students', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
-  const updateStudent = (updatedStudent: Student) => {
-    const updated = students.map(s => s.id === updatedStudent.id ? updatedStudent : s);
-    setStudents(updated);
-    localStorage.setItem('edupulse_students', JSON.stringify(updated));
-  };
+  const updateStudent = useCallback((updatedStudent: Student) => {
+    setStudents(prev => {
+      const updated = prev.map(s => s.id === updatedStudent.id ? updatedStudent : s);
+      localStorage.setItem('edupulse_students', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
-  const deleteStudent = (id: string) => {
-    const updated = students.filter(s => s.id !== id);
-    setStudents(updated);
-    localStorage.setItem('edupulse_students', JSON.stringify(updated));
-  };
+  const deleteStudent = useCallback((id: string) => {
+    setStudents(prev => {
+      const updated = prev.filter(s => s.id !== id);
+      localStorage.setItem('edupulse_students', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
-  const bulkAddStudents = (newStudents: any[]) => {
+  const bulkAddStudents = useCallback((newStudents: any[]) => {
     const added = newStudents.map(s => ({
       id: Math.random().toString(36).substr(2, 9),
       rollNumber: s.rollNumber || "",
@@ -136,10 +142,12 @@ export function useStudentStore() {
       address: "",
       mobileNumber: ""
     }));
-    const updated = [...students, ...added];
-    setStudents(updated);
-    localStorage.setItem('edupulse_students', JSON.stringify(updated));
-  };
+    setStudents(prev => {
+      const updated = [...prev, ...added];
+      localStorage.setItem('edupulse_students', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   return { students, addStudent, updateStudent, deleteStudent, bulkAddStudents, isLoaded };
 }
