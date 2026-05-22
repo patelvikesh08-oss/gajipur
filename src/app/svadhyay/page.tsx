@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -17,9 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BookOpen, Calendar, Save } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import React from "react";
 
@@ -157,29 +154,26 @@ export default function SvadhyayPage() {
                       {isAnnual ? (
                         <>
                           <TableCell className="border-l p-1">
-                            <div className="flex items-center justify-center gap-2">
+                            <div className="flex items-center justify-center">
                               <Input type="number" className="h-8 w-14 text-center" defaultValue={8} />
-                              <Switch defaultChecked className="scale-75" />
                             </div>
                           </TableCell>
                           <TableCell className="border-l p-1">
-                            <div className="flex items-center justify-center gap-2">
+                            <div className="flex items-center justify-center">
                               <Input type="number" className="h-8 w-14 text-center" defaultValue={9} />
-                              <Switch defaultChecked className="scale-75" />
                             </div>
                           </TableCell>
                         </>
                       ) : (
                         <TableCell className="border-l">
-                          <div className="flex items-center justify-center gap-3">
+                          <div className="flex items-center justify-center">
                             <Input 
                               type="number" 
                               max={10} 
                               min={0} 
-                              className="h-8 w-16 font-bold text-center" 
+                              className="h-8 w-20 font-bold text-center" 
                               defaultValue={7} 
                             />
-                            <Switch defaultChecked className="data-[state=checked]:bg-pink-500 scale-75" />
                           </div>
                         </TableCell>
                       )}
