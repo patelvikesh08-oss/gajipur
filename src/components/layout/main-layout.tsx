@@ -28,7 +28,8 @@ import {
   FileSpreadsheet,
   ChevronRight,
   GraduationCap,
-  Trophy
+  Trophy,
+  PieChart
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -48,6 +49,7 @@ const examinationSubItems = [
   { name: "SVADHYAY", href: "/svadhyay", icon: BookOpen },
   { name: "PAT/SAT", href: "/pat-sat", icon: CheckCircle2 },
   { name: "Top Performers", href: "/top-performers", icon: Trophy },
+  { name: "Results", href: "/results", icon: PieChart },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
