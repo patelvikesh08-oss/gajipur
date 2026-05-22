@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
-import { useStudentStore, Student, Gender, calculateAge } from "@/lib/student-store";
+import { useStudentStore, Student, Gender } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
 import {
   Table,
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit, Calendar, User, CreditCard, Building2, Phone, Home, ScrollText } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, User, CreditCard, Building2, Phone, Home, Hash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
@@ -39,6 +39,7 @@ export default function StudentsPage() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   const [formData, setFormData] = useState<Omit<Student, 'id'>>({
+    rollNumber: "",
     name: "",
     birthday: "",
     gender: "Male" as Gender,
@@ -62,10 +63,11 @@ export default function StudentsPage() {
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
                           s.academicStandard.toLowerCase().includes(search.toLowerCase()) ||
-                          s.grNumber.toLowerCase().includes(search.toLowerCase());
+                          s.grNumber.toLowerCase().includes(search.toLowerCase()) ||
+                          s.rollNumber.toLowerCase().includes(search.toLowerCase());
     const matchesGender = filterGender === "all" || s.gender === filterGender;
     return matchesSearch && matchesGender;
-  });
+  }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
   const handleSave = () => {
     if (editingStudent) {
@@ -80,6 +82,7 @@ export default function StudentsPage() {
 
   const resetForm = () => {
     setFormData({
+      rollNumber: "",
       name: "",
       birthday: "",
       gender: "Male",
@@ -102,6 +105,7 @@ export default function StudentsPage() {
   const handleEdit = (s: Student) => {
     setEditingStudent(s);
     setFormData({
+      rollNumber: s.rollNumber,
       name: s.name,
       birthday: s.birthday,
       gender: s.gender,
@@ -127,7 +131,6 @@ export default function StudentsPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-slate-800">Student Information System</h1>
-          
           <div className="flex flex-wrap items-center gap-3">
              <Badge variant="outline" className="px-4 py-2 bg-white font-bold text-primary border-primary/20">
                 Session: {academicYear}
@@ -139,7 +142,7 @@ export default function StudentsPage() {
           <div className="relative w-full sm:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by Name, G.R., or Standard..."
+              placeholder="Search by Roll No, Name, G.R., or Standard..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
@@ -181,14 +184,14 @@ export default function StudentsPage() {
                       <h3 className="text-sm font-bold text-primary flex items-center gap-2 border-b pb-2">
                         <User className="w-4 h-4" /> Personal Details
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="grid gap-2">
+                          <Label htmlFor="rollNo">Roll Number</Label>
+                          <Input id="rollNo" value={formData.rollNumber} onChange={(e) => setFormData({...formData, rollNumber: e.target.value})} placeholder="e.g. 01" />
+                        </div>
+                        <div className="grid gap-2 md:col-span-2">
                           <Label htmlFor="name">Full Name</Label>
                           <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="birthday">Birthday</Label>
-                          <Input id="birthday" type="date" value={formData.birthday} onChange={(e) => setFormData({...formData, birthday: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="gender">Gender</Label>
@@ -206,16 +209,16 @@ export default function StudentsPage() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="grid gap-2">
+                          <Label htmlFor="birthday">Birthday</Label>
+                          <Input id="birthday" type="date" value={formData.birthday} onChange={(e) => setFormData({...formData, birthday: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
                           <Label htmlFor="fatherName">Father's Name</Label>
                           <Input id="fatherName" value={formData.fatherName} onChange={(e) => setFormData({...formData, fatherName: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="motherName">Mother's Name</Label>
                           <Input id="motherName" value={formData.motherName} onChange={(e) => setFormData({...formData, motherName: e.target.value})} />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="caste">Caste</Label>
-                          <Input id="caste" value={formData.caste} onChange={(e) => setFormData({...formData, caste: e.target.value})} />
                         </div>
                       </div>
                     </div>
@@ -238,10 +241,14 @@ export default function StudentsPage() {
                           <Input id="childUid" value={formData.childUniqueId} onChange={(e) => setFormData({...formData, childUniqueId: e.target.value})} />
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="grid gap-2">
                           <Label htmlFor="aadhar">Aadhar Card Number</Label>
                           <Input id="aadhar" value={formData.aadharCard} onChange={(e) => setFormData({...formData, aadharCard: e.target.value})} />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="caste">Caste</Label>
+                          <Input id="caste" value={formData.caste} onChange={(e) => setFormData({...formData, caste: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="attendance">Attendance (%)</Label>
@@ -295,6 +302,7 @@ export default function StudentsPage() {
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Roll No</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">G.R. No</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Full Name</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Gender</TableHead>
@@ -318,6 +326,7 @@ export default function StudentsPage() {
                 {filteredStudents.length > 0 ? (
                   filteredStudents.map((s) => (
                     <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
+                      <TableCell className="font-black text-primary whitespace-nowrap">{s.rollNumber}</TableCell>
                       <TableCell className="font-bold text-slate-500 whitespace-nowrap">{s.grNumber}</TableCell>
                       <TableCell className="font-bold text-slate-900 whitespace-nowrap">{s.name}</TableCell>
                       <TableCell className="whitespace-nowrap">
@@ -356,7 +365,7 @@ export default function StudentsPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={17} className="h-32 text-center text-muted-foreground font-medium italic">
+                    <TableCell colSpan={18} className="h-32 text-center text-muted-foreground font-medium italic">
                       No student records matching your criteria.
                     </TableCell>
                   </TableRow>

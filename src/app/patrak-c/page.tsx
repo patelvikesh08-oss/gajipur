@@ -45,10 +45,11 @@ export default function PatrakCPage() {
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
+                          (s.rollNumber || "").includes(search.toLowerCase());
     const matchesStandard = selectedStandard === "all" || s.academicStandard === selectedStandard;
     return matchesSearch && matchesStandard;
-  });
+  }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
   const handleSaveAll = () => {
     toast({
@@ -105,7 +106,7 @@ export default function PatrakCPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            placeholder="Search by student name..."
+            placeholder="Search by student name or roll number..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
@@ -129,7 +130,10 @@ export default function PatrakCPage() {
               <TableHeader className="bg-slate-50">
                 {/* Tier 1 Header */}
                 <TableRow>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[180px]">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[80px]">
+                    Roll No
+                  </TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[80px] bg-slate-50 z-20 min-w-[180px]">
                     Student Name
                   </TableHead>
                   <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px]">
@@ -204,7 +208,10 @@ export default function PatrakCPage() {
               <TableBody>
                 {filteredStudents.map((s) => (
                   <TableRow key={s.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-0 bg-white z-10">
+                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10">
+                      {s.rollNumber}
+                    </TableCell>
+                    <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[80px] bg-white z-10">
                       {s.name}
                     </TableCell>
                     <TableCell className="text-slate-500 font-medium border-r">{s.grNumber}</TableCell>
@@ -275,15 +282,8 @@ export default function PatrakCPage() {
                 ))}
                 {selectedStandard === "all" && (
                   <TableRow>
-                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 7} className="h-32 text-center text-muted-foreground">
+                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 8} className="h-32 text-center text-muted-foreground">
                       Select a standard to begin direct results entry for all mapped subjects.
-                    </TableCell>
-                  </TableRow>
-                )}
-                {selectedStandard !== "all" && filteredStudents.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 7} className="h-32 text-center text-muted-foreground">
-                      No students found in this standard.
                     </TableCell>
                   </TableRow>
                 )}

@@ -34,10 +34,11 @@ export default function PatrakBPage() {
   if (!studentsLoaded || !sessionLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
+                          (s.rollNumber || "").includes(search.toLowerCase());
     const matchesStandard = selectedStandard === "all" || s.academicStandard === selectedStandard;
     return matchesSearch && matchesStandard;
-  });
+  }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
   const handleSaveAll = () => {
     toast({
@@ -92,7 +93,7 @@ export default function PatrakBPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            placeholder="Filter students..."
+            placeholder="Filter students by name or roll number..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
@@ -114,6 +115,7 @@ export default function PatrakBPage() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
+                <TableHead className="font-bold uppercase tracking-wider text-xs w-[80px]">Roll No</TableHead>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Student</TableHead>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Standard</TableHead>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Qualitative Observation</TableHead>
@@ -124,6 +126,7 @@ export default function PatrakBPage() {
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50">
+                  <TableCell className="font-black text-primary">{s.rollNumber}</TableCell>
                   <TableCell className="font-bold text-slate-700">{s.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="border-accent text-accent font-bold">{s.academicStandard}</Badge>
@@ -153,7 +156,7 @@ export default function PatrakBPage() {
               ))}
               {filteredStudents.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                     No students matching criteria.
                   </TableCell>
                 </TableRow>

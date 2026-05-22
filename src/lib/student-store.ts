@@ -7,6 +7,7 @@ export type Gender = 'Male' | 'Female' | 'Other';
 
 export interface Student {
   id: string;
+  rollNumber: string;
   name: string;
   birthday: string;
   gender: Gender;
@@ -28,6 +29,7 @@ export interface Student {
 const DEFAULT_STUDENTS: Student[] = [
   { 
     id: '1', 
+    rollNumber: '01',
     name: 'Alice Johnson', 
     birthday: '2014-05-15', 
     gender: 'Female', 
@@ -47,6 +49,7 @@ const DEFAULT_STUDENTS: Student[] = [
   },
   { 
     id: '2', 
+    rollNumber: '02',
     name: 'Bob Smith', 
     birthday: '2013-11-20', 
     gender: 'Male', 
@@ -115,6 +118,7 @@ export function useStudentStore() {
   const bulkAddStudents = (newStudents: any[]) => {
     const added = newStudents.map(s => ({
       id: Math.random().toString(36).substr(2, 9),
+      rollNumber: s.rollNumber || "",
       name: s.name || "Unknown Student",
       birthday: s.birthday || "2015-01-01",
       gender: s.gender || 'Male',

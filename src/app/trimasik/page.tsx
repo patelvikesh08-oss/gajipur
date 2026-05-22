@@ -45,10 +45,11 @@ export default function TrimasikPage() {
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
+                          (s.rollNumber || "").includes(search.toLowerCase());
     const matchesStandard = selectedStandard === "all" || s.academicStandard === selectedStandard;
     return matchesSearch && matchesStandard;
-  });
+  }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
   const handleSaveAll = () => {
     toast({
@@ -103,7 +104,7 @@ export default function TrimasikPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            placeholder="Search student names..."
+            placeholder="Search student names or roll number..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
@@ -125,6 +126,7 @@ export default function TrimasikPage() {
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px]">Roll No</TableHead>
                 <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
                 {activeSubjects.map((subject) => (
                   <TableHead 
@@ -152,6 +154,7 @@ export default function TrimasikPage() {
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50">
+                  <TableCell className="font-black text-primary">{s.rollNumber}</TableCell>
                   <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${s.id}-${subject}`}>
@@ -196,15 +199,8 @@ export default function TrimasikPage() {
               ))}
               {selectedStandard === "all" && (
                 <TableRow>
-                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 3} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 4} className="h-32 text-center text-muted-foreground">
                     Please select a specific academic standard to view subject columns and enter marks.
-                  </TableCell>
-                </TableRow>
-              )}
-              {selectedStandard !== "all" && filteredStudents.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 3} className="h-32 text-center text-muted-foreground">
-                    No students found in this standard.
                   </TableCell>
                 </TableRow>
               )}
