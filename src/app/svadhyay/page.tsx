@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
+import { useSubjectStore } from "@/lib/subject-store";
 import {
   Table,
   TableBody,
@@ -24,15 +25,23 @@ import { toast } from "@/hooks/use-toast";
 export default function SvadhyayPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
+  const { mappings, isLoaded: subjectsLoaded } = useSubjectStore();
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
+  const [selectedSubject, setSelectedSubject] = useState("");
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  if (!studentsLoaded || !sessionLoaded) return null;
+  const availableSubjects = useMemo(() => {
+    if (selectedStandard === "all") return [];
+    const mapping = mappings.find(m => m.standard === selectedStandard);
+    return mapping ? mapping.subjects : [];
+  }, [selectedStandard, mappings]);
+
+  if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
@@ -43,7 +52,7 @@ export default function SvadhyayPage() {
   const handleSaveAll = () => {
     toast({
       title: "Self-Study Records Saved",
-      description: `Completion status for ${selectedStandard} has been updated.`,
+      description: `Completion status for ${selectedSubject || 'all'} updated.`,
     });
   };
 
@@ -91,14 +100,17 @@ export default function SvadhyayPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Input
             placeholder="Find students..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
-          <Select value={selectedStandard} onValueChange={setSelectedStandard}>
+          <Select value={selectedStandard} onValueChange={(val) => {
+            setSelectedStandard(val);
+            setSelectedSubject("");
+          }}>
             <SelectTrigger className="bg-white">
               <SelectValue placeholder="Grade Level" />
             </SelectTrigger>
@@ -106,6 +118,19 @@ export default function SvadhyayPage() {
               <SelectItem value="all">All Standards</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selectedSubject} onValueChange={setSelectedSubject} disabled={availableSubjects.length === 0}>
+            <SelectTrigger className="bg-white">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-muted-foreground" />
+                <SelectValue placeholder="Select Subject" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {availableSubjects.map(sub => (
+                <SelectItem key={sub} value={sub}>{sub}</SelectItem>
               ))}
             </SelectContent>
           </Select>

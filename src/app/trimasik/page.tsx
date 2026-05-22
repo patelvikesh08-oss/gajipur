@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
+import { useSubjectStore } from "@/lib/subject-store";
 import {
   Table,
   TableBody,
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ClipboardList, Calendar, Save, CheckCircle } from "lucide-react";
+import { ClipboardList, Calendar, Save, CheckCircle, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -23,15 +24,23 @@ import { toast } from "@/hooks/use-toast";
 export default function TrimasikPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
+  const { mappings, isLoaded: subjectsLoaded } = useSubjectStore();
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
+  const [selectedSubject, setSelectedSubject] = useState("");
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  if (!studentsLoaded || !sessionLoaded) return null;
+  const availableSubjects = useMemo(() => {
+    if (selectedStandard === "all") return [];
+    const mapping = mappings.find(m => m.standard === selectedStandard);
+    return mapping ? mapping.subjects : [];
+  }, [selectedStandard, mappings]);
+
+  if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
@@ -40,9 +49,17 @@ export default function TrimasikPage() {
   });
 
   const handleSaveAll = () => {
+    if (!selectedSubject && availableSubjects.length > 0) {
+      toast({
+        title: "Subject Required",
+        description: "Please select a subject before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
     toast({
       title: "Marks Saved Successfully",
-      description: `All quarterly records for ${selectedStandard} have been updated for ${academicYear}.`,
+      description: `Quarterly records for ${selectedSubject || 'all subjects'} in ${selectedStandard} updated.`,
     });
   };
 
@@ -90,14 +107,17 @@ export default function TrimasikPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Input
             placeholder="Search student names..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
-          <Select value={selectedStandard} onValueChange={setSelectedStandard}>
+          <Select value={selectedStandard} onValueChange={(val) => {
+            setSelectedStandard(val);
+            setSelectedSubject("");
+          }}>
             <SelectTrigger className="bg-white">
               <SelectValue placeholder="Filter by Standard" />
             </SelectTrigger>
@@ -105,6 +125,19 @@ export default function TrimasikPage() {
               <SelectItem value="all">All Standards</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selectedSubject} onValueChange={setSelectedSubject} disabled={availableSubjects.length === 0}>
+            <SelectTrigger className="bg-white">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-muted-foreground" />
+                <SelectValue placeholder="Select Subject" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              {availableSubjects.map(sub => (
+                <SelectItem key={sub} value={sub}>{sub}</SelectItem>
               ))}
             </SelectContent>
           </Select>
