@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ClipboardList, Calendar, Save, CheckCircle, BookOpen } from "lucide-react";
+import { ClipboardList, Calendar, Save, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -28,13 +28,12 @@ export default function TrimasikPage() {
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
-  const [selectedSubject, setSelectedSubject] = useState("");
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  const availableSubjects = useMemo(() => {
+  const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
     const mapping = mappings.find(m => m.standard === selectedStandard);
     return mapping ? mapping.subjects : [];
@@ -49,17 +48,9 @@ export default function TrimasikPage() {
   });
 
   const handleSaveAll = () => {
-    if (!selectedSubject && availableSubjects.length > 0) {
-      toast({
-        title: "Subject Required",
-        description: "Please select a subject before saving.",
-        variant: "destructive",
-      });
-      return;
-    }
     toast({
       title: "Marks Saved Successfully",
-      description: `Quarterly records for ${selectedSubject || 'all subjects'} in ${selectedStandard} updated.`,
+      description: `Quarterly records for ${selectedStandard} updated.`,
     });
   };
 
@@ -73,7 +64,7 @@ export default function TrimasikPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">TRIMASIK (Quarterly Records)</h1>
-              <p className="text-xs text-muted-foreground font-medium">Direct marks entry for all students</p>
+              <p className="text-xs text-muted-foreground font-medium">Direct marks entry grid</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -107,17 +98,14 @@ export default function TrimasikPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             placeholder="Search student names..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
-          <Select value={selectedStandard} onValueChange={(val) => {
-            setSelectedStandard(val);
-            setSelectedSubject("");
-          }}>
+          <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="bg-white">
               <SelectValue placeholder="Filter by Standard" />
             </SelectTrigger>
@@ -128,19 +116,6 @@ export default function TrimasikPage() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={selectedSubject} onValueChange={setSelectedSubject} disabled={availableSubjects.length === 0}>
-            <SelectTrigger className="bg-white">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-muted-foreground" />
-                <SelectValue placeholder="Select Subject" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              {availableSubjects.map(sub => (
-                <SelectItem key={sub} value={sub}>{sub}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
@@ -148,37 +123,51 @@ export default function TrimasikPage() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Standard</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs w-[150px]">Marks (100)</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs text-center">Grade</TableHead>
+                {activeSubjects.map((subject) => (
+                  <TableHead key={subject} className="font-bold uppercase tracking-wider text-xs text-center min-w-[100px]">
+                    {subject}
+                  </TableHead>
+                ))}
+                <TableHead className="font-bold uppercase tracking-wider text-xs text-center w-[80px]">Total</TableHead>
                 <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-bold text-slate-700">{s.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className="font-medium">{s.academicStandard}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Input type="number" placeholder="00" className="h-8 text-center font-bold focus:ring-primary" defaultValue={Math.floor(Math.random() * 20) + 75} />
-                  </TableCell>
+                  <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
+                  {activeSubjects.map((subject) => (
+                    <TableCell key={`${s.id}-${subject}`}>
+                      <Input 
+                        type="number" 
+                        placeholder="00" 
+                        className="h-8 text-center font-bold focus:ring-primary mx-auto w-16" 
+                        defaultValue={Math.floor(Math.random() * 20) + 75} 
+                      />
+                    </TableCell>
+                  ))}
                   <TableCell className="text-center">
-                    <Badge className="bg-green-500 font-bold px-3">A</Badge>
+                    <span className="font-black text-primary">88</span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2 text-green-600 font-bold text-xs">
-                      <CheckCircle className="w-3.5 h-3.5" />
-                      Entered
+                    <div className="flex items-center justify-end gap-2 text-green-600 font-bold text-[10px] uppercase">
+                      <CheckCircle className="w-3 h-3" />
+                      Ready
                     </div>
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredStudents.length === 0 && (
+              {selectedStandard === "all" && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                    No students found for the selected filters.
+                  <TableCell colSpan={activeSubjects.length + 3} className="h-32 text-center text-muted-foreground">
+                    Please select a specific academic standard to view subject columns and enter marks.
+                  </TableCell>
+                </TableRow>
+              )}
+              {selectedStandard !== "all" && filteredStudents.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={activeSubjects.length + 3} className="h-32 text-center text-muted-foreground">
+                    No students found in this standard.
                   </TableCell>
                 </TableRow>
               )}
@@ -189,3 +178,4 @@ export default function TrimasikPage() {
     </MainLayout>
   );
 }
+

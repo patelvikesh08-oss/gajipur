@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen, Calendar, Save, Check } from "lucide-react";
+import { BookOpen, Calendar, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -29,13 +29,12 @@ export default function SvadhyayPage() {
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
-  const [selectedSubject, setSelectedSubject] = useState("");
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  const availableSubjects = useMemo(() => {
+  const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
     const mapping = mappings.find(m => m.standard === selectedStandard);
     return mapping ? mapping.subjects : [];
@@ -52,7 +51,7 @@ export default function SvadhyayPage() {
   const handleSaveAll = () => {
     toast({
       title: "Self-Study Records Saved",
-      description: `Completion status for ${selectedSubject || 'all'} updated.`,
+      description: `Completion status updated for ${selectedStandard}.`,
     });
   };
 
@@ -66,7 +65,7 @@ export default function SvadhyayPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">SVADHYAY (Self-Study Records)</h1>
-              <p className="text-xs text-muted-foreground font-medium">Quickly log student homework and self-study status</p>
+              <p className="text-xs text-muted-foreground font-medium">Bulk log student completion status</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -100,17 +99,14 @@ export default function SvadhyayPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             placeholder="Find students..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
-          <Select value={selectedStandard} onValueChange={(val) => {
-            setSelectedStandard(val);
-            setSelectedSubject("");
-          }}>
+          <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="bg-white">
               <SelectValue placeholder="Grade Level" />
             </SelectTrigger>
@@ -121,19 +117,6 @@ export default function SvadhyayPage() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={selectedSubject} onValueChange={setSelectedSubject} disabled={availableSubjects.length === 0}>
-            <SelectTrigger className="bg-white">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-muted-foreground" />
-                <SelectValue placeholder="Select Subject" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              {availableSubjects.map(sub => (
-                <SelectItem key={sub} value={sub}>{sub}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
@@ -141,34 +124,41 @@ export default function SvadhyayPage() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Student Name</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Standard</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Units Completed</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs text-center w-[120px]">Status</TableHead>
-                <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Verified</TableHead>
+                {activeSubjects.map((subject) => (
+                  <TableHead key={subject} className="font-bold uppercase tracking-wider text-xs text-center min-w-[120px]">
+                    {subject} (Units)
+                  </TableHead>
+                ))}
+                <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-bold text-slate-700">{s.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="border-pink-500 text-pink-600 font-bold">{s.academicStandard}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Input type="number" max={10} min={0} className="h-8 w-24 font-bold text-center" defaultValue={Math.floor(Math.random() * 5) + 5} />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge className="bg-pink-500 font-bold px-3">Completed</Badge>
-                  </TableCell>
+                  <TableCell className="font-bold text-slate-700 whitespace-nowrap">{s.name}</TableCell>
+                  {activeSubjects.map((subject) => (
+                    <TableCell key={`${s.id}-${subject}`}>
+                      <div className="flex items-center justify-center gap-3">
+                        <Input 
+                          type="number" 
+                          max={10} 
+                          min={0} 
+                          className="h-8 w-16 font-bold text-center" 
+                          defaultValue={Math.floor(Math.random() * 5) + 5} 
+                        />
+                        <Switch defaultChecked className="data-[state=checked]:bg-pink-500 scale-75" />
+                      </div>
+                    </TableCell>
+                  ))}
                   <TableCell className="text-right">
-                    <Switch defaultChecked className="data-[state=checked]:bg-pink-500" />
+                    <Badge className="bg-pink-500 font-bold px-3 text-[10px]">VERIFIED</Badge>
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredStudents.length === 0 && (
+              {selectedStandard === "all" && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                    No student logs available for current selection.
+                  <TableCell colSpan={activeSubjects.length + 2} className="h-32 text-center text-muted-foreground">
+                    Select a standard to view subject-wise self-study columns.
                   </TableCell>
                 </TableRow>
               )}
@@ -179,3 +169,4 @@ export default function SvadhyayPage() {
     </MainLayout>
   );
 }
+

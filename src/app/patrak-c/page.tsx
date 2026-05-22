@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileSpreadsheet, Calendar, Save, Trophy, BookOpen } from "lucide-react";
+import { FileSpreadsheet, Calendar, Save, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -28,13 +28,12 @@ export default function PatrakCPage() {
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
-  const [selectedSubject, setSelectedSubject] = useState("");
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
   }, [students]);
 
-  const availableSubjects = useMemo(() => {
+  const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
     const mapping = mappings.find(m => m.standard === selectedStandard);
     return mapping ? mapping.subjects : [];
@@ -51,7 +50,7 @@ export default function PatrakCPage() {
   const handleSaveAll = () => {
     toast({
       title: "Cumulative Results Saved",
-      description: `Final assessment for ${selectedSubject || 'all'} updated.`,
+      description: `Final assessment for ${selectedStandard} updated.`,
     });
   };
 
@@ -65,7 +64,7 @@ export default function PatrakCPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">PATRAK-C (Final Results)</h1>
-              <p className="text-xs text-muted-foreground font-medium">Commit aggregate marks and final grades</p>
+              <p className="text-xs text-muted-foreground font-medium">Cumulative marks and final outcomes</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -99,17 +98,14 @@ export default function PatrakCPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             placeholder="Search by student name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
-          <Select value={selectedStandard} onValueChange={(val) => {
-            setSelectedStandard(val);
-            setSelectedSubject("");
-          }}>
+          <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="bg-white">
               <SelectValue placeholder="Academic Standard" />
             </SelectTrigger>
@@ -120,19 +116,6 @@ export default function PatrakCPage() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={selectedSubject} onValueChange={setSelectedSubject} disabled={availableSubjects.length === 0}>
-            <SelectTrigger className="bg-white">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-muted-foreground" />
-                <SelectValue placeholder="Select Subject" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              {availableSubjects.map(sub => (
-                <SelectItem key={sub} value={sub}>{sub}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
@@ -140,45 +123,41 @@ export default function PatrakCPage() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead className="font-bold uppercase tracking-wider text-xs">Student</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs">Standard</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs w-[140px]">Percentage (%)</TableHead>
-                <TableHead className="font-bold uppercase tracking-wider text-xs text-center w-[120px]">Final Grade</TableHead>
+                {activeSubjects.map((subject) => (
+                  <TableHead key={subject} className="font-bold uppercase tracking-wider text-xs text-center min-w-[100px]">
+                    {subject}
+                  </TableHead>
+                ))}
+                <TableHead className="font-bold uppercase tracking-wider text-xs w-[100px] text-center">Avg %</TableHead>
                 <TableHead className="text-right font-bold uppercase tracking-wider text-xs">Outcome</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50">
-                  <TableCell className="font-black text-slate-700">{s.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="border-orange-500 text-orange-600 font-bold">{s.academicStandard}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Input type="number" step="0.1" className="h-8 font-bold text-center" defaultValue={(Math.random() * 15 + 80).toFixed(1)} />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Select defaultValue="Distinction">
-                      <SelectTrigger className="h-8 font-bold text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Distinction">Distinction</SelectItem>
-                        <SelectItem value="First Class">First Class</SelectItem>
-                        <SelectItem value="Pass">Pass</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
+                  <TableCell className="font-black text-slate-700 whitespace-nowrap">{s.name}</TableCell>
+                  {activeSubjects.map((subject) => (
+                    <TableCell key={`${s.id}-${subject}`}>
+                      <Input 
+                        type="number" 
+                        step="0.1" 
+                        className="h-8 font-bold text-center mx-auto w-16" 
+                        defaultValue={(Math.random() * 15 + 80).toFixed(1)} 
+                      />
+                    </TableCell>
+                  ))}
+                  <TableCell className="text-center font-black text-orange-600">84.5%</TableCell>
                   <TableCell className="text-right">
                     <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
-                      <Trophy className="w-3 h-3" /> PASSED
+                      <Trophy className="w-3 h-3" /> PASS
                     </Badge>
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredStudents.length === 0 && (
+              {selectedStandard === "all" && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                    Select a standard to begin direct results entry.
+                  <TableCell colSpan={activeSubjects.length + 3} className="h-32 text-center text-muted-foreground">
+                    Select a standard to begin direct results entry for all mapped subjects.
                   </TableCell>
                 </TableRow>
               )}
@@ -189,3 +168,4 @@ export default function PatrakCPage() {
     </MainLayout>
   );
 }
+
