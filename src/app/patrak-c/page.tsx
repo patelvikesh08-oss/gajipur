@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileSpreadsheet, Calendar, Save, Trophy } from "lucide-react";
+import { FileSpreadsheet, Calendar, Save, Trophy, ScrollText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -154,6 +154,12 @@ export default function PatrakCPage() {
                       {subject}
                     </TableHead>
                   ))}
+
+                  {/* PATRAK B SECTION */}
+                  <TableHead colSpan={isAnnual ? 3 : 1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50">
+                    PATRAK-B
+                  </TableHead>
+
                   <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l">Avg %</TableHead>
                   <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px]">Outcome</TableHead>
                 </TableRow>
@@ -169,6 +175,10 @@ export default function PatrakCPage() {
                         <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b">Grade</TableHead>
                       </React.Fragment>
                     ))}
+                    {/* Patrak B Tier 2 for Annual */}
+                    <TableHead className="text-[10px] font-bold text-center border-r border-b bg-blue-50/50">Sem 1</TableHead>
+                    <TableHead className="text-[10px] font-bold text-center border-r border-b bg-green-50/50">Sem 2</TableHead>
+                    <TableHead className="text-[10px] font-black text-center border-r border-b bg-indigo-100">Total</TableHead>
                   </TableRow>
                 ) : (
                   <TableRow>
@@ -183,6 +193,8 @@ export default function PatrakCPage() {
                         <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px]">Grd.</TableHead>
                       </React.Fragment>
                     ))}
+                    {/* Patrak B Tier 2 for Single Semester */}
+                    <TableHead className="text-[10px] font-black text-center border-r bg-indigo-50/50">Total</TableHead>
                   </TableRow>
                 )}
 
@@ -272,6 +284,26 @@ export default function PatrakCPage() {
                         )}
                       </React.Fragment>
                     ))}
+
+                    {/* PATRAK B DATA CELLS */}
+                    {isAnnual ? (
+                      <>
+                        <TableCell className="p-1 border-r bg-blue-50/20">
+                          <Input type="number" className="h-7 text-[10px] text-center font-bold" defaultValue={85} />
+                        </TableCell>
+                        <TableCell className="p-1 border-r bg-green-50/20">
+                          <Input type="number" className="h-7 text-[10px] text-center font-bold" defaultValue={88} />
+                        </TableCell>
+                        <TableCell className="p-1 border-r bg-indigo-100/30 text-center font-black text-indigo-700 text-xs">
+                          173
+                        </TableCell>
+                      </>
+                    ) : (
+                      <TableCell className="p-1 border-r bg-indigo-50/20">
+                        <Input type="number" className="h-7 text-xs text-center font-bold" defaultValue={85} />
+                      </TableCell>
+                    )}
+
                     <TableCell className="text-center font-black text-orange-600 border-l">84.5%</TableCell>
                     <TableCell className="text-right sticky right-0 bg-white z-10 border-l">
                       <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
@@ -280,9 +312,9 @@ export default function PatrakCPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {(selectedStandard === "all" || activeSubjects.length === 0) && (
+                {(selectedStandard === "all" || (activeSubjects.length === 0)) && (
                   <TableRow>
-                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 8} className="h-32 text-center text-muted-foreground">
+                    <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + (isAnnual ? 11 : 9)} className="h-32 text-center text-muted-foreground">
                       {selectedStandard === "all" 
                         ? "Select a standard to begin direct results entry." 
                         : "No subjects mapped for this standard in " + semester + "."}
