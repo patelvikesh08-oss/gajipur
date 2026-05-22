@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useSubjectStore } from "@/lib/subject-store";
 import { useStudentStore } from "@/lib/student-store";
@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Layers, Plus, Trash2, Check, Book, Calendar } from "lucide-react";
+import { Layers, Plus, Trash2, Check, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 
@@ -21,24 +21,25 @@ const AVAILABLE_SUBJECTS = [
 ];
 
 export default function SubjectMappingPage() {
-  const { mappings, saveMapping, deleteMapping, isLoaded: subjectsLoaded } = useSubjectStore();
+  const { mappings, saveMapping, isLoaded: subjectsLoaded } = useSubjectStore();
   const { students, isLoaded: studentsLoaded } = useStudentStore();
-  const { academicYear, updateYear, isLoaded: sessionLoaded } = useSessionStore();
+  const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
   
   const [selectedStandard, setSelectedStandard] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [currentSubjects, setCurrentSubjects] = useState<string[]>([]);
 
+  // Update current subjects when standard or semester changes
+  useEffect(() => {
+    if (selectedStandard && subjectsLoaded) {
+      const existing = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
+      setCurrentSubjects(existing ? existing.subjects : []);
+    }
+  }, [selectedStandard, semester, mappings, subjectsLoaded]);
+
   if (!subjectsLoaded || !studentsLoaded || !sessionLoaded) return null;
 
   const standards = Array.from(new Set(students.map(s => s.academicStandard))).sort();
-
-  const handleStandardChange = (val: string) => {
-    setSelectedStandard(val);
-    const existing = mappings.find(m => m.standard === val);
-    setCurrentSubjects(existing ? existing.subjects : []);
-    setSelectedSubject("");
-  };
 
   const addSubject = () => {
     if (!selectedSubject) return;
@@ -59,10 +60,10 @@ export default function SubjectMappingPage() {
       toast({ title: "Please select a standard", variant: "destructive" });
       return;
     }
-    saveMapping(selectedStandard, currentSubjects);
+    saveMapping(selectedStandard, semester, currentSubjects);
     toast({
       title: "Mapping Saved",
-      description: `Subjects updated for ${selectedStandard} (${academicYear})`,
+      description: `Subjects updated for ${selectedStandard} in ${semester} (${academicYear})`,
     });
   };
 
@@ -77,31 +78,43 @@ export default function SubjectMappingPage() {
             <h1 className="text-2xl font-bold text-slate-800">Subject Mapping</h1>
           </div>
           
-          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
-            <Calendar className="w-4 h-4 text-muted-foreground" />
-            <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
-              <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
-                <SelectValue placeholder="Year" />
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
+                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2023-24">2023-24</SelectItem>
+                  <SelectItem value="2024-25">2024-25</SelectItem>
+                  <SelectItem value="2025-26">2025-26</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
+              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
+                <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2023-24">2023-24</SelectItem>
-                <SelectItem value="2024-25">2024-25</SelectItem>
-                <SelectItem value="2025-26">2025-26</SelectItem>
+                <SelectItem value="Semester 1">Semester 1</SelectItem>
+                <SelectItem value="Semester 2">Semester 2</SelectItem>
+                <SelectItem value="Annual">Annual</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-lg">Curriculum Configuration</CardTitle>
-              <CardDescription>Mapping subjects for the session {academicYear}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Curriculum Configuration</CardTitle>
+            <CardDescription>Map subjects for a specific standard and semester.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Select Academic Standard</Label>
-                <Select value={selectedStandard} onValueChange={handleStandardChange}>
+                <Label>Academic Standard</Label>
+                <Select value={selectedStandard} onValueChange={setSelectedStandard}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a standard..." />
                   </SelectTrigger>
@@ -112,51 +125,66 @@ export default function SubjectMappingPage() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label>Mapping for Semester</Label>
+                <Badge className="w-full h-10 justify-center bg-muted text-foreground hover:bg-muted border-none font-bold">
+                  {semester}
+                </Badge>
+              </div>
+            </div>
 
-              {selectedStandard && (
-                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <div className="flex items-end gap-2">
-                    <div className="flex-1 space-y-2">
-                      <Label>Add Subject</Label>
-                      <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose a subject..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {AVAILABLE_SUBJECTS.map(sub => (
-                            <SelectItem key={sub} value={sub}>{sub}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button onClick={addSubject} disabled={!selectedSubject}>
-                      <Plus className="w-4 h-4" />
-                    </Button>
+            {selectedStandard && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300 pt-4 border-t">
+                <div className="flex items-end gap-2">
+                  <div className="flex-1 space-y-2">
+                    <Label>Add Subject</Label>
+                    <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose a subject to add..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {AVAILABLE_SUBJECTS.map(sub => (
+                          <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
+                  <Button onClick={addSubject} disabled={!selectedSubject} size="icon">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
 
-                  <div className="space-y-3">
-                    <Label className="text-xs font-bold uppercase text-muted-foreground">Active Subjects for {selectedStandard}</Label>
-                    <div className="flex flex-wrap gap-2 min-h-[120px] p-4 border-2 border-dashed rounded-xl bg-muted/20">
-                      {currentSubjects.map(sub => (
-                        <Badge key={sub} variant="secondary" className="px-3 py-1 text-sm flex items-center gap-2 group">
-                          {sub}
-                          <button onClick={() => removeSubject(sub)} className="text-muted-foreground hover:text-destructive">
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
+                <div className="space-y-3">
+                  <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
+                    Mapped Subjects ({semester})
+                  </Label>
+                  <div className="flex flex-wrap gap-2 min-h-[120px] p-4 border-2 border-dashed rounded-xl bg-muted/20">
+                    {currentSubjects.map(sub => (
+                      <Badge key={sub} variant="secondary" className="px-3 py-1 text-sm flex items-center gap-2 group">
+                        {sub}
+                        <button onClick={() => removeSubject(sub)} className="text-muted-foreground hover:text-destructive">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </Badge>
+                    ))}
+                    {currentSubjects.length === 0 && (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm font-medium italic">
+                        No subjects mapped yet for this selection.
+                      </div>
+                    )}
                   </div>
+                </div>
 
-                  <Button onClick={handleSave} className="w-full font-bold shadow-lg shadow-primary/20">
+                <div className="flex justify-end pt-4">
+                  <Button onClick={handleSave} className="font-bold px-8 shadow-lg shadow-primary/20">
                     <Check className="w-4 h-4 mr-2" />
                     Save Configuration
                   </Button>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </MainLayout>
   );

@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ClipboardList, Calendar, Save, CheckCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import React from "react";
@@ -38,9 +37,11 @@ export default function TrimasikPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    const mapping = mappings.find(m => m.standard === selectedStandard);
+    // If Annual, we might want to show all subjects mapped for both sem 1 and 2, or a specific annual map
+    // For simplicity, we'll try to find mappings for the current semester
+    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
     return mapping ? mapping.subjects : [];
-  }, [selectedStandard, mappings]);
+  }, [selectedStandard, semester, mappings]);
 
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
@@ -197,10 +198,12 @@ export default function TrimasikPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {selectedStandard === "all" && (
+              {(selectedStandard === "all" || activeSubjects.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 4} className="h-32 text-center text-muted-foreground">
-                    Please select a specific academic standard to view subject columns and enter marks.
+                    {selectedStandard === "all" 
+                      ? "Please select a specific academic standard to view subject columns." 
+                      : "No subjects mapped for this standard in " + semester + ". Go to Subject Mapping to configure."}
                   </TableCell>
                 </TableRow>
               )}

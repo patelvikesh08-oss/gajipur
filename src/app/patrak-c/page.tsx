@@ -38,9 +38,9 @@ export default function PatrakCPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    const mapping = mappings.find(m => m.standard === selectedStandard);
+    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
     return mapping ? mapping.subjects : [];
-  }, [selectedStandard, mappings]);
+  }, [selectedStandard, semester, mappings]);
 
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
@@ -280,10 +280,12 @@ export default function PatrakCPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {selectedStandard === "all" && (
+                {(selectedStandard === "all" || activeSubjects.length === 0) && (
                   <TableRow>
                     <TableCell colSpan={activeSubjects.length * (isAnnual ? 8 : 5) + 8} className="h-32 text-center text-muted-foreground">
-                      Select a standard to begin direct results entry for all mapped subjects.
+                      {selectedStandard === "all" 
+                        ? "Select a standard to begin direct results entry." 
+                        : "No subjects mapped for this standard in " + semester + "."}
                     </TableCell>
                   </TableRow>
                 )}

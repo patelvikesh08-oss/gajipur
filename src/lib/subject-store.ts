@@ -6,12 +6,13 @@ import { useState, useEffect } from 'react';
 export interface SubjectMapping {
   id: string;
   standard: string;
+  semester: string;
   subjects: string[];
 }
 
 const DEFAULT_MAPPINGS: SubjectMapping[] = [
-  { id: '1', standard: '5th Grade', subjects: ['Mathematics', 'Science', 'English', 'Social Studies', 'Environmental Studies'] },
-  { id: '2', standard: '6th Grade', subjects: ['Mathematics', 'Science', 'English', 'Social Studies', 'Gujarati'] },
+  { id: '1', standard: '5th Grade', semester: 'Semester 1', subjects: ['Mathematics', 'Science', 'English', 'Social Studies', 'Environmental Studies'] },
+  { id: '2', standard: '6th Grade', semester: 'Semester 1', subjects: ['Mathematics', 'Science', 'English', 'Social Studies', 'Gujarati'] },
 ];
 
 export function useSubjectStore() {
@@ -29,14 +30,14 @@ export function useSubjectStore() {
     setIsLoaded(true);
   }, []);
 
-  const saveMapping = (standard: string, subjects: string[]) => {
-    const existingIndex = mappings.findIndex(m => m.standard === standard);
+  const saveMapping = (standard: string, semester: string, subjects: string[]) => {
+    const existingIndex = mappings.findIndex(m => m.standard === standard && m.semester === semester);
     let updated;
     if (existingIndex > -1) {
       updated = [...mappings];
       updated[existingIndex] = { ...updated[existingIndex], subjects };
     } else {
-      updated = [...mappings, { id: Math.random().toString(36).substr(2, 9), standard, subjects }];
+      updated = [...mappings, { id: Math.random().toString(36).substr(2, 9), standard, semester, subjects }];
     }
     setMappings(updated);
     localStorage.setItem('edupulse_subject_mappings', JSON.stringify(updated));

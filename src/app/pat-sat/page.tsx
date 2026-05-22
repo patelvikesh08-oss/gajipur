@@ -38,9 +38,9 @@ export default function PatSatPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    const mapping = mappings.find(m => m.standard === selectedStandard);
+    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
     return mapping ? mapping.subjects : [];
-  }, [selectedStandard, mappings]);
+  }, [selectedStandard, semester, mappings]);
 
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
@@ -190,10 +190,12 @@ export default function PatSatPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {selectedStandard === "all" && (
+              {(selectedStandard === "all" || activeSubjects.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 3} className="h-32 text-center text-muted-foreground">
-                    Please select an academic standard to view subject columns and enter assessment scores.
+                    {selectedStandard === "all" 
+                      ? "Please select an academic standard to view subject columns." 
+                      : "No subjects mapped for this standard in " + semester + "."}
                   </TableCell>
                 </TableRow>
               )}

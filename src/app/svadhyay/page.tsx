@@ -37,9 +37,9 @@ export default function SvadhyayPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    const mapping = mappings.find(m => m.standard === selectedStandard);
+    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
     return mapping ? mapping.subjects : [];
-  }, [selectedStandard, mappings]);
+  }, [selectedStandard, semester, mappings]);
 
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
@@ -185,10 +185,12 @@ export default function SvadhyayPage() {
                   ))}
                 </TableRow>
               ))}
-              {selectedStandard === "all" && (
+              {(selectedStandard === "all" || activeSubjects.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 2} className="h-32 text-center text-muted-foreground">
-                    Select a standard to view subject-wise self-study columns.
+                    {selectedStandard === "all" 
+                      ? "Select a standard to view subject-wise self-study columns." 
+                      : "No subjects mapped for this standard in " + semester + "."}
                   </TableCell>
                 </TableRow>
               )}
