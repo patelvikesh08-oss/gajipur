@@ -58,7 +58,7 @@ export default function ReportCardPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto space-y-8 pb-20 print:p-0 print:m-0 print:max-w-none">
+      <div className="max-w-6xl mx-auto space-y-8 pb-20 print:p-0 print:m-0 print:max-w-none print:w-full">
         <div className="flex items-center justify-between print:hidden">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
@@ -68,8 +68,8 @@ export default function ReportCardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 print:block">
-          {/* Controls Panel */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 print:block print:w-full">
+          {/* Controls Panel - Hidden on Print */}
           <Card className="lg:col-span-1 border-none shadow-md h-fit sticky top-8 print:hidden">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -146,11 +146,12 @@ export default function ReportCardPage() {
           </Card>
 
           {/* Preview Panel */}
-          <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0">
+          <div className="lg:col-span-3 space-y-8 print:w-full print:m-0 print:p-0 print:block">
             {activeReports.length > 0 ? (
               <div className={`grid gap-12 print:block ${twoInOne && !isBulkMode ? "print:grid-cols-2 print:gap-0" : "grid-cols-1"}`}>
                 {activeReports.map((student, index) => {
                   const isEvenStudent = index % 2 !== 0;
+                  // If bulk print and even student, alternate pages 2, 1 as requested
                   const parts = isEvenStudent && isBulkMode
                     ? [
                         { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 },
@@ -263,32 +264,42 @@ export default function ReportCardPage() {
 
       <style jsx global>{`
         @media print {
-          /* Hide sidebar, header, and triggers */
-          aside[data-sidebar="sidebar"], 
+          /* AGGRESSIVE HIDING OF UI COMPONENTS */
+          aside, 
+          [data-sidebar],
           header, 
+          nav,
           [data-sidebar="trigger"],
-          .print\\:hidden {
+          .print\\:hidden,
+          .lg\\:col-span-1 {
             display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
           }
 
-          /* Reset layout for print */
-          body, html {
-            background: white !important;
+          /* Reset all layout containers */
+          html, body {
+            margin: 0 !important;
             padding: 0 !important;
-            margin: 0 !important;
-          }
-
-          /* Force MainLayout inset to fill screen */
-          main {
-            padding: 0 !important;
-            margin: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
             background: white !important;
-            display: block !important;
           }
 
-          .mx-auto {
+          /* Target the specific SidebarInset layout wrapper */
+          main, 
+          .mx-auto,
+          [class*="SidebarInset"],
+          div[class*="SidebarProvider"],
+          div[class*="max-w-7xl"] {
             margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
             max-width: none !important;
+            background: white !important;
+            border: none !important;
+            box-shadow: none !important;
           }
 
           .print-page {
@@ -296,6 +307,7 @@ export default function ReportCardPage() {
             border: none !important;
             margin: 0 !important;
             page-break-after: always !important;
+            visibility: visible !important;
           }
 
           ${twoInOne ? `
@@ -310,6 +322,7 @@ export default function ReportCardPage() {
               border-right: 1px solid #eee !important;
               box-sizing: border-box;
               page-break-after: auto !important;
+              padding: 40px !important;
             }
             .print-page:nth-child(2n) {
               page-break-after: always !important;
