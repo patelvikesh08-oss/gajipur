@@ -59,7 +59,7 @@
     margin: 10mm;
   }
 
-  /* Hide all UI elements */
+  /* Hide UI elements */
   .no-print, 
   aside, 
   header,
@@ -68,29 +68,30 @@
   [data-sidebar="sidebar"],
   button,
   .scroll-bar,
-  [role="scrollbar"],
-  .no-print * {
+  [role="scrollbar"] {
     display: none !important;
   }
 
-  /* Reset layout constraints to prevent blank pages */
-  html, body, 
+  /* CRITICAL: Reset layout to prevent blank first page */
+  html, body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
   .group\/sidebar-wrapper,
-  main, 
-  .relative.flex.min-h-svh,
   [data-sidebar="inset"],
+  main,
   .min-h-svh,
   .min-h-screen {
     display: block !important;
-    width: 100% !important;
     min-height: 0 !important;
     height: auto !important;
-    margin: 0 !important;
     padding: 0 !important;
+    margin: 0 !important;
     position: static !important;
-    background: white !important;
-    overflow: visible !important;
-    box-shadow: none !important;
+    width: 100% !important;
   }
 
   .mx-auto {
@@ -98,7 +99,7 @@
     width: 100% !important;
   }
 
-  /* Checkbox Print Visibility Fix */
+  /* Checkbox Print Visibility Fix - SIMPLE STYLE */
   [role="checkbox"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -109,6 +110,9 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 2px !important;
   }
 
   [role="checkbox"][data-state="checked"] {
@@ -116,20 +120,19 @@
     border-color: #000 !important;
   }
 
-  /* Ensure the check icon inside the checkbox is visible (white) */
-  [role="checkbox"][data-state="checked"] svg,
-  [role="checkbox"][data-state="checked"] [data-state="checked"] svg {
+  /* Ensure the check icon inside is high-contrast */
+  [role="checkbox"][data-state="checked"] svg {
     color: #fff !important;
     stroke: #fff !important;
     fill: none !important;
     opacity: 1 !important;
     visibility: visible !important;
     display: block !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    width: 12px !important;
+    height: 12px !important;
   }
 
-  /* Expand scrollable containers */
+  /* Expand scrollable containers to show all content */
   [data-radix-scroll-area-viewport],
   .overflow-hidden,
   .overflow-auto {
@@ -165,12 +168,10 @@
     background: white !important;
   }
 
-  /* Sticky reset */
   .sticky {
     position: static !important;
   }
 
-  /* Remove any background shadows or gradients */
   .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl, .shadow-inner {
     box-shadow: none !important;
   }

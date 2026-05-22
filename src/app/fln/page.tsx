@@ -139,6 +139,7 @@ export default function FlnPage() {
           </div>
         </div>
 
+        {/* PRINT ONLY HEADER */}
         <div className="hidden print:block text-center mb-6 space-y-2 border-b-2 border-slate-900 pb-4">
           <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
           <h2 className="text-lg font-bold uppercase">FLN Milestone Progress Report</h2>
@@ -218,7 +219,7 @@ export default function FlnPage() {
                               <Checkbox 
                                 checked={flnData[s.id]?.[cat.name]?.[num-1] || false}
                                 onCheckedChange={(val) => handleCheck(s.id, cat.name, num-1, val)}
-                                className="h-4 w-4 border-slate-300 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
+                                className="h-4 w-4 border-slate-300"
                               />
                             </div>
                           </TableCell>
