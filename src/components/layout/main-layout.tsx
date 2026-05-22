@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -30,7 +31,8 @@ import {
   Trophy,
   PieChart,
   IdCard,
-  FileText
+  FileText,
+  Layers
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -53,6 +55,7 @@ const examinationSubItems = [
   { name: "Top Performers", href: "/top-performers", icon: Trophy },
   { name: "Report Card", href: "/report-card", icon: FileText },
   { name: "Results", href: "/results", icon: PieChart },
+  { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
 ];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
