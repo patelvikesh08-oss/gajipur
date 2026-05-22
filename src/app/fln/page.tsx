@@ -173,7 +173,7 @@ export default function FlnPage() {
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <ScrollArea className="w-full">
-            <Table className="border-collapse">
+            <Table className="border-collapse w-full">
               <TableHeader className="bg-slate-50 print:bg-slate-100">
                 {/* Tier 1 Header */}
                 <TableRow>
