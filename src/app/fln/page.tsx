@@ -182,8 +182,8 @@ export default function FlnPage() {
             <Table className="border-collapse w-full">
               <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] w-[50px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-[50px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] w-[50px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-[50px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
                   {flnCategories.map((cat) => (
                     <TableHead 
                       key={cat.name} 
@@ -196,20 +196,30 @@ export default function FlnPage() {
                 </TableRow>
                 <TableRow>
                   {flnCategories.map((cat) => (
-                    <React.Fragment key={`${cat.name}-subs`}>
+                    <React.Fragment key={`${cat.name}-labels`}>
                       {subColumns.map(idx => (
-                        <TableHead key={`${cat.name}-${idx}`} className="text-[8px] font-bold border-r min-w-[32px] h-[160px] p-0 bg-white print:border-black print:h-auto print:py-1">
-                          <div className="flex flex-col items-center justify-end h-full w-full pb-3 gap-2 print:pb-1">
+                        <TableHead key={`${cat.name}-label-${idx}`} className="text-[8px] font-bold border-r min-w-[32px] h-[140px] p-0 bg-white print:border-black print:h-auto print:py-1">
+                          <div className="flex flex-col items-center justify-end h-full w-full pb-3 print:pb-1">
                             <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden print:writing-mode-horizontal-tb print:rotate-0 print:text-[7px]">
                               {config.categories[cat.name][idx] || `M${idx + 1}`}
                             </span>
-                            <span className="text-primary font-black mt-auto print:text-black">{idx + 1}</span>
                           </div>
                         </TableHead>
                       ))}
-                      <TableHead className="text-[8px] font-black text-center px-0.5 border-r min-w-[30px] bg-slate-100 text-primary print:bg-white print:text-black print:border-black">
+                      <TableHead rowSpan={2} className="text-[8px] font-black text-center px-0.5 border-r min-w-[30px] bg-slate-100 text-primary print:bg-white print:text-black print:border-black">
                         TOT
                       </TableHead>
+                    </React.Fragment>
+                  ))}
+                </TableRow>
+                <TableRow>
+                  {flnCategories.map((cat) => (
+                    <React.Fragment key={`${cat.name}-numbers`}>
+                      {subColumns.map(idx => (
+                        <TableHead key={`${cat.name}-num-${idx}`} className="text-[9px] font-black text-center border-r bg-white print:border-black py-1 h-8">
+                          <span className="text-primary font-black print:text-black">{idx + 1}</span>
+                        </TableHead>
+                      ))}
                     </React.Fragment>
                   ))}
                 </TableRow>

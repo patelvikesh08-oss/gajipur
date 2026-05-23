@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -137,11 +138,11 @@ export default function PatrakBPage() {
             <Table className="border-collapse print:table-fixed">
               <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center print:border-black">Roll No</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center print:border-black">Roll No</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name</TableHead>
                   
                   {isAnnual && (
-                    <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[60px] bg-muted/20 print:border-black">Sem</TableHead>
+                    <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[60px] bg-muted/20 print:border-black">Sem</TableHead>
                   )}
 
                   {config.fields.map(field => (
@@ -150,9 +151,22 @@ export default function PatrakBPage() {
                     </TableHead>
                   ))}
 
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-blue-50/50 print:border-black">Sem 1 Total</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-green-50/50 print:border-black">Sem 2 Total</TableHead>
-                  <TableHead rowSpan={2} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-orange-50/50 print:border-black">Avg Marks</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-blue-50/50 print:border-black">Sem 1 Total</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-green-50/50 print:border-black">Sem 2 Total</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-orange-50/50 print:border-black">Avg Marks</TableHead>
+                </TableRow>
+                <TableRow>
+                  {config.fields.map(field => (
+                    Array.from({ length: field.subColumnCount }).map((_, i) => (
+                      <TableHead key={`${field.id}-label-${i}`} className="text-[9px] font-bold border-r min-w-[45px] h-[140px] p-0 bg-white print:border-black print:h-auto print:py-1">
+                        <div className="flex flex-col items-center justify-end h-full w-full pb-3 print:pb-1">
+                          <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden print:writing-mode-horizontal-tb print:rotate-0 print:text-[8px]">
+                            {field.subColumnLabels[i] || `Milestone ${i+1}`}
+                          </span>
+                        </div>
+                      </TableHead>
+                    ))
+                  ))}
                 </TableRow>
                 <TableRow>
                   {(() => {
@@ -161,13 +175,8 @@ export default function PatrakBPage() {
                       Array.from({ length: field.subColumnCount }).map((_, i) => {
                         subColIndex++;
                         return (
-                          <TableHead key={`${field.id}-${i}`} className="text-[9px] font-bold border-r min-w-[45px] h-[160px] p-0 bg-white print:border-black print:h-auto print:py-1">
-                            <div className="flex flex-col items-center justify-end h-full w-full pb-3 gap-2 print:pb-1">
-                              <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden print:writing-mode-horizontal-tb print:rotate-0 print:text-[8px]">
-                                {field.subColumnLabels[i] || `Milestone ${i+1}`}
-                              </span>
-                              <span className="text-primary font-black mt-auto print:text-black">{subColIndex}</span>
-                            </div>
+                          <TableHead key={`${field.id}-num-${i}`} className="text-[10px] font-black text-center border-r bg-white print:border-black h-8 py-1">
+                            <span className="text-primary font-black print:text-black">{subColIndex}</span>
                           </TableHead>
                         );
                       })
