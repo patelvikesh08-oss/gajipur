@@ -1,9 +1,8 @@
-
 "use client";
 
 import React, { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
-import { useStudentStore } from "@/lib/student-store";
+import { useStudentStore, Student } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
 import { useSubjectStore } from "@/lib/subject-store";
 import {
@@ -31,6 +30,7 @@ export default function PatrakCPage() {
   const [selectedStandard, setSelectedStandard] = useState("all");
 
   const isAnnual = semester === "Annual";
+  const commonRowSpan = 3;
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
@@ -42,14 +42,24 @@ export default function PatrakCPage() {
     return mapping ? mapping.subjects : [];
   }, [selectedStandard, semester, mappings]);
 
-  if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
+  const filteredStudents = useMemo(() => {
+    return students.filter((s) => {
+      const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
+                            (s.rollNumber || "").includes(search.toLowerCase());
+      const matchesStandard = selectedStandard === "all" || s.academicStandard === selectedStandard;
+      return matchesSearch && matchesStandard;
+    }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
+  }, [students, search, selectedStandard]);
 
-  const filteredStudents = students.filter((s) => {
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
-                          (s.rollNumber || "").includes(search.toLowerCase());
-    const matchesStandard = selectedStandard === "all" || s.academicStandard === selectedStandard;
-    return matchesSearch && matchesStandard;
-  }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
+  // Chunking logic for print
+  const subjectChunks = useMemo(() => {
+    const size = isAnnual ? 2 : 3;
+    const chunks = [];
+    for (let i = 0; i < activeSubjects.length; i += size) {
+      chunks.push(activeSubjects.slice(i, i + size));
+    }
+    return chunks;
+  }, [activeSubjects, isAnnual]);
 
   const handleSaveAll = () => {
     toast({
@@ -58,8 +68,7 @@ export default function PatrakCPage() {
     });
   };
 
-  // Fixed row span for all headers to maintain height consistency
-  const commonRowSpan = 3;
+  if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
   return (
     <MainLayout>
@@ -140,119 +149,96 @@ export default function PatrakCPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:overflow-visible print:border-none print:shadow-none">
+        {/* BROWSER VIEW */}
+        <div className="rounded-xl border bg-white shadow-sm overflow-hidden no-print">
           <ScrollArea className="w-full">
-            <div className="flex print:block">
+            <div className="flex">
               {/* Biographical Section */}
               <div className="flex-shrink-0">
                 <Table className="border-collapse border-r-0">
-                  <TableHeader className="bg-slate-50 print:bg-white">
+                  <TableHeader className="bg-slate-50">
                     <TableRow className="h-12">
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[60px] print:static print:border-black text-center">
-                        Roll No
-                      </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[60px] bg-slate-50 z-20 min-w-[160px] print:static print:border-black">
-                        Student Name
-                      </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] print:border-black text-center">
-                        G.R. No.
-                      </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black text-center">
-                        Birthdate
-                      </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[60px] text-center print:border-black">
-                        Atten.
-                      </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black text-center">
-                        Caste
-                      </TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[60px] text-center">Roll No</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[60px] bg-slate-50 z-20 min-w-[160px]">Student Name</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] text-center">G.R. No.</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] text-center">Birthdate</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[60px] text-center">Atten.</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] text-center">Caste</TableHead>
                     </TableRow>
-                    {/* Placeholder rows to maintain biographical header height relative to performance rows */}
                     <TableRow className="h-12" />
                     <TableRow className="h-12" />
                   </TableHeader>
                   <TableBody>
                     {filteredStudents.map((s) => (
-                      <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white h-10">
-                        <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 print:text-black print:border-black text-center">
-                          {s.rollNumber}
-                        </TableCell>
-                        <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 print:text-black print:border-black">
-                          {s.name}
-                        </TableCell>
-                        <TableCell className="text-slate-500 font-medium border-r print:text-black print:border-black text-center">{s.grNumber}</TableCell>
-                        <TableCell className="text-slate-600 border-r print:text-black print:border-black text-center text-xs">{s.birthday}</TableCell>
-                        <TableCell className="text-center font-bold text-primary border-r print:text-black print:border-black">{s.attendance}%</TableCell>
-                        <TableCell className="text-slate-600 border-r print:text-black print:border-black text-center">{s.caste}</TableCell>
+                      <TableRow key={s.id} className="hover:bg-slate-50/50 h-10">
+                        <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-center">{s.rollNumber}</TableCell>
+                        <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10">{s.name}</TableCell>
+                        <TableCell className="text-slate-500 font-medium border-r text-center">{s.grNumber}</TableCell>
+                        <TableCell className="text-slate-600 border-r text-center text-xs">{s.birthday}</TableCell>
+                        <TableCell className="text-center font-bold text-primary border-r">{s.attendance}%</TableCell>
+                        <TableCell className="text-slate-600 border-r text-center">{s.caste}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </div>
 
-              {/* Page Breaker for Portrait Mode */}
-              <div className="portrait-break" />
-
               {/* Performance Section */}
               <div className="flex-1 min-w-0">
                 <Table className="border-collapse">
-                  <TableHeader className="bg-slate-50 print:bg-white">
+                  <TableHeader className="bg-slate-50">
                     <TableRow className="h-12">
                       {activeSubjects.map((subject) => (
-                        <TableHead key={subject} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-slate-100/50 print:border-black print:bg-white">
+                        <TableHead key={subject} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-slate-100/50">
                           {subject}
                         </TableHead>
                       ))}
-                      <TableHead colSpan={1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50 print:border-black print:bg-white">
-                        PATRAK-B
-                      </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l print:border-black">Total Marks</TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l print:border-black">Avg %</TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px] print:static print:border-black">Outcome</TableHead>
+                      <TableHead colSpan={1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50">PATRAK-B</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l">Total Marks</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l">Avg %</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px]">Outcome</TableHead>
                     </TableRow>
 
                     <TableRow className="h-12">
                       {activeSubjects.map((subject) => (
-                        <React.Fragment key={`${subject}-sem-row`}>
+                        <React.Fragment key={`${subject}-row2`}>
                           {isAnnual ? (
                             <>
-                              <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-blue-50/50 print:border-black print:bg-white">Semester 1</TableHead>
-                              <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-green-50/50 print:border-black print:bg-white">Semester 2</TableHead>
-                              <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-orange-50 print:border-black print:bg-white">Total</TableHead>
-                              <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b print:border-black">Grade</TableHead>
+                              <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-blue-50/50">Semester 1</TableHead>
+                              <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-green-50/50">Semester 2</TableHead>
+                              <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-orange-50">Total</TableHead>
+                              <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b">Grade</TableHead>
                             </>
                           ) : (
                             <>
-                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Sva.</TableHead>
-                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Tri.</TableHead>
-                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">
-                                {semester === "Semester 1" ? "PAT" : semester === "Semester 2" ? "SAT" : "PAT/SAT"}
-                              </TableHead>
-                              <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50 print:border-black print:bg-white">Total</TableHead>
-                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Grd.</TableHead>
+                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px]">Sva.</TableHead>
+                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px]">Tri.</TableHead>
+                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px]">{semester === "Semester 1" ? "PAT" : "SAT"}</TableHead>
+                              <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50">Total</TableHead>
+                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px]">Grd.</TableHead>
                             </>
                           )}
                         </React.Fragment>
                       ))}
-                      <TableHead rowSpan={isAnnual ? 2 : 1} className="text-[10px] font-black text-center border-r bg-indigo-50/50 print:border-black print:bg-white">
+                      <TableHead rowSpan={isAnnual ? 2 : 1} className="text-[10px] font-black text-center border-r bg-indigo-50/50">
                         {isAnnual ? "Avg" : "Total"}
                       </TableHead>
                     </TableRow>
 
                     <TableRow className="h-12">
                       {activeSubjects.map((subject) => (
-                        <React.Fragment key={`${subject}-annual-data-row`}>
+                        <React.Fragment key={`${subject}-row3`}>
                           {isAnnual ? (
                             <>
-                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">Tri.</TableHead>
-                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">Sva.</TableHead>
-                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">PAT</TableHead>
-                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">Tri.</TableHead>
-                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">Sva.</TableHead>
-                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">SAT</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px]">Tri.</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px]">Sva.</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px]">PAT</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px]">Tri.</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px]">Sva.</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px]">SAT</TableHead>
                             </>
                           ) : (
-                            <React.Fragment key={`${subject}-empty-bottom`} />
+                            <TableHead colSpan={5} className="h-0 p-0 border-none" />
                           )}
                         </React.Fragment>
                       ))}
@@ -262,65 +248,39 @@ export default function PatrakCPage() {
 
                   <TableBody>
                     {filteredStudents.map((s) => (
-                      <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white h-10">
+                      <TableRow key={s.id} className="hover:bg-slate-50/50 h-10">
                         {activeSubjects.map((subject) => (
                           <React.Fragment key={`${s.id}-${subject}`}>
                             {isAnnual ? (
                               <>
-                                <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={15} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={10} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={25} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={18} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={12} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20 print:text-black print:border-black">
-                                  102
-                                </TableCell>
-                                <TableCell className="p-1 border-r text-center font-black text-primary text-[10px] print:text-black print:border-black">
-                                  A+
-                                </TableCell>
+                                <TableCell className="p-1 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={15} /></TableCell>
+                                <TableCell className="p-1 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={10} /></TableCell>
+                                <TableCell className="p-1 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={25} /></TableCell>
+                                <TableCell className="p-1 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={18} /></TableCell>
+                                <TableCell className="p-1 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={12} /></TableCell>
+                                <TableCell className="p-1 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} /></TableCell>
+                                <TableCell className="p-1 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20">102</TableCell>
+                                <TableCell className="p-1 border-r text-center font-black text-primary text-[10px]">A+</TableCell>
                               </>
                             ) : (
                               <>
-                                <TableCell className="p-1 border-r print:border-black">
-                                  <input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={8} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r print:border-black">
-                                  <input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={72} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r print:border-black">
-                                  <input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} />
-                                </TableCell>
-                                <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs print:text-black print:border-black">
-                                  102
-                                </TableCell>
-                                <TableCell className="p-1 border-r text-center font-black text-primary text-[10px] print:text-black print:border-black">
-                                  A+
-                                </TableCell>
+                                <TableCell className="p-1 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={8} /></TableCell>
+                                <TableCell className="p-1 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={72} /></TableCell>
+                                <TableCell className="p-1 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} /></TableCell>
+                                <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs">102</TableCell>
+                                <TableCell className="p-1 border-r text-center font-black text-primary text-[10px]">A+</TableCell>
                               </>
                             )}
                           </React.Fragment>
                         ))}
 
-                        <TableCell className={`p-1 border-r text-center font-bold text-xs print:border-black ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700 print:text-black' : 'bg-indigo-50/20'}`}>
+                        <TableCell className={`p-1 border-r text-center font-bold text-xs ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700' : 'bg-indigo-50/20'}`}>
                           {isAnnual ? "86.5" : <input type="number" className="h-7 w-full text-xs text-center font-bold bg-transparent border-none outline-none" defaultValue={85} />}
                         </TableCell>
 
-                        <TableCell className="text-center font-black text-indigo-700 border-l print:text-black print:border-black">425</TableCell>
-                        <TableCell className="text-center font-black text-orange-600 border-l print:text-black print:border-black">84.5%</TableCell>
-                        <TableCell className="text-right sticky right-0 bg-white z-10 border-l print:static print:border-black no-print">
+                        <TableCell className="text-center font-black text-indigo-700 border-l">425</TableCell>
+                        <TableCell className="text-center font-black text-orange-600 border-l">84.5%</TableCell>
+                        <TableCell className="text-right sticky right-0 bg-white z-10 border-l">
                           <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
                             <Trophy className="w-3 h-3" /> PASS
                           </Badge>
@@ -331,8 +291,196 @@ export default function PatrakCPage() {
                 </Table>
               </div>
             </div>
-            <ScrollBar orientation="horizontal" className="no-print" />
+            <ScrollBar orientation="horizontal" />
           </ScrollArea>
+        </div>
+
+        {/* PRINT VIEW - Chunked Pages */}
+        <div className="hidden print:block space-y-8">
+          {/* Page 1: Student Details */}
+          <div className="page-break-after-always">
+            <h3 className="text-xs font-black uppercase mb-2 border-b-2 border-slate-900 inline-block">Section A: Biographical Data</h3>
+            <Table className="border-collapse">
+              <TableHeader className="print:bg-white">
+                <TableRow className="h-12">
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-[10px] border-r border-black text-center">Roll No</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-[10px] border-r border-black">Student Name</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-[10px] border-r border-black text-center">G.R. No.</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-[10px] border-r border-black text-center">Birthdate</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-[10px] border-r border-black text-center">Atten.</TableHead>
+                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-[10px] border-r border-black text-center">Caste</TableHead>
+                </TableRow>
+                <TableRow className="h-12" />
+                <TableRow className="h-12" />
+              </TableHeader>
+              <TableBody>
+                {filteredStudents.map((s) => (
+                  <TableRow key={s.id} className="h-10 print:bg-white border-black">
+                    <TableCell className="font-black text-center border-black">{s.rollNumber}</TableCell>
+                    <TableCell className="font-black border-black">{s.name}</TableCell>
+                    <TableCell className="text-center border-black">{s.grNumber}</TableCell>
+                    <TableCell className="text-center text-xs border-black">{s.birthday}</TableCell>
+                    <TableCell className="text-center font-bold border-black">{s.attendance}%</TableCell>
+                    <TableCell className="text-center border-black">{s.caste}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Performance Pages */}
+          {subjectChunks.map((chunk, chunkIdx) => {
+            const size = isAnnual ? 2 : 3;
+            const isLastChunk = chunkIdx === subjectChunks.length - 1;
+            const isLonely = chunk.length === 1;
+            const includeSummary = (isAnnual && isLonely) || (!isAnnual && chunk.length < 3) || subjectChunks.length === 0;
+
+            return (
+              <div key={chunkIdx} className={isLastChunk && includeSummary ? "" : "page-break-after-always"}>
+                <h3 className="text-xs font-black uppercase mb-2 border-b-2 border-slate-900 inline-block">
+                  Section B: Performance Page {chunkIdx + 1}
+                </h3>
+                <Table className="border-collapse border-black">
+                  <TableHeader className="print:bg-white">
+                    <TableRow className="h-12 border-black">
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-[10px] border-r border-black text-center min-w-[50px]">Roll No</TableHead>
+                      {chunk.map(sub => (
+                        <TableHead key={sub} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase text-center border-r border-black">{sub}</TableHead>
+                      ))}
+                      {includeSummary && (
+                        <>
+                          <TableHead className="font-bold uppercase text-center border-r border-black">Patrak-B</TableHead>
+                          <TableHead rowSpan={commonRowSpan} className="font-bold uppercase text-center border-r border-black">Total</TableHead>
+                          <TableHead rowSpan={commonRowSpan} className="font-bold uppercase text-center border-r border-black">Avg %</TableHead>
+                          <TableHead rowSpan={commonRowSpan} className="font-bold uppercase text-center border-black">Result</TableHead>
+                        </>
+                      )}
+                    </TableRow>
+                    <TableRow className="h-12 border-black">
+                      {chunk.map(sub => (
+                        <React.Fragment key={`${sub}-r2`}>
+                          {isAnnual ? (
+                            <>
+                              <TableHead colSpan={3} className="text-[9px] font-black text-center border-r border-black">Sem 1</TableHead>
+                              <TableHead colSpan={3} className="text-[9px] font-black text-center border-r border-black">Sem 2</TableHead>
+                              <TableHead rowSpan={2} className="text-[9px] font-black text-center border-r border-black">Tot</TableHead>
+                              <TableHead rowSpan={2} className="text-[9px] font-black text-center border-r border-black">Grd</TableHead>
+                            </>
+                          ) : (
+                            <>
+                              <TableHead className="text-[8px] font-bold text-center border-r border-black">Sva</TableHead>
+                              <TableHead className="text-[8px] font-bold text-center border-r border-black">Tri</TableHead>
+                              <TableHead className="text-[8px] font-bold text-center border-r border-black">Ass</TableHead>
+                              <TableHead className="text-[8px] font-black text-center border-r border-black">Tot</TableHead>
+                              <TableHead className="text-[8px] font-bold text-center border-r border-black">Grd</TableHead>
+                            </>
+                          )}
+                        </React.Fragment>
+                      ))}
+                      {includeSummary && (
+                         <TableHead rowSpan={isAnnual ? 2 : 1} className="text-[9px] font-black text-center border-r border-black">{isAnnual ? "Avg" : "Tot"}</TableHead>
+                      )}
+                    </TableRow>
+                    <TableRow className="h-12 border-black">
+                       {chunk.map(sub => (
+                         <React.Fragment key={`${sub}-r3`}>
+                            {isAnnual ? (
+                              <>
+                                <TableHead className="text-[7px] text-center border-r border-black">Tri</TableHead>
+                                <TableHead className="text-[7px] text-center border-r border-black">Sva</TableHead>
+                                <TableHead className="text-[7px] text-center border-r border-black">PAT</TableHead>
+                                <TableHead className="text-[7px] text-center border-r border-black">Tri</TableHead>
+                                <TableHead className="text-[7px] text-center border-r border-black">Sva</TableHead>
+                                <TableHead className="text-[7px] text-center border-r border-black">SAT</TableHead>
+                              </>
+                            ) : null}
+                         </React.Fragment>
+                       ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map(s => (
+                      <TableRow key={s.id} className="h-10 border-black">
+                        <TableCell className="font-black text-center border-black">{s.rollNumber}</TableCell>
+                        {chunk.map(sub => (
+                           <React.Fragment key={`${s.id}-${sub}`}>
+                             {isAnnual ? (
+                                <>
+                                  <TableCell className="text-center border-black">15</TableCell>
+                                  <TableCell className="text-center border-black">10</TableCell>
+                                  <TableCell className="text-center border-black">25</TableCell>
+                                  <TableCell className="text-center border-black">18</TableCell>
+                                  <TableCell className="text-center border-black">12</TableCell>
+                                  <TableCell className="text-center border-black">22</TableCell>
+                                  <TableCell className="text-center font-bold border-black">102</TableCell>
+                                  <TableCell className="text-center font-black border-black">A+</TableCell>
+                                </>
+                             ) : (
+                                <>
+                                  <TableCell className="text-center border-black">8</TableCell>
+                                  <TableCell className="text-center border-black">72</TableCell>
+                                  <TableCell className="text-center border-black">22</TableCell>
+                                  <TableCell className="text-center font-bold border-black">102</TableCell>
+                                  <TableCell className="text-center font-black border-black">A+</TableCell>
+                                </>
+                             )}
+                           </React.Fragment>
+                        ))}
+                        {includeSummary && (
+                          <>
+                            <TableCell className="text-center font-bold border-black">86</TableCell>
+                            <TableCell className="text-center font-black border-black">425</TableCell>
+                            <TableCell className="text-center font-black border-black">84.5%</TableCell>
+                            <TableCell className="text-center font-black border-black">PASS</TableCell>
+                          </>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            );
+          })}
+
+          {/* Standalone Summary Page if it didn't fit */}
+          {(() => {
+            const lastChunk = subjectChunks[subjectChunks.length - 1];
+            const size = isAnnual ? 2 : 3;
+            const summaryIncluded = lastChunk && lastChunk.length < size;
+            
+            if (!summaryIncluded && activeSubjects.length > 0) {
+              return (
+                <div className="page-break-after-always">
+                  <h3 className="text-xs font-black uppercase mb-2 border-b-2 border-slate-900 inline-block">Section C: Final Outcome</h3>
+                  <Table className="border-collapse border-black">
+                    <TableHeader className="print:bg-white">
+                      <TableRow className="h-12 border-black">
+                        <TableHead className="font-bold border-black text-center">Roll No</TableHead>
+                        <TableHead className="font-bold border-black text-center">Student Name</TableHead>
+                        <TableHead className="font-bold border-black text-center">Patrak-B</TableHead>
+                        <TableHead className="font-bold border-black text-center">Total Marks</TableHead>
+                        <TableHead className="font-bold border-black text-center">Avg %</TableHead>
+                        <TableHead className="font-bold border-black text-center">Outcome</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredStudents.map(s => (
+                        <TableRow key={s.id} className="h-10 border-black">
+                          <TableCell className="font-black text-center border-black">{s.rollNumber}</TableCell>
+                          <TableCell className="font-black border-black">{s.name}</TableCell>
+                          <TableCell className="text-center font-bold border-black">85</TableCell>
+                          <TableCell className="text-center font-black border-black">425</TableCell>
+                          <TableCell className="text-center font-black border-black">84.5%</TableCell>
+                          <TableCell className="text-center font-black border-black">PASS</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              );
+            }
+            return null;
+          })()}
         </div>
 
         <div className="flex justify-end gap-3 pt-6 mb-12 no-print">

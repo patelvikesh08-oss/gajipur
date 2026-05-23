@@ -68,7 +68,6 @@
     margin: 0 !important;
   }
 
-  /* Aggressively neutralize layout height constraints that cause blank pages */
   [data-sidebar="wrapper"],
   [data-sidebar="inset"],
   .group\/sidebar-wrapper,
@@ -86,7 +85,6 @@
     margin: 0 !important;
   }
 
-  /* Reset SidebarProvider grid specifically */
   [style*="--sidebar-width"] {
     display: block !important;
   }
@@ -103,7 +101,6 @@
     display: none !important;
   }
 
-  /* High contrast tick marks with no boxes */
   [role="checkbox"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -153,7 +150,10 @@
     position: static !important;
   }
 
-  /* Custom portrait breaking for wide tables */
+  .page-break-after-always {
+    page-break-after: always !important;
+  }
+
   .portrait-break {
     display: none;
   }
