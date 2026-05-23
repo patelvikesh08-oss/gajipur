@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -115,17 +116,6 @@ export default function PatrakCPage() {
               <Save className="w-4 h-4 mr-2" />
               Save Results
             </Button>
-          </div>
-        </div>
-
-        {/* PRINT HEADER */}
-        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
-          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-lg font-bold uppercase">PATRAK-C (Final Results)</h2>
-          <div className="flex justify-center gap-8 font-bold text-xs">
-            <span>Academic Year: {academicYear}</span>
-            <span>Semester: {semester}</span>
-            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
           </div>
         </div>
 
@@ -253,28 +243,28 @@ export default function PatrakCPage() {
                           <React.Fragment key={`${s.id}-${subject}`}>
                             {isAnnual ? (
                               <>
-                                <TableCell className="p-1 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={15} /></TableCell>
-                                <TableCell className="p-1 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={10} /></TableCell>
-                                <TableCell className="p-1 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={25} /></TableCell>
-                                <TableCell className="p-1 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={18} /></TableCell>
-                                <TableCell className="p-1 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={12} /></TableCell>
-                                <TableCell className="p-1 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} /></TableCell>
-                                <TableCell className="p-1 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20">102</TableCell>
-                                <TableCell className="p-1 border-r text-center font-black text-primary text-[10px]">A+</TableCell>
+                                <TableCell className="p-0 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={15} /></TableCell>
+                                <TableCell className="p-0 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={10} /></TableCell>
+                                <TableCell className="p-0 border-r bg-blue-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={25} /></TableCell>
+                                <TableCell className="p-0 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={18} /></TableCell>
+                                <TableCell className="p-0 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={12} /></TableCell>
+                                <TableCell className="p-0 border-r bg-green-50/10"><input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} /></TableCell>
+                                <TableCell className="p-0 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20">102</TableCell>
+                                <TableCell className="p-0 border-r text-center font-black text-primary text-[10px]">A+</TableCell>
                               </>
                             ) : (
                               <>
-                                <TableCell className="p-1 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={8} /></TableCell>
-                                <TableCell className="p-1 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={72} /></TableCell>
-                                <TableCell className="p-1 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} /></TableCell>
-                                <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs">102</TableCell>
-                                <TableCell className="p-1 border-r text-center font-black text-primary text-[10px]">A+</TableCell>
+                                <TableCell className="p-0 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={8} /></TableCell>
+                                <TableCell className="p-0 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={72} /></TableCell>
+                                <TableCell className="p-0 border-r"><input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} /></TableCell>
+                                <TableCell className="p-0 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs">102</TableCell>
+                                <TableCell className="p-0 border-r text-center font-black text-primary text-[10px]">A+</TableCell>
                               </>
                             )}
                           </React.Fragment>
                         ))}
 
-                        <TableCell className={`p-1 border-r text-center font-bold text-xs ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700' : 'bg-indigo-50/20'}`}>
+                        <TableCell className={`p-0 border-r text-center font-bold text-xs ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700' : 'bg-indigo-50/20'}`}>
                           {isAnnual ? "86.5" : <input type="number" className="h-7 w-full text-xs text-center font-bold bg-transparent border-none outline-none" defaultValue={85} />}
                         </TableCell>
 
