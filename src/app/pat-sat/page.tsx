@@ -31,8 +31,9 @@ export default function PatSatPage() {
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
-
-  const isAnnual = semester === "Annual";
+  
+  // Local state to track raw scores for automatic calculation
+  const [scores, setScores] = useState<Record<string, Record<string, number>>>({});
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
@@ -58,6 +59,17 @@ export default function PatSatPage() {
     return matchesSearch && matchesStandard;
   }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
+  const handleScoreChange = (studentId: string, subject: string, value: string) => {
+    const numValue = value === "" ? 0 : parseInt(value);
+    setScores(prev => ({
+      ...prev,
+      [studentId]: {
+        ...(prev[studentId] || {}),
+        [subject]: isNaN(numValue) ? 0 : numValue
+      }
+    }));
+  };
+
   const handleSaveAll = () => {
     toast({
       title: "Assessments Saved",
@@ -65,7 +77,6 @@ export default function PatSatPage() {
     });
   };
 
-  // Common Header Rowspan for Student info
   const commonHeaderRowSpan = 2;
 
   return (
@@ -214,20 +225,27 @@ export default function PatSatPage() {
                       <input 
                         type="number" 
                         className="w-full h-8 text-center text-xs font-bold bg-transparent border-none outline-none focus:bg-orange-50/50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                        defaultValue={0} 
+                        value={scores[s.id]?.[subject] ?? ""} 
+                        onChange={(e) => handleScoreChange(s.id, subject, e.target.value)}
+                        placeholder="0"
                       />
                     </TableCell>
                   ))}
 
-                  {activeSubjects.map((subject) => (
-                    <TableCell key={`${s.id}-${subject}-50`} className="border-r p-0 bg-indigo-50/10 print:border-black">
-                      <input 
-                        type="number" 
-                        className="w-full h-8 text-center text-xs font-black text-indigo-700 bg-transparent border-none outline-none focus:bg-indigo-100/50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                        defaultValue={0} 
-                      />
-                    </TableCell>
-                  ))}
+                  {activeSubjects.map((subject) => {
+                    const rawVal = scores[s.id]?.[subject] || 0;
+                    const calculatedVal = Math.round(rawVal / 2);
+                    return (
+                      <TableCell key={`${s.id}-${subject}-50`} className="border-r p-0 bg-indigo-50/10 print:border-black">
+                        <input 
+                          type="number" 
+                          readOnly
+                          className="w-full h-8 text-center text-xs font-black text-indigo-700 bg-transparent border-none outline-none focus:bg-indigo-100/50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none cursor-default" 
+                          value={calculatedVal}
+                        />
+                      </TableCell>
+                    );
+                  })}
 
                   <TableCell className="text-right border-l print:border-black no-print">
                     <Badge className="bg-indigo-600 font-bold px-3">A+</Badge>
@@ -259,3 +277,4 @@ export default function PatSatPage() {
     </MainLayout>
   );
 }
+
