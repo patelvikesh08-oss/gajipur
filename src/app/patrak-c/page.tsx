@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -57,7 +58,8 @@ export default function PatrakCPage() {
     });
   };
 
-  const commonRowSpan = isAnnual ? 3 : 2;
+  // Fixed row span for all headers to maintain height consistency
+  const commonRowSpan = 3;
 
   return (
     <MainLayout>
@@ -145,42 +147,43 @@ export default function PatrakCPage() {
               <div className="flex-shrink-0">
                 <Table className="border-collapse border-r-0">
                   <TableHeader className="bg-slate-50 print:bg-white">
-                    <TableRow>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[80px] print:static print:border-black">
+                    <TableRow className="h-12">
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[60px] print:static print:border-black text-center">
                         Roll No
                       </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[80px] bg-slate-50 z-20 min-w-[180px] print:static print:border-black">
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[60px] bg-slate-50 z-20 min-w-[160px] print:static print:border-black">
                         Student Name
                       </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black">
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] print:border-black text-center">
                         G.R. No.
                       </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[120px] print:border-black">
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black text-center">
                         Birthdate
                       </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] text-center print:border-black">
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[60px] text-center print:border-black">
                         Atten.
                       </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black">
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] print:border-black text-center">
                         Caste
                       </TableHead>
                     </TableRow>
-                    {isAnnual && <TableRow className="h-0" />}
-                    {isAnnual && <TableRow className="h-0" />}
+                    {/* Placeholder rows to maintain biographical header height relative to performance rows */}
+                    <TableRow className="h-12" />
+                    <TableRow className="h-12" />
                   </TableHeader>
                   <TableBody>
                     {filteredStudents.map((s) => (
-                      <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
-                        <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 print:text-black print:border-black">
+                      <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white h-10">
+                        <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 print:text-black print:border-black text-center">
                           {s.rollNumber}
                         </TableCell>
-                        <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[80px] bg-white z-10 print:text-black print:border-black">
+                        <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[60px] bg-white z-10 print:text-black print:border-black">
                           {s.name}
                         </TableCell>
-                        <TableCell className="text-slate-500 font-medium border-r print:text-black print:border-black">{s.grNumber}</TableCell>
-                        <TableCell className="text-slate-600 border-r print:text-black print:border-black">{s.birthday}</TableCell>
+                        <TableCell className="text-slate-500 font-medium border-r print:text-black print:border-black text-center">{s.grNumber}</TableCell>
+                        <TableCell className="text-slate-600 border-r print:text-black print:border-black text-center text-xs">{s.birthday}</TableCell>
                         <TableCell className="text-center font-bold text-primary border-r print:text-black print:border-black">{s.attendance}%</TableCell>
-                        <TableCell className="text-slate-600 border-r print:text-black print:border-black">{s.caste}</TableCell>
+                        <TableCell className="text-slate-600 border-r print:text-black print:border-black text-center">{s.caste}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -194,7 +197,7 @@ export default function PatrakCPage() {
               <div className="flex-1 min-w-0">
                 <Table className="border-collapse">
                   <TableHeader className="bg-slate-50 print:bg-white">
-                    <TableRow>
+                    <TableRow className="h-12">
                       {activeSubjects.map((subject) => (
                         <TableHead key={subject} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-slate-100/50 print:border-black print:bg-white">
                           {subject}
@@ -207,54 +210,58 @@ export default function PatrakCPage() {
                       <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px] print:static print:border-black">Outcome</TableHead>
                     </TableRow>
 
-                    {isAnnual ? (
-                      <TableRow>
-                        {activeSubjects.map((subject) => (
-                          <React.Fragment key={`${subject}-sem-row`}>
-                            <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-blue-50/50 print:border-black print:bg-white">Semester 1</TableHead>
-                            <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-green-50/50 print:border-black print:bg-white">Semester 2</TableHead>
-                            <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-orange-50 print:border-black print:bg-white">Total</TableHead>
-                            <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b print:border-black">Grade</TableHead>
-                          </React.Fragment>
-                        ))}
-                        <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-indigo-100 print:border-black print:bg-white">Avg</TableHead>
-                      </TableRow>
-                    ) : (
-                      <TableRow>
-                        {activeSubjects.map((subject) => (
-                          <React.Fragment key={`${subject}-sub`}>
-                            <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">Sva.</TableHead>
-                            <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">Tri.</TableHead>
-                            <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">
-                              {semester === "Semester 1" ? "PAT" : semester === "Semester 2" ? "SAT" : "PAT/SAT"}
-                            </TableHead>
-                            <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50 print:border-black print:bg-white">Total</TableHead>
-                            <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Grd.</TableHead>
-                          </React.Fragment>
-                        ))}
-                        <TableHead className="text-[10px] font-black text-center border-r bg-indigo-50/50 print:border-black print:bg-white">Total</TableHead>
-                      </TableRow>
-                    )}
+                    <TableRow className="h-12">
+                      {activeSubjects.map((subject) => (
+                        <React.Fragment key={`${subject}-sem-row`}>
+                          {isAnnual ? (
+                            <>
+                              <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-blue-50/50 print:border-black print:bg-white">Semester 1</TableHead>
+                              <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-green-50/50 print:border-black print:bg-white">Semester 2</TableHead>
+                              <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-orange-50 print:border-black print:bg-white">Total</TableHead>
+                              <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b print:border-black">Grade</TableHead>
+                            </>
+                          ) : (
+                            <>
+                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Sva.</TableHead>
+                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Tri.</TableHead>
+                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">
+                                {semester === "Semester 1" ? "PAT" : semester === "Semester 2" ? "SAT" : "PAT/SAT"}
+                              </TableHead>
+                              <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50 print:border-black print:bg-white">Total</TableHead>
+                              <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Grd.</TableHead>
+                            </>
+                          )}
+                        </React.Fragment>
+                      ))}
+                      <TableHead rowSpan={isAnnual ? 2 : 1} className="text-[10px] font-black text-center border-r bg-indigo-50/50 print:border-black print:bg-white">
+                        {isAnnual ? "Avg" : "Total"}
+                      </TableHead>
+                    </TableRow>
 
-                    {isAnnual && (
-                      <TableRow>
-                        {activeSubjects.map((subject) => (
-                          <React.Fragment key={`${subject}-annual-data-row`}>
-                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Trimasik</TableHead>
-                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Svadhyay</TableHead>
-                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">PAT/SAT</TableHead>
-                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Trimasik</TableHead>
-                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Svadhyay</TableHead>
-                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">PAT/SAT</TableHead>
-                          </React.Fragment>
-                        ))}
-                      </TableRow>
-                    )}
+                    <TableRow className="h-12">
+                      {activeSubjects.map((subject) => (
+                        <React.Fragment key={`${subject}-annual-data-row`}>
+                          {isAnnual ? (
+                            <>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">Tri.</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">Sva.</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">PAT</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">Tri.</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">Sva.</TableHead>
+                              <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[40px] print:border-black">SAT</TableHead>
+                            </>
+                          ) : (
+                            <React.Fragment key={`${subject}-empty-bottom`} />
+                          )}
+                        </React.Fragment>
+                      ))}
+                      {!isAnnual && <TableHead className="h-0 p-0 border-none" />}
+                    </TableRow>
                   </TableHeader>
 
                   <TableBody>
                     {filteredStudents.map((s) => (
-                      <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
+                      <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white h-10">
                         {activeSubjects.map((subject) => (
                           <React.Fragment key={`${s.id}-${subject}`}>
                             {isAnnual ? (
