@@ -163,7 +163,7 @@ export default function PatrakCPage() {
                       <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[60px] text-center print:border-black">
                         Atten.
                       </TableHead>
-                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] print:border-black text-center">
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black text-center">
                         Caste
                       </TableHead>
                     </TableRow>
@@ -206,6 +206,7 @@ export default function PatrakCPage() {
                       <TableHead colSpan={1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50 print:border-black print:bg-white">
                         PATRAK-B
                       </TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l print:border-black">Total Marks</TableHead>
                       <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l print:border-black">Avg %</TableHead>
                       <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px] print:static print:border-black">Outcome</TableHead>
                     </TableRow>
@@ -267,22 +268,22 @@ export default function PatrakCPage() {
                             {isAnnual ? (
                               <>
                                 <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={15} />
+                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={15} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={10} />
+                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={10} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={25} />
+                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={25} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={18} />
+                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={18} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={12} />
+                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={12} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={22} />
+                                  <input type="number" className="h-7 w-full text-[10px] text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20 print:text-black print:border-black">
                                   102
@@ -294,13 +295,13 @@ export default function PatrakCPage() {
                             ) : (
                               <>
                                 <TableCell className="p-1 border-r print:border-black">
-                                  <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={8} />
+                                  <input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={8} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r print:border-black">
-                                  <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={72} />
+                                  <input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={72} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r print:border-black">
-                                  <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={22} />
+                                  <input type="number" className="h-7 w-full text-xs text-center px-1 font-medium bg-transparent border-none outline-none" defaultValue={22} />
                                 </TableCell>
                                 <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs print:text-black print:border-black">
                                   102
@@ -314,9 +315,10 @@ export default function PatrakCPage() {
                         ))}
 
                         <TableCell className={`p-1 border-r text-center font-bold text-xs print:border-black ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700 print:text-black' : 'bg-indigo-50/20'}`}>
-                          {isAnnual ? "86.5" : <Input type="number" className="h-7 text-xs text-center font-bold print:border-none" defaultValue={85} />}
+                          {isAnnual ? "86.5" : <input type="number" className="h-7 w-full text-xs text-center font-bold bg-transparent border-none outline-none" defaultValue={85} />}
                         </TableCell>
 
+                        <TableCell className="text-center font-black text-indigo-700 border-l print:text-black print:border-black">425</TableCell>
                         <TableCell className="text-center font-black text-orange-600 border-l print:text-black print:border-black">84.5%</TableCell>
                         <TableCell className="text-right sticky right-0 bg-white z-10 border-l print:static print:border-black no-print">
                           <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
