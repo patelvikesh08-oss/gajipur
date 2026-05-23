@@ -5,6 +5,7 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
 import { useSubjectStore } from "@/lib/subject-store";
+import { useMarksMappingStore } from "@/lib/marks-mapping-store";
 import {
   Table,
   TableBody,
@@ -25,6 +26,7 @@ export default function PatSatPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
   const { mappings, isLoaded: subjectsLoaded } = useSubjectStore();
+  const { getMarksFor, isLoaded: marksLoaded } = useMarksMappingStore();
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
@@ -41,7 +43,12 @@ export default function PatSatPage() {
     return mapping ? mapping.subjects : [];
   }, [selectedStandard, semester, mappings]);
 
-  if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
+  const maxMarks = useMemo(() => {
+    if (selectedStandard === "all") return 0;
+    return getMarksFor(selectedStandard, semester, 'PAT/SAT');
+  }, [selectedStandard, semester, getMarksFor]);
+
+  if (!studentsLoaded || !sessionLoaded || !subjectsLoaded || !marksLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -56,6 +63,9 @@ export default function PatSatPage() {
       description: `PAT/SAT scores successfully committed for ${selectedStandard}.`,
     });
   };
+
+  // Header row span calculation: Max Marks + 50% Marks + Subject Name (+ Semesters if Annual)
+  const baseHeaderRowSpan = isAnnual ? 4 : 3;
 
   return (
     <MainLayout>
@@ -139,26 +149,55 @@ export default function PatSatPage() {
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <Table>
             <TableHeader className="bg-slate-50 print:bg-white">
+              {/* Row 1: Marks Out Of [Max] */}
               <TableRow>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name</TableHead>
+                <TableHead rowSpan={baseHeaderRowSpan} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black border-r">Roll No</TableHead>
+                <TableHead rowSpan={baseHeaderRowSpan} className="font-bold uppercase tracking-wider text-xs print:border-black border-r">Student Name</TableHead>
+                {activeSubjects.map((subject) => (
+                  <TableHead 
+                    key={`${subject}-max-header`} 
+                    colSpan={isAnnual ? 2 : 1} 
+                    className="font-black uppercase tracking-widest text-[10px] text-center border-r bg-indigo-50/50 print:border-black h-10"
+                  >
+                    Marks out of {maxMarks}
+                  </TableHead>
+                ))}
+                <TableHead rowSpan={baseHeaderRowSpan} className="text-right font-bold uppercase tracking-wider text-xs border-l print:border-black no-print">Grade</TableHead>
+              </TableRow>
+
+              {/* Row 2: Marks Out Of 50% */}
+              <TableRow>
+                {activeSubjects.map((subject) => (
+                  <TableHead 
+                    key={`${subject}-50-header`} 
+                    colSpan={isAnnual ? 2 : 1} 
+                    className="font-bold uppercase tracking-wider text-[9px] text-center border-r bg-muted/20 print:border-black h-10"
+                  >
+                    Marks out of {maxMarks / 2} (50%)
+                  </TableHead>
+                ))}
+              </TableRow>
+
+              {/* Row 3: Subject Name */}
+              <TableRow>
                 {activeSubjects.map((subject) => (
                   <TableHead 
                     key={subject} 
                     colSpan={isAnnual ? 2 : 1} 
-                    className="font-bold uppercase tracking-wider text-xs text-center border-l print:border-black"
+                    className="font-bold uppercase tracking-wider text-xs text-center border-r print:border-black h-10"
                   >
                     {subject}
                   </TableHead>
                 ))}
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l print:border-black no-print">Grade</TableHead>
               </TableRow>
+
+              {/* Row 4: Semesters (Optional) */}
               {isAnnual && (
                 <TableRow>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${subject}-sem-header`}>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[80px] print:border-black">Sem 1</TableHead>
-                      <TableHead className="text-[10px] font-bold text-center border-l min-w-[80px] print:border-black">Sem 2</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-r min-w-[80px] print:border-black h-8 bg-white">Sem 1</TableHead>
+                      <TableHead className="text-[10px] font-bold text-center border-r min-w-[80px] print:border-black h-8 bg-white">Sem 2</TableHead>
                     </React.Fragment>
                   ))}
                 </TableRow>
@@ -166,34 +205,34 @@ export default function PatSatPage() {
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
-                <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
-                  <TableCell className="font-black text-primary print:text-black print:border-black">{s.rollNumber}</TableCell>
-                  <TableCell className="font-bold text-slate-700 whitespace-nowrap print:text-black print:border-black">{s.name}</TableCell>
+                <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white h-10">
+                  <TableCell className="font-black text-primary border-r print:text-black print:border-black">{s.rollNumber}</TableCell>
+                  <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r print:text-black print:border-black">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${s.id}-${subject}`}>
                       {isAnnual ? (
                         <>
-                          <TableCell className="border-l p-1 print:border-black">
+                          <TableCell className="border-r p-1 print:border-black">
                             <Input 
                               type="number" 
                               className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none" 
-                              defaultValue={42} 
+                              defaultValue={0} 
                             />
                           </TableCell>
-                          <TableCell className="border-l p-1 print:border-black">
+                          <TableCell className="border-r p-1 print:border-black">
                             <Input 
                               type="number" 
                               className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none" 
-                              defaultValue={45} 
+                              defaultValue={0} 
                             />
                           </TableCell>
                         </>
                       ) : (
-                        <TableCell className="border-l print:border-black">
+                        <TableCell className="border-r print:border-black">
                           <Input 
                             type="number" 
                             className="h-8 text-center font-bold focus:ring-primary mx-auto w-16 print:border-none" 
-                            defaultValue={40} 
+                            defaultValue={0} 
                           />
                         </TableCell>
                       )}
@@ -204,6 +243,13 @@ export default function PatSatPage() {
                   </TableCell>
                 </TableRow>
               ))}
+              {activeSubjects.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-40 text-center text-muted-foreground italic font-medium">
+                    Please select a specific academic standard to load assessment columns.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
