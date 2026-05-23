@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -166,33 +167,33 @@ export default function TrimasikPage() {
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
-                <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
+                <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white h-10">
                   <TableCell className="font-black text-primary print:text-black print:border-black">{s.rollNumber}</TableCell>
                   <TableCell className="font-bold text-slate-700 whitespace-nowrap print:text-black print:border-black">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${s.id}-${subject}`}>
                       {isAnnual ? (
                         <>
-                          <TableCell className="border-l p-1 print:border-black">
-                            <Input 
+                          <TableCell className="border-l p-0 print:border-black">
+                            <input 
                               type="number" 
-                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none print:bg-transparent" 
+                              className="w-full h-8 text-center font-bold bg-transparent border-none outline-none focus:bg-primary/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                               defaultValue={75} 
                             />
                           </TableCell>
-                          <TableCell className="border-l p-1 print:border-black">
-                            <Input 
+                          <TableCell className="border-l p-0 print:border-black">
+                            <input 
                               type="number" 
-                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none print:bg-transparent" 
+                              className="w-full h-8 text-center font-bold bg-transparent border-none outline-none focus:bg-primary/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                               defaultValue={82} 
                             />
                           </TableCell>
                         </>
                       ) : (
-                        <TableCell className="border-l print:border-black">
-                          <Input 
+                        <TableCell className="border-l p-0 print:border-black">
+                          <input 
                             type="number" 
-                            className="h-8 text-center font-bold focus:ring-primary mx-auto w-16 print:border-none print:bg-transparent" 
+                            className="w-full h-8 text-center font-bold bg-transparent border-none outline-none focus:bg-primary/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                             defaultValue={80} 
                           />
                         </TableCell>

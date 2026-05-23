@@ -150,7 +150,6 @@ export default function PatSatPage() {
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
           <Table className="border-collapse">
             <TableHeader className="bg-slate-50 print:bg-white">
-              {/* Row 1: Group Headers for Raw and Weighted Marks */}
               <TableRow className="h-12">
                 <TableHead rowSpan={commonHeaderRowSpan} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r print:border-black text-center">
                   Roll No
@@ -179,9 +178,7 @@ export default function PatSatPage() {
                 </TableHead>
               </TableRow>
 
-              {/* Row 2: Vertical Subject Names */}
               <TableRow>
-                {/* Raw Marks Subject Labels */}
                 {activeSubjects.map((subject) => (
                   <TableHead key={`${subject}-raw-label`} className="h-[140px] p-0 border-r print:border-black bg-white">
                     <div className="flex flex-col items-center justify-end h-full w-full pb-3">
@@ -191,7 +188,6 @@ export default function PatSatPage() {
                     </div>
                   </TableHead>
                 ))}
-                {/* 50% Marks Subject Labels */}
                 {activeSubjects.map((subject) => (
                   <TableHead key={`${subject}-50-label`} className="h-[140px] p-0 border-r print:border-black bg-white">
                     <div className="flex flex-col items-center justify-end h-full w-full pb-3">
@@ -213,23 +209,21 @@ export default function PatSatPage() {
                     {s.name}
                   </TableCell>
                   
-                  {/* Inputs for Raw Marks */}
                   {activeSubjects.map((subject) => (
-                    <TableCell key={`${s.id}-${subject}-raw`} className="border-r p-1 print:border-black">
-                      <Input 
+                    <TableCell key={`${s.id}-${subject}-raw`} className="border-r p-0 print:border-black">
+                      <input 
                         type="number" 
-                        className="h-8 text-center text-xs font-bold focus:ring-primary mx-auto w-12 print:border-none" 
+                        className="w-full h-8 text-center text-xs font-bold bg-transparent border-none outline-none focus:bg-orange-50/50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                         defaultValue={0} 
                       />
                     </TableCell>
                   ))}
 
-                  {/* Inputs for 50% Marks */}
                   {activeSubjects.map((subject) => (
-                    <TableCell key={`${s.id}-${subject}-50`} className="border-r p-1 bg-indigo-50/10 print:border-black">
-                      <Input 
+                    <TableCell key={`${s.id}-${subject}-50`} className="border-r p-0 bg-indigo-50/10 print:border-black">
+                      <input 
                         type="number" 
-                        className="h-8 text-center text-xs font-black text-indigo-700 focus:ring-primary mx-auto w-12 print:border-none" 
+                        className="w-full h-8 text-center text-xs font-black text-indigo-700 bg-transparent border-none outline-none focus:bg-indigo-100/50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                         defaultValue={0} 
                       />
                     </TableCell>

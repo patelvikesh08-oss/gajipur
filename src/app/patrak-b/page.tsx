@@ -201,20 +201,20 @@ export default function PatrakBPage() {
 
                       {config.fields.map(field => (
                         Array.from({ length: field.subColumnCount }).map((_, i) => (
-                          <TableCell key={`${s.id}-${field.id}-${i}-s1`} className="p-1 border-r print:border-black">
-                            <Input className="h-7 text-center text-xs print:border-none print:h-5" defaultValue="" />
+                          <TableCell key={`${s.id}-${field.id}-${i}-s1`} className="p-0 border-r print:border-black">
+                            <input className="w-full h-8 text-center text-xs bg-transparent border-none outline-none focus:bg-accent/5 transition-colors" defaultValue="" />
                           </TableCell>
                         ))
                       ))}
 
-                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-blue-50/10 print:border-black">
-                        <Input type="number" className="h-7 text-center font-bold text-xs print:border-none" defaultValue={0} />
+                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-0 border-r bg-blue-50/10 print:border-black">
+                        <input type="number" className="w-full h-8 text-center font-bold text-xs bg-transparent border-none outline-none focus:bg-accent/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" defaultValue={0} />
                       </TableCell>
-                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-green-50/10 print:border-black">
-                        <Input type="number" className="h-7 text-center font-bold text-xs print:border-none" defaultValue={0} />
+                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-0 border-r bg-green-50/10 print:border-black">
+                        <input type="number" className="w-full h-8 text-center font-bold text-xs bg-transparent border-none outline-none focus:bg-accent/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" defaultValue={0} />
                       </TableCell>
-                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-1 border-r bg-orange-50/10 print:border-black">
-                        <Input type="number" className="h-7 text-center font-black text-orange-600 text-xs print:border-none print:text-black" defaultValue={0} />
+                      <TableCell rowSpan={isAnnual ? 2 : 1} className="p-0 border-r bg-orange-50/10 print:border-black">
+                        <input type="number" className="w-full h-8 text-center font-black text-orange-600 text-xs bg-transparent border-none outline-none focus:bg-accent/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" defaultValue={0} />
                       </TableCell>
                     </TableRow>
                     
@@ -223,8 +223,8 @@ export default function PatrakBPage() {
                         <TableCell className="bg-green-50/20 text-center text-[9px] font-black text-primary border-r print:text-black print:border-black">S2</TableCell>
                         {config.fields.map(field => (
                           Array.from({ length: field.subColumnCount }).map((_, i) => (
-                            <TableCell key={`${s.id}-${field.id}-${i}-s2`} className="p-1 border-r print:border-black">
-                              <Input className="h-7 text-center text-xs print:border-none print:h-5" defaultValue="" />
+                            <TableCell key={`${s.id}-${field.id}-${i}-s2`} className="p-0 border-r print:border-black">
+                              <input className="w-full h-8 text-center text-xs bg-transparent border-none outline-none focus:bg-accent/5 transition-colors" defaultValue="" />
                             </TableCell>
                           ))
                         ))}
