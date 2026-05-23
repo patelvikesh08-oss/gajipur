@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -6,7 +7,7 @@ import { useStudentStore } from "@/lib/student-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, GraduationCap, Layers, Users, Calendar, Printer } from "lucide-react";
+import { FileText, GraduationCap, Layers, Users, Calendar, Printer, School, UserCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -177,7 +178,7 @@ export default function ReportCardPage() {
             <div className="space-y-8">
               {activeReports.map((student) => {
                 const parts = [
-                  { id: 'patrakf', title: 'PERFORMANCE RECORD', pageNum: 1 },
+                  { id: 'patrakc', title: 'PATRAK-C PERFORMANCE RECORD', pageNum: 1 },
                   { id: 'marksheet', title: 'MARKSHEET', pageNum: 2 }
                 ];
 
@@ -190,7 +191,8 @@ export default function ReportCardPage() {
                       >
                         <div className="report-content">
                           <div className="text-center mb-8 space-y-2">
-                            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">EduPulse Global Academy</h1>
+                            <h2 className="text-sm font-black text-primary uppercase tracking-[0.3em] mb-1">PATRAK-C</h2>
+                            <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">EduPulse Global Academy</h1>
                             <div className="flex items-center justify-center gap-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest print:text-black">
                               <span>Academic Year: {academicYear}</span>
                               <span className="w-1 h-1 rounded-full bg-slate-300 print:bg-black" />
@@ -202,21 +204,64 @@ export default function ReportCardPage() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-6 mb-8 bg-slate-50 p-6 border-l-4 border-primary rounded-r-lg print:bg-white print:border-black">
-                            <div className="space-y-1">
-                              <p className="text-[9px] font-bold text-slate-400 uppercase">Student Full Name</p>
-                              <p className="text-sm font-black text-slate-900 uppercase">{student.name}</p>
+                          <div className="grid grid-cols-2 gap-8 mb-8">
+                            <div className="space-y-4">
+                              <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-flex items-center gap-2 print:bg-black">
+                                <School className="w-3 h-3" /> School Detail
+                              </h3>
+                              <div className="bg-slate-50 p-4 rounded-lg space-y-2 border-l-4 border-slate-300 print:bg-white print:border-black">
+                                <div className="space-y-0.5">
+                                  <p className="text-[8px] font-bold text-slate-400 uppercase">School Name</p>
+                                  <p className="text-xs font-black text-slate-800">EDUPULSE GLOBAL ACADEMY</p>
+                                </div>
+                                <div className="space-y-0.5">
+                                  <p className="text-[8px] font-bold text-slate-400 uppercase">School Index Number</p>
+                                  <p className="text-xs font-black text-slate-800">SCH-IDX-998877</p>
+                                </div>
+                                <div className="space-y-0.5">
+                                  <p className="text-[8px] font-bold text-slate-400 uppercase">District / Block</p>
+                                  <p className="text-xs font-black text-slate-800">SPRINGFIELD / CENTRAL</p>
+                                </div>
+                              </div>
                             </div>
-                            <div className="space-y-1">
-                              <p className="text-[9px] font-bold text-slate-400 uppercase">Academic Standard</p>
-                              <p className="text-sm font-black text-slate-900 uppercase">{student.academicStandard}</p>
+
+                            <div className="space-y-4">
+                              <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-flex items-center gap-2 print:bg-black">
+                                <UserCircle className="w-3 h-3" /> Student Detail
+                              </h3>
+                              <div className="bg-primary/5 p-4 rounded-lg space-y-2 border-l-4 border-primary print:bg-white print:border-black">
+                                <div className="flex justify-between gap-4">
+                                  <div className="space-y-0.5">
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase">Full Name</p>
+                                    <p className="text-xs font-black text-slate-900 uppercase">{student.name}</p>
+                                  </div>
+                                  <div className="space-y-0.5 text-right">
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase">Roll No</p>
+                                    <p className="text-xs font-black text-slate-900">{student.rollNumber}</p>
+                                  </div>
+                                </div>
+                                <div className="flex justify-between gap-4">
+                                  <div className="space-y-0.5">
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase">Standard</p>
+                                    <p className="text-xs font-black text-slate-900 uppercase">{student.academicStandard}</p>
+                                  </div>
+                                  <div className="space-y-0.5 text-right">
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase">G.R. No</p>
+                                    <p className="text-xs font-black text-slate-900">{student.grNumber}</p>
+                                  </div>
+                                </div>
+                                <div className="space-y-0.5">
+                                  <p className="text-[8px] font-bold text-slate-400 uppercase">Aadhar Card Number</p>
+                                  <p className="text-xs font-black text-slate-900">{student.aadharCard || "N/A"}</p>
+                                </div>
+                              </div>
                             </div>
                           </div>
 
-                          {part.id === 'patrakf' ? (
+                          {part.id === 'patrakc' ? (
                             <div className="space-y-8">
                               <div className="space-y-3">
-                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-block print:bg-black">Personal Qualities & Conduct</h3>
+                                <h3 className="text-[10px] font-black border-b-2 border-slate-900 pb-1 uppercase inline-block print:border-black">Personal Qualities & Conduct</h3>
                                 <Table className="border text-xs print:border-black">
                                   <TableBody>
                                     {["Punctuality", "Cleanliness", "Social Behavior", "Leadership Skill", "Discipline"].map(t => (
@@ -229,8 +274,8 @@ export default function ReportCardPage() {
                                 </Table>
                               </div>
                               <div className="space-y-3">
-                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 uppercase rounded-sm inline-block print:bg-black">Co-Curricular Observations</h3>
-                                <div className="border p-4 rounded-md italic text-xs bg-slate-50 leading-relaxed text-slate-600 print:bg-white print:text-black print:border-black">
+                                <h3 className="text-[10px] font-black border-b-2 border-slate-900 pb-1 uppercase inline-block print:border-black">Co-Curricular Observations</h3>
+                                <div className="border p-4 rounded-md italic text-xs bg-slate-50 leading-relaxed text-slate-600 print:bg-white print:text-black print:border-black min-h-[100px]">
                                   Shows keen interest in artistic expression and demonstrates consistent leadership in group activities.
                                 </div>
                               </div>
