@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -64,8 +65,8 @@ export default function PatSatPage() {
     });
   };
 
-  // Header row span calculation: Max Marks + 50% Marks + Subject Name (+ Semesters if Annual)
-  const baseHeaderRowSpan = isAnnual ? 4 : 3;
+  // Common Header Rowspan for Student info
+  const commonHeaderRowSpan = 2;
 
   return (
     <MainLayout>
@@ -147,97 +148,93 @@ export default function PatSatPage() {
         </div>
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
-          <Table>
+          <Table className="border-collapse">
             <TableHeader className="bg-slate-50 print:bg-white">
-              {/* Row 1: Marks Out Of [Max] */}
-              <TableRow>
-                <TableHead rowSpan={baseHeaderRowSpan} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black border-r">Roll No</TableHead>
-                <TableHead rowSpan={baseHeaderRowSpan} className="font-bold uppercase tracking-wider text-xs print:border-black border-r">Student Name</TableHead>
-                {activeSubjects.map((subject) => (
-                  <TableHead 
-                    key={`${subject}-max-header`} 
-                    colSpan={isAnnual ? 2 : 1} 
-                    className="font-black uppercase tracking-widest text-[10px] text-center border-r bg-indigo-50/50 print:border-black h-10"
-                  >
-                    Marks out of {maxMarks}
-                  </TableHead>
-                ))}
-                <TableHead rowSpan={baseHeaderRowSpan} className="text-right font-bold uppercase tracking-wider text-xs border-l print:border-black no-print">Grade</TableHead>
+              {/* Row 1: Group Headers for Raw and Weighted Marks */}
+              <TableRow className="h-12">
+                <TableHead rowSpan={commonHeaderRowSpan} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r print:border-black text-center">
+                  Roll No
+                </TableHead>
+                <TableHead rowSpan={commonHeaderRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[150px] print:border-black">
+                  Student Name
+                </TableHead>
+                {activeSubjects.length > 0 && (
+                  <>
+                    <TableHead 
+                      colSpan={activeSubjects.length} 
+                      className="font-black uppercase tracking-widest text-[10px] text-center border-r border-b bg-orange-100/30 print:border-black h-12"
+                    >
+                      Marks Obtained (Out of {maxMarks})
+                    </TableHead>
+                    <TableHead 
+                      colSpan={activeSubjects.length} 
+                      className="font-black uppercase tracking-widest text-[10px] text-center border-r border-b bg-indigo-50/50 print:border-black h-12"
+                    >
+                      Marks as per 50% (Out of {maxMarks / 2})
+                    </TableHead>
+                  </>
+                )}
+                <TableHead rowSpan={commonHeaderRowSpan} className="text-right font-bold uppercase tracking-wider text-xs border-l print:border-black no-print">
+                  Result
+                </TableHead>
               </TableRow>
 
-              {/* Row 2: Marks Out Of 50% */}
+              {/* Row 2: Vertical Subject Names */}
               <TableRow>
+                {/* Raw Marks Subject Labels */}
                 {activeSubjects.map((subject) => (
-                  <TableHead 
-                    key={`${subject}-50-header`} 
-                    colSpan={isAnnual ? 2 : 1} 
-                    className="font-bold uppercase tracking-wider text-[9px] text-center border-r bg-muted/20 print:border-black h-10"
-                  >
-                    Marks out of {maxMarks / 2} (50%)
+                  <TableHead key={`${subject}-raw-label`} className="h-[140px] p-0 border-r print:border-black bg-white">
+                    <div className="flex flex-col items-center justify-end h-full w-full pb-3">
+                      <span className="vertical-text text-[10px] font-bold text-slate-600 px-1 uppercase tracking-tight">
+                        {subject}
+                      </span>
+                    </div>
+                  </TableHead>
+                ))}
+                {/* 50% Marks Subject Labels */}
+                {activeSubjects.map((subject) => (
+                  <TableHead key={`${subject}-50-label`} className="h-[140px] p-0 border-r print:border-black bg-white">
+                    <div className="flex flex-col items-center justify-end h-full w-full pb-3">
+                      <span className="vertical-text text-[10px] font-bold text-indigo-600 px-1 uppercase tracking-tight">
+                        {subject}
+                      </span>
+                    </div>
                   </TableHead>
                 ))}
               </TableRow>
-
-              {/* Row 3: Subject Name */}
-              <TableRow>
-                {activeSubjects.map((subject) => (
-                  <TableHead 
-                    key={subject} 
-                    colSpan={isAnnual ? 2 : 1} 
-                    className="font-bold uppercase tracking-wider text-xs text-center border-r print:border-black h-10"
-                  >
-                    {subject}
-                  </TableHead>
-                ))}
-              </TableRow>
-
-              {/* Row 4: Semesters (Optional) */}
-              {isAnnual && (
-                <TableRow>
-                  {activeSubjects.map((subject) => (
-                    <React.Fragment key={`${subject}-sem-header`}>
-                      <TableHead className="text-[10px] font-bold text-center border-r min-w-[80px] print:border-black h-8 bg-white">Sem 1</TableHead>
-                      <TableHead className="text-[10px] font-bold text-center border-r min-w-[80px] print:border-black h-8 bg-white">Sem 2</TableHead>
-                    </React.Fragment>
-                  ))}
-                </TableRow>
-              )}
             </TableHeader>
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white h-10">
-                  <TableCell className="font-black text-primary border-r print:text-black print:border-black">{s.rollNumber}</TableCell>
-                  <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r print:text-black print:border-black">{s.name}</TableCell>
+                  <TableCell className="font-black text-primary border-r print:text-black print:border-black text-center text-xs">
+                    {s.rollNumber}
+                  </TableCell>
+                  <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r print:text-black print:border-black text-xs">
+                    {s.name}
+                  </TableCell>
+                  
+                  {/* Inputs for Raw Marks */}
                   {activeSubjects.map((subject) => (
-                    <React.Fragment key={`${s.id}-${subject}`}>
-                      {isAnnual ? (
-                        <>
-                          <TableCell className="border-r p-1 print:border-black">
-                            <Input 
-                              type="number" 
-                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none" 
-                              defaultValue={0} 
-                            />
-                          </TableCell>
-                          <TableCell className="border-r p-1 print:border-black">
-                            <Input 
-                              type="number" 
-                              className="h-8 text-center font-bold focus:ring-primary mx-auto w-14 print:border-none" 
-                              defaultValue={0} 
-                            />
-                          </TableCell>
-                        </>
-                      ) : (
-                        <TableCell className="border-r print:border-black">
-                          <Input 
-                            type="number" 
-                            className="h-8 text-center font-bold focus:ring-primary mx-auto w-16 print:border-none" 
-                            defaultValue={0} 
-                          />
-                        </TableCell>
-                      )}
-                    </React.Fragment>
+                    <TableCell key={`${s.id}-${subject}-raw`} className="border-r p-1 print:border-black">
+                      <Input 
+                        type="number" 
+                        className="h-8 text-center text-xs font-bold focus:ring-primary mx-auto w-12 print:border-none" 
+                        defaultValue={0} 
+                      />
+                    </TableCell>
                   ))}
+
+                  {/* Inputs for 50% Marks */}
+                  {activeSubjects.map((subject) => (
+                    <TableCell key={`${s.id}-${subject}-50`} className="border-r p-1 bg-indigo-50/10 print:border-black">
+                      <Input 
+                        type="number" 
+                        className="h-8 text-center text-xs font-black text-indigo-700 focus:ring-primary mx-auto w-12 print:border-none" 
+                        defaultValue={0} 
+                      />
+                    </TableCell>
+                  ))}
+
                   <TableCell className="text-right border-l print:border-black no-print">
                     <Badge className="bg-indigo-600 font-bold px-3">A+</Badge>
                   </TableCell>
