@@ -55,7 +55,7 @@
 
 @media print {
   @page {
-    size: landscape;
+    size: auto;
     margin: 5mm;
   }
 
@@ -68,15 +68,17 @@
     margin: 0 !important;
   }
 
-  div, main, section, article, 
-  .group\/sidebar-wrapper,
-  [data-sidebar="inset"],
+  /* Aggressively neutralize layout height constraints that cause blank pages */
   [data-sidebar="wrapper"],
+  [data-sidebar="inset"],
+  .group\/sidebar-wrapper,
   .min-h-svh,
-  .min-h-screen {
+  .min-h-screen,
+  main,
+  div {
     display: block !important;
-    min-height: 0 !important;
     height: auto !important;
+    min-height: 0 !important;
     position: static !important;
     overflow: visible !important;
     width: 100% !important;
@@ -84,16 +86,14 @@
     margin: 0 !important;
   }
 
-  [data-radix-scroll-area-viewport] {
+  /* Reset SidebarProvider grid specifically */
+  [style*="--sidebar-width"] {
     display: block !important;
-    overflow: visible !important;
-    height: auto !important;
   }
 
   .no-print, 
   aside, 
   header, 
-  footer, 
   nav,
   [data-sidebar="trigger"],
   [data-sidebar="sidebar"],
@@ -103,7 +103,7 @@
     display: none !important;
   }
 
-  /* Just print tick marks, remove the box entirely */
+  /* High contrast tick marks with no boxes */
   [role="checkbox"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -114,29 +114,24 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 12px !important;
-    height: 12px !important;
-  }
-
-  [role="checkbox"][data-state="checked"] svg {
-    color: #000 !important;
-    stroke: #000 !important;
-    stroke-width: 4px !important;
-    fill: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: block !important;
     width: 14px !important;
     height: 14px !important;
+  }
+
+  [role="checkbox"][data-state="checked"]::after {
+    content: '✓';
+    color: #000 !important;
+    font-weight: 900 !important;
+    font-size: 14px !important;
   }
 
   table {
     width: 100% !important;
     border-collapse: collapse !important;
-    font-size: 7pt !important;
+    font-size: 8pt !important;
     table-layout: auto !important;
     background: white !important;
-    border: 1px solid black !important;
+    border: 0.5pt solid black !important;
   }
 
   thead {
@@ -149,21 +144,26 @@
 
   th, td {
     border: 0.5pt solid black !important;
-    padding: 1px !important;
+    padding: 2px !important;
     color: black !important;
     background: transparent !important;
-    white-space: nowrap !important;
   }
 
   .sticky {
     position: static !important;
   }
 
-  .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl, .shadow-inner {
-    box-shadow: none !important;
+  /* Custom portrait breaking for wide tables */
+  .portrait-break {
+    display: none;
   }
 
-  .bg-slate-50, .bg-muted, .bg-muted\/50, .bg-slate-100 {
-    background-color: transparent !important;
+  @media (orientation: portrait) {
+    .portrait-break {
+      display: block !important;
+      page-break-after: always !important;
+      height: 0 !important;
+      margin: 0 !important;
+    }
   }
 }

@@ -140,166 +140,188 @@ export default function PatrakCPage() {
 
         <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:overflow-visible print:border-none print:shadow-none">
           <ScrollArea className="w-full">
-            <Table className="border-collapse">
-              <TableHeader className="bg-slate-50 print:bg-white">
-                <TableRow>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[80px] print:static print:border-black">
-                    Roll No
-                  </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[80px] bg-slate-50 z-20 min-w-[180px] print:static print:border-black">
-                    Student Name
-                  </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black">
-                    G.R. No.
-                  </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[120px] print:border-black">
-                    Birthdate
-                  </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] text-center print:border-black">
-                    Atten.
-                  </TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black">
-                    Caste
-                  </TableHead>
-                  
-                  {activeSubjects.map((subject) => (
-                    <TableHead key={subject} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-slate-100/50 print:border-black print:bg-white">
-                      {subject}
-                    </TableHead>
-                  ))}
-
-                  <TableHead colSpan={1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50 print:border-black print:bg-white">
-                    PATRAK-B
-                  </TableHead>
-
-                  <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l print:border-black">Avg %</TableHead>
-                  <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px] print:static print:border-black">Outcome</TableHead>
-                </TableRow>
-
-                {isAnnual ? (
-                  <TableRow>
-                    {activeSubjects.map((subject) => (
-                      <React.Fragment key={`${subject}-sem-row`}>
-                        <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-blue-50/50 print:border-black print:bg-white">Semester 1</TableHead>
-                        <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-green-50/50 print:border-black print:bg-white">Semester 2</TableHead>
-                        <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-orange-50 print:border-black print:bg-white">Total</TableHead>
-                        <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b print:border-black">Grade</TableHead>
-                      </React.Fragment>
+            <div className="flex print:block">
+              {/* Biographical Section */}
+              <div className="flex-shrink-0">
+                <Table className="border-collapse border-r-0">
+                  <TableHeader className="bg-slate-50 print:bg-white">
+                    <TableRow>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-0 bg-slate-50 z-20 min-w-[80px] print:static print:border-black">
+                        Roll No
+                      </TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r sticky left-[80px] bg-slate-50 z-20 min-w-[180px] print:static print:border-black">
+                        Student Name
+                      </TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black">
+                        G.R. No.
+                      </TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[120px] print:border-black">
+                        Birthdate
+                      </TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[80px] text-center print:border-black">
+                        Atten.
+                      </TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[100px] print:border-black">
+                        Caste
+                      </TableHead>
+                    </TableRow>
+                    {isAnnual && <TableRow className="h-0" />}
+                    {isAnnual && <TableRow className="h-0" />}
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map((s) => (
+                      <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
+                        <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 print:text-black print:border-black">
+                          {s.rollNumber}
+                        </TableCell>
+                        <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[80px] bg-white z-10 print:text-black print:border-black">
+                          {s.name}
+                        </TableCell>
+                        <TableCell className="text-slate-500 font-medium border-r print:text-black print:border-black">{s.grNumber}</TableCell>
+                        <TableCell className="text-slate-600 border-r print:text-black print:border-black">{s.birthday}</TableCell>
+                        <TableCell className="text-center font-bold text-primary border-r print:text-black print:border-black">{s.attendance}%</TableCell>
+                        <TableCell className="text-slate-600 border-r print:text-black print:border-black">{s.caste}</TableCell>
+                      </TableRow>
                     ))}
-                    <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-indigo-100 print:border-black print:bg-white">Avg</TableHead>
-                  </TableRow>
-                ) : (
-                  <TableRow>
-                    {activeSubjects.map((subject) => (
-                      <React.Fragment key={`${subject}-sub`}>
-                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">Sva.</TableHead>
-                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">Tri.</TableHead>
-                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">
-                          {semester === "Semester 1" ? "PAT" : semester === "Semester 2" ? "SAT" : "PAT/SAT"}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Page Breaker for Portrait Mode */}
+              <div className="portrait-break" />
+
+              {/* Performance Section */}
+              <div className="flex-1 min-w-0">
+                <Table className="border-collapse">
+                  <TableHeader className="bg-slate-50 print:bg-white">
+                    <TableRow>
+                      {activeSubjects.map((subject) => (
+                        <TableHead key={subject} colSpan={isAnnual ? 8 : 5} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-slate-100/50 print:border-black print:bg-white">
+                          {subject}
                         </TableHead>
-                        <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50 print:border-black print:bg-white">Total</TableHead>
-                        <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Grd.</TableHead>
-                      </React.Fragment>
+                      ))}
+                      <TableHead colSpan={1} className="font-bold uppercase tracking-wider text-xs text-center border-r border-b bg-indigo-50/50 print:border-black print:bg-white">
+                        PATRAK-B
+                      </TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="text-center font-bold uppercase tracking-wider text-xs min-w-[80px] border-l print:border-black">Avg %</TableHead>
+                      <TableHead rowSpan={commonRowSpan} className="text-right font-bold uppercase tracking-wider text-xs sticky right-0 bg-slate-50 z-20 min-w-[100px] print:static print:border-black">Outcome</TableHead>
+                    </TableRow>
+
+                    {isAnnual ? (
+                      <TableRow>
+                        {activeSubjects.map((subject) => (
+                          <React.Fragment key={`${subject}-sem-row`}>
+                            <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-blue-50/50 print:border-black print:bg-white">Semester 1</TableHead>
+                            <TableHead colSpan={3} className="text-[10px] font-black text-center border-r border-b bg-green-50/50 print:border-black print:bg-white">Semester 2</TableHead>
+                            <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-orange-50 print:border-black print:bg-white">Total</TableHead>
+                            <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b print:border-black">Grade</TableHead>
+                          </React.Fragment>
+                        ))}
+                        <TableHead rowSpan={2} className="text-[10px] font-black text-center border-r border-b bg-indigo-100 print:border-black print:bg-white">Avg</TableHead>
+                      </TableRow>
+                    ) : (
+                      <TableRow>
+                        {activeSubjects.map((subject) => (
+                          <React.Fragment key={`${subject}-sub`}>
+                            <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">Sva.</TableHead>
+                            <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">Tri.</TableHead>
+                            <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[60px] print:border-black">
+                              {semester === "Semester 1" ? "PAT" : semester === "Semester 2" ? "SAT" : "PAT/SAT"}
+                            </TableHead>
+                            <TableHead className="text-[10px] font-black text-center px-1 border-r min-w-[60px] bg-orange-50/50 print:border-black print:bg-white">Total</TableHead>
+                            <TableHead className="text-[10px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Grd.</TableHead>
+                          </React.Fragment>
+                        ))}
+                        <TableHead className="text-[10px] font-black text-center border-r bg-indigo-50/50 print:border-black print:bg-white">Total</TableHead>
+                      </TableRow>
+                    )}
+
+                    {isAnnual && (
+                      <TableRow>
+                        {activeSubjects.map((subject) => (
+                          <React.Fragment key={`${subject}-annual-data-row`}>
+                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Trimasik</TableHead>
+                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Svadhyay</TableHead>
+                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">PAT/SAT</TableHead>
+                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Trimasik</TableHead>
+                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Svadhyay</TableHead>
+                            <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">PAT/SAT</TableHead>
+                          </React.Fragment>
+                        ))}
+                      </TableRow>
+                    )}
+                  </TableHeader>
+
+                  <TableBody>
+                    {filteredStudents.map((s) => (
+                      <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
+                        {activeSubjects.map((subject) => (
+                          <React.Fragment key={`${s.id}-${subject}`}>
+                            {isAnnual ? (
+                              <>
+                                <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
+                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={15} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
+                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={10} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
+                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={25} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
+                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={18} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
+                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={12} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
+                                  <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={22} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20 print:text-black print:border-black">
+                                  102
+                                </TableCell>
+                                <TableCell className="p-1 border-r text-center font-black text-primary text-[10px] print:text-black print:border-black">
+                                  A+
+                                </TableCell>
+                              </>
+                            ) : (
+                              <>
+                                <TableCell className="p-1 border-r print:border-black">
+                                  <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={8} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r print:border-black">
+                                  <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={72} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r print:border-black">
+                                  <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={22} />
+                                </TableCell>
+                                <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs print:text-black print:border-black">
+                                  102
+                                </TableCell>
+                                <TableCell className="p-1 border-r text-center font-black text-primary text-[10px] print:text-black print:border-black">
+                                  A+
+                                </TableCell>
+                              </>
+                            )}
+                          </React.Fragment>
+                        ))}
+
+                        <TableCell className={`p-1 border-r text-center font-bold text-xs print:border-black ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700 print:text-black' : 'bg-indigo-50/20'}`}>
+                          {isAnnual ? "86.5" : <Input type="number" className="h-7 text-xs text-center font-bold print:border-none" defaultValue={85} />}
+                        </TableCell>
+
+                        <TableCell className="text-center font-black text-orange-600 border-l print:text-black print:border-black">84.5%</TableCell>
+                        <TableCell className="text-right sticky right-0 bg-white z-10 border-l print:static print:border-black no-print">
+                          <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
+                            <Trophy className="w-3 h-3" /> PASS
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                    <TableHead className="text-[10px] font-black text-center border-r bg-indigo-50/50 print:border-black print:bg-white">Total</TableHead>
-                  </TableRow>
-                )}
-
-                {isAnnual && (
-                  <TableRow>
-                    {activeSubjects.map((subject) => (
-                      <React.Fragment key={`${subject}-annual-data-row`}>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Trimasik</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Svadhyay</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">PAT/SAT</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Trimasik</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">Svadhyay</TableHead>
-                        <TableHead className="text-[9px] font-bold text-center px-1 border-r min-w-[50px] print:border-black">PAT/SAT</TableHead>
-                      </React.Fragment>
-                    ))}
-                  </TableRow>
-                )}
-              </TableHeader>
-
-              <TableBody>
-                {filteredStudents.map((s) => (
-                  <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white">
-                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 print:text-black print:border-black">
-                      {s.rollNumber}
-                    </TableCell>
-                    <TableCell className="font-black text-slate-700 whitespace-nowrap border-r sticky left-[80px] bg-white z-10 print:text-black print:border-black">
-                      {s.name}
-                    </TableCell>
-                    <TableCell className="text-slate-500 font-medium border-r print:text-black print:border-black">{s.grNumber}</TableCell>
-                    <TableCell className="text-slate-600 border-r print:text-black print:border-black">{s.birthday}</TableCell>
-                    <TableCell className="text-center font-bold text-primary border-r print:text-black print:border-black">{s.attendance}%</TableCell>
-                    <TableCell className="text-slate-600 border-r print:text-black print:border-black">{s.caste}</TableCell>
-                    
-                    {activeSubjects.map((subject) => (
-                      <React.Fragment key={`${s.id}-${subject}`}>
-                        {isAnnual ? (
-                          <>
-                            <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={15} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={10} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r bg-blue-50/10 print:border-black">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={25} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={18} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={12} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r bg-green-50/10 print:border-black">
-                              <Input type="number" className="h-7 text-[10px] text-center px-1 font-medium print:border-none" defaultValue={22} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r text-center font-bold text-orange-700 text-xs bg-orange-50/20 print:text-black print:border-black">
-                              102
-                            </TableCell>
-                            <TableCell className="p-1 border-r text-center font-black text-primary text-[10px] print:text-black print:border-black">
-                              A+
-                            </TableCell>
-                          </>
-                        ) : (
-                          <>
-                            <TableCell className="p-1 border-r print:border-black">
-                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={8} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r print:border-black">
-                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={72} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r print:border-black">
-                              <Input type="number" className="h-7 text-xs text-center px-1 font-medium print:border-none" defaultValue={22} />
-                            </TableCell>
-                            <TableCell className="p-1 border-r bg-orange-50/20 text-center font-bold text-orange-700 text-xs print:text-black print:border-black">
-                              102
-                            </TableCell>
-                            <TableCell className="p-1 border-r text-center font-black text-primary text-[10px] print:text-black print:border-black">
-                              A+
-                            </TableCell>
-                          </>
-                        )}
-                      </React.Fragment>
-                    ))}
-
-                    <TableCell className={`p-1 border-r text-center font-bold text-xs print:border-black ${isAnnual ? 'bg-indigo-100/30 font-black text-indigo-700 print:text-black' : 'bg-indigo-50/20'}`}>
-                      {isAnnual ? "86.5" : <Input type="number" className="h-7 text-xs text-center font-bold print:border-none" defaultValue={85} />}
-                    </TableCell>
-
-                    <TableCell className="text-center font-black text-orange-600 border-l print:text-black print:border-black">84.5%</TableCell>
-                    <TableCell className="text-right sticky right-0 bg-white z-10 border-l print:static print:border-black no-print">
-                      <Badge className="bg-green-600 font-bold px-3 py-1 flex gap-1 items-center justify-center">
-                        <Trophy className="w-3 h-3" /> PASS
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
             <ScrollBar orientation="horizontal" className="no-print" />
           </ScrollArea>
         </div>
