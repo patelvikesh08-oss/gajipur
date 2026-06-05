@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -57,12 +56,7 @@ export function useStudentStore() {
 
   const addStudent = (student: Omit<Student, 'id'>) => {
     if (!firestore) {
-      const permissionError = new FirestorePermissionError({
-        path: 'students',
-        operation: 'create',
-        requestResourceData: student,
-      });
-      errorEmitter.emit('permission-error', permissionError);
+      console.error("Firestore not initialized");
       return;
     }
     
