@@ -85,29 +85,29 @@ function AppSidebar() {
       collapsible="icon" 
       onMouseEnter={() => !isMobile && setOpen(true)}
       onMouseLeave={() => !isMobile && setOpen(false)}
-      className="border-none bg-gradient-to-b from-blue-700 via-blue-600 to-blue-800 text-white no-print"
+      className="border-none bg-gradient-to-b from-emerald-700 via-emerald-600 to-emerald-800 text-white no-print"
     >
       <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
         <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center overflow-hidden">
-          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shrink-0">
-             <GraduationCap className="w-5 h-5 text-blue-700" />
+          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-lg">
+             <GraduationCap className="w-5 h-5 text-emerald-700" />
           </div>
           <span className="font-headline font-bold text-xl text-white tracking-tight truncate group-data-[state=collapsed]:hidden">EduPulse Admin</span>
         </div>
         <div className="flex items-center gap-3 p-2 bg-white/10 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300">
-          <Avatar className="w-10 h-10 border-2 border-green-400 p-0.5 shrink-0">
+          <Avatar className="w-10 h-10 border-2 border-emerald-400 p-0.5 shrink-0">
             <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             <AvatarFallback>AD</AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden group-data-[state=collapsed]:hidden">
             <span className="text-sm font-bold truncate text-white">Admin User</span>
             <span className="text-[10px] text-white/60 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Online / ઓનલાઇન
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Online / ઓનલાઇન
             </span>
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-2 py-4 pl-4">
+      <SidebarContent className="px-2 py-4 pl-4 bg-transparent">
         <SidebarMenu className="space-y-1">
           {mainNavigation.map((item) => {
             const isActive = pathname === item.href;
@@ -119,14 +119,14 @@ function AppSidebar() {
                   className={cn(
                     "px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none",
                     "text-white/80 hover:bg-white/10 hover:text-white",
-                    isActive && "bg-white text-blue-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-blue-700"
+                    isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
                   )}
                 >
                   <Link href={item.href}>
                     <span className="font-bold group-data-[state=collapsed]:hidden">
                       {item.name}
                     </span>
-                    <item.icon className={cn("w-5 h-5", isActive ? "text-blue-700" : "text-white/80 group-hover:text-white")} />
+                    <item.icon className={cn("w-5 h-5", isActive ? "text-emerald-700" : "text-white/80 group-hover:text-white")} />
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -160,14 +160,14 @@ function AppSidebar() {
                           className={cn(
                             "px-4 py-4 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
                             "text-white/70 hover:bg-white/10 hover:text-white",
-                            isActive && "bg-white text-blue-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-blue-700"
+                            isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
                           )}
                         >
                           <Link href={item.href}>
                             <span className="text-sm font-medium group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
-                            <item.icon className={cn("w-4 h-4", isActive ? "text-blue-700" : "text-white/70 group-hover:text-white")} />
+                            <item.icon className={cn("w-4 h-4", isActive ? "text-emerald-700" : "text-white/70 group-hover:text-white")} />
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
@@ -205,14 +205,14 @@ function AppSidebar() {
                           className={cn(
                             "px-4 py-4 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
                             "text-white/70 hover:bg-white/10 hover:text-white",
-                            isActive && "bg-white text-blue-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-blue-700"
+                            isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
                           )}
                         >
                           <Link href={item.href}>
                             <span className="text-sm font-medium group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
-                            <item.icon className={cn("w-4 h-4", isActive ? "text-blue-700" : "text-white/70 group-hover:text-white")} />
+                            <item.icon className={cn("w-4 h-4", isActive ? "text-emerald-700" : "text-white/70 group-hover:text-white")} />
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
@@ -245,7 +245,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
     <SidebarInset onClick={handleContentClick} className="bg-white transition-all duration-300">
       <header className="flex h-16 shrink-0 items-center justify-between gap-2 bg-white px-6 shadow-sm border-b no-print">
         <div className="flex items-center gap-4 flex-1">
-          <SidebarTrigger className="text-blue-600 hover:bg-blue-50" />
+          <SidebarTrigger className="text-emerald-600 hover:bg-emerald-50" />
           <div className="relative w-64 max-sm:hidden">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -257,7 +257,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
         
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors cursor-pointer">
-            <Avatar className="w-8 h-8 border border-green-500 p-0.5">
+            <Avatar className="w-8 h-8 border border-emerald-500 p-0.5">
               <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             </Avatar>
             <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account / એડમિન</span>
