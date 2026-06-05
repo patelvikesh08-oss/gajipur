@@ -1,6 +1,11 @@
+
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { useCallback } from 'react';
 
 export interface FieldMapping {
   field: string;
@@ -40,44 +45,31 @@ const DEFAULT_CONFIG: ReportCardConfig = {
 };
 
 export function useReportCardConfigStore() {
-  const [config, setConfig] = useState<ReportCardConfig>(DEFAULT_CONFIG);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const firestore = useFirestore();
+  
+  const configDocRef = useMemoFirebase(() => 
+    firestore ? doc(firestore, 'configs', 'reportcard') : null, 
+  [firestore]);
+  
+  const { data: configData, loading, error: fetchError } = useDoc<ReportCardConfig>(configDocRef);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('edupulse_report_config_v2');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setConfig({ ...DEFAULT_CONFIG, ...parsed });
-      } catch (e) {
-        console.error("Failed to load config", e);
-      }
-    } else {
-      // Migration from v1
-      const oldSaved = localStorage.getItem('edupulse_report_config');
-      if (oldSaved) {
-        try {
-          const parsed = JSON.parse(oldSaved);
-          const migrated = {
-            ...DEFAULT_CONFIG,
-            ...parsed,
-            templateUrlPage1: parsed.templateUrl,
-            fieldMappingsPage1: parsed.fieldMappings || []
-          };
-          setConfig(migrated);
-        } catch (e) {}
-      }
-    }
-    setIsLoaded(true);
-  }, []);
+  const config = configData || DEFAULT_CONFIG;
 
   const updateConfig = useCallback((updates: Partial<ReportCardConfig>) => {
-    setConfig(prev => {
-      const newConfig = { ...prev, ...updates };
-      localStorage.setItem('edupulse_report_config_v2', JSON.stringify(newConfig));
-      return newConfig;
-    });
-  }, []);
+    if (!firestore) return;
+    
+    const newConfig = { ...config, ...updates };
+    const docRef = doc(firestore, 'configs', 'reportcard');
 
-  return { config, updateConfig, isLoaded };
+    setDoc(docRef, newConfig, { merge: true }).catch(async (err) => {
+      const permissionError = new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'write',
+        requestResourceData: newConfig,
+      } satisfies SecurityRuleContext);
+      errorEmitter.emit('permission-error', permissionError);
+    });
+  }, [firestore, config]);
+
+  return { config, updateConfig, isLoaded: !loading, error: fetchError };
 }

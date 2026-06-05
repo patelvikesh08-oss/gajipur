@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -20,7 +21,8 @@ import {
   Database,
   Eye,
   PlusCircle,
-  Layers
+  Layers,
+  Loader2
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function ReportCardConfigPage() {
   const { config, updateConfig, isLoaded } = useReportCardConfigStore();
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [activePage, setActivePage] = useState<"page1" | "page2">("page1");
   const [activeField, setActiveField] = useState<{field: string, label: string} | null>(null);
   const [draggingField, setDraggingField] = useState<string | null>(null);
@@ -42,36 +45,74 @@ export default function ReportCardConfigPage() {
   const currentTemplateUrl = activePage === "page1" ? config.templateUrlPage1 : config.templateUrlPage2;
   const currentMappings = activePage === "page1" ? config.fieldMappingsPage1 : config.fieldMappingsPage2;
 
+  const compressImage = (dataUrl: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1600;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        // Using JPEG with 0.7 quality to significantly reduce storage footprint
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.src = dataUrl;
+    });
+  };
+
   const handleSave = () => {
     setIsSaving(true);
     setTimeout(() => {
       setIsSaving(false);
       toast({
         title: "Configuration Saved / માહિતી સાચવવામાં આવી",
-        description: "Report card templates and mappings for both pages have been updated.",
+        description: "Report card templates and mappings have been synced with database.",
       });
     }, 800);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      setIsUploading(true);
+      
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const url = event.target?.result as string;
+      reader.onload = async (event) => {
+        const rawUrl = event.target?.result as string;
+        const compressedUrl = await compressImage(rawUrl);
+        
         if (activePage === "page1") {
           updateConfig({
-            templateUrlPage1: url,
+            templateUrlPage1: compressedUrl,
             templateType: 'image',
             fieldMappingsPage1: [] 
           });
         } else {
           updateConfig({
-            templateUrlPage2: url,
+            templateUrlPage2: compressedUrl,
             fieldMappingsPage2: []
           });
         }
-        toast({ title: "Template Uploaded", description: `Uploaded template for ${activePage === "page1" ? "Page 1" : "Page 2"}.` });
+        setIsUploading(false);
+        toast({ title: "Template Optimized & Uploaded", description: `Compressed template for ${activePage === "page1" ? "Page 1" : "Page 2"}.` });
       };
       reader.readAsDataURL(file);
     }
@@ -203,14 +244,19 @@ export default function ReportCardConfigPage() {
                   
                   {!currentTemplateUrl ? (
                     <div 
-                      onClick={() => fileInputRef.current?.click()}
-                      className="border-2 border-dashed border-indigo-200 rounded-3xl p-32 flex flex-col items-center justify-center bg-slate-50 gap-4 transition-all hover:border-indigo-400 hover:bg-indigo-50/50 cursor-pointer group"
+                      onClick={() => !isUploading && fileInputRef.current?.click()}
+                      className={cn(
+                        "border-2 border-dashed border-indigo-200 rounded-3xl p-32 flex flex-col items-center justify-center bg-slate-50 gap-4 transition-all hover:border-indigo-400 hover:bg-indigo-50/50 cursor-pointer group",
+                        isUploading && "cursor-wait opacity-50"
+                      )}
                     >
                       <div className="p-6 rounded-2xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
-                        <FileUp className="w-12 h-12" />
+                        {isUploading ? <Loader2 className="w-12 h-12 animate-spin" /> : <FileUp className="w-12 h-12" />}
                       </div>
                       <div className="text-center">
-                        <p className="font-black text-slate-700 text-lg">Click to Upload {activePage === "page1" ? "Page 1" : "Page 2"} Template</p>
+                        <p className="font-black text-slate-700 text-lg">
+                          {isUploading ? "Optimizing Image..." : `Click to Upload ${activePage === "page1" ? "Page 1" : "Page 2"} Template`}
+                        </p>
                         <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Supports PNG, JPG, JPEG</p>
                       </div>
                     </div>
@@ -359,7 +405,7 @@ export default function ReportCardConfigPage() {
 
                   <div className="p-6 bg-slate-50 border-t">
                     <Button onClick={handleSave} className="w-full font-black h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-2xl shadow-indigo-100 text-sm uppercase tracking-widest" disabled={isSaving}>
-                      {isSaving ? "Saving..." : <><Save className="w-5 h-5 mr-2" /> Commit All Pages</>}
+                      {isSaving ? "Syncing..." : <><Save className="w-5 h-5 mr-2" /> Sync Configuration</>}
                     </Button>
                   </div>
                 </CardContent>

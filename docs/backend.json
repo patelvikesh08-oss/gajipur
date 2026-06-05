@@ -67,6 +67,20 @@
         "maxTotalSubColumns": { "type": "number" }
       }
     },
+    "ReportCardConfig": {
+      "title": "Report Card Configuration",
+      "description": "Custom template and field mapping for student report cards.",
+      "type": "object",
+      "properties": {
+        "templateUrlPage1": { "type": "string" },
+        "templateUrlPage2": { "type": "string" },
+        "fieldMappingsPage1": { "type": "array" },
+        "fieldMappingsPage2": { "type": "array" },
+        "schoolName": { "type": "string" },
+        "schoolIndex": { "type": "string" },
+        "districtBlock": { "type": "string" }
+      }
+    },
     "PatrakAEntry": {
       "title": "Patrak-A Entry",
       "description": "Formative assessment marks for a student.",
@@ -105,6 +119,10 @@
     "/configs/patrakb": {
       "schema": "PatrakBConfig",
       "description": "Patrak-B grid configuration settings."
+    },
+    "/configs/reportcard": {
+      "schema": "ReportCardConfig",
+      "description": "Global report card layout settings."
     },
     "/patrakA/{entryId}": {
       "schema": "PatrakAEntry",
