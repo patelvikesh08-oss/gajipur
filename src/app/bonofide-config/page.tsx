@@ -1,29 +1,53 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Settings, Upload, Save, FileText, CheckCircle2, Image as ImageIcon } from "lucide-react";
+import { Settings, Upload, Save, FileText, CheckCircle2, Image as ImageIcon, FileUp, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 export default function BonofideConfigPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [templateName, setTemplateName] = useState("Standard Academic Template");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = () => {
     setIsSaving(true);
+    // Simulate a save process
     setTimeout(() => {
       setIsSaving(false);
       toast({
-        title: "Configuration Saved",
+        title: "Configuration Saved / માહિતી સાચવવામાં આવી",
         description: "Bonafide template settings have been updated.",
       });
     }, 800);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      toast({
+        title: "File Selected / ફાઇલ પસંદ કરી",
+        description: `Selected: ${file.name}`,
+      });
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const clearFile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   return (
@@ -77,21 +101,52 @@ export default function BonofideConfigPage() {
                   <Upload className="w-5 h-5 text-primary" />
                   Blank Template Upload / નમૂનો અપલોડ
                 </CardTitle>
-                <CardDescription>Upload a JPG/PNG background template if you wish to use a custom printed letterhead.</CardDescription>
+                <CardDescription>Upload a JPG/PNG or Word background template if you wish to use a custom printed letterhead.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="border-2 border-dashed border-primary/30 rounded-xl p-10 flex flex-col items-center justify-center bg-white gap-4 transition-colors hover:border-primary">
-                  <div className="p-4 rounded-full bg-primary/10">
-                    <ImageIcon className="w-10 h-10 text-primary" />
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileChange} 
+                  className="hidden" 
+                  accept=".jpg,.jpeg,.png,.doc,.docx,.pdf"
+                />
+                
+                {!selectedFile ? (
+                  <div 
+                    onClick={triggerFileInput}
+                    className="border-2 border-dashed border-primary/30 rounded-xl p-10 flex flex-col items-center justify-center bg-white gap-4 transition-all hover:border-primary hover:bg-primary/5 cursor-pointer"
+                  >
+                    <div className="p-4 rounded-full bg-primary/10">
+                      <ImageIcon className="w-10 h-10 text-primary" />
+                    </div>
+                    <div className="text-center">
+                      <p className="font-bold text-slate-700">Click to select template / ફાઇલ પસંદ કરવા ક્લિક કરો</p>
+                      <p className="text-xs text-muted-foreground mt-1">Images (JPG/PNG) or Documents (DOCX/PDF)</p>
+                    </div>
+                    <Button variant="outline" className="font-bold pointer-events-none">
+                      Select File / ફાઇલ પસંદ કરો
+                    </Button>
                   </div>
-                  <div className="text-center">
-                    <p className="font-bold text-slate-700">Drag and drop template or click to browse</p>
-                    <p className="text-xs text-muted-foreground mt-1">Recommended size: 2480 x 3508 pixels (A4 @ 300 DPI)</p>
+                ) : (
+                  <div className="bg-white border rounded-xl p-6 flex items-center gap-4 relative group">
+                    <div className="w-12 h-12 rounded bg-primary/10 flex items-center justify-center text-primary">
+                      <FileUp className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold truncate">{selectedFile.name}</p>
+                      <p className="text-xs text-muted-foreground">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={clearFile}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
                   </div>
-                  <Button variant="outline" className="font-bold">
-                    Select Image / ફાઇલ પસંદ કરો
-                  </Button>
-                </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -107,8 +162,8 @@ export default function BonofideConfigPage() {
                     <FileText className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate">{templateName}</p>
-                    <p className="text-[10px] text-muted-foreground">Updated 2 days ago</p>
+                    <p className="text-sm font-bold truncate">{selectedFile ? selectedFile.name : templateName}</p>
+                    <p className="text-[10px] text-muted-foreground">{selectedFile ? "Just selected" : "Updated 2 days ago"}</p>
                   </div>
                   <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
                 </div>
