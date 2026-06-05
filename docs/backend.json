@@ -81,6 +81,20 @@
         "districtBlock": { "type": "string" }
       }
     },
+    "SchoolDetail": {
+      "title": "School Detail",
+      "description": "General school identity information.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "indexNumber": { "type": "string" },
+        "district": { "type": "string" },
+        "block": { "type": "string" },
+        "address": { "type": "string" },
+        "mobile": { "type": "string" },
+        "principal": { "type": "string" }
+      }
+    },
     "PatrakAEntry": {
       "title": "Patrak-A Entry",
       "description": "Formative assessment marks for a student.",
@@ -123,6 +137,10 @@
     "/configs/reportcard": {
       "schema": "ReportCardConfig",
       "description": "Global report card layout settings."
+    },
+    "/configs/school": {
+      "schema": "SchoolDetail",
+      "description": "Global school identity settings."
     },
     "/patrakA/{entryId}": {
       "schema": "PatrakAEntry",

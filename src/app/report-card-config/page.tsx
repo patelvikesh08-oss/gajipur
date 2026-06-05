@@ -350,7 +350,7 @@ export default function ReportCardConfigPage() {
                   <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Mapping Toolbox</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <div className="p-6 space-y-8 max-h-[calc(100vh-300px)] overflow-auto custom-scrollbar">
+                  <div className="p-6 space-y-8 max-h-[calc(100vh-300px)] overflow-auto custom-scrollbar no-scrollbar">
                     <div className="bg-indigo-50 p-4 rounded-2xl mb-6">
                       <div className="flex gap-3">
                         <Info className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />

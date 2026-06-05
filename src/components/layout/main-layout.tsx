@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -32,7 +33,8 @@ import {
   SpellCheck,
   Settings2,
   Settings,
-  FileDigit
+  FileDigit,
+  Building2
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -61,6 +63,7 @@ const examinationSubItems = [
 ];
 
 const settingsSubItems = [
+  { name: "School Details / શાળા વિગત", href: "/school-details", icon: Building2 },
   { name: "Subject Mapping / વિષય", href: "/subject-mapping", icon: Layers },
   { name: "Marks Mapping / ગુણ", href: "/marks-mapping", icon: Calculator },
   { name: "Patrak-B Config / પત્રક-બ સેટિંગ", href: "/patrak-b-config", icon: Settings2 },
@@ -78,7 +81,7 @@ function AppSidebar() {
       collapsible="icon" 
       onMouseEnter={() => !isMobile && setOpen(true)}
       onMouseLeave={() => !isMobile && setOpen(false)}
-      className="border-none bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
+      className="border-none bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent no-scrollbar"
     >
       <SidebarHeader className="p-4 transition-all duration-300 group-data-[state=collapsed]:p-2">
         <div className="flex items-center gap-3 p-2 transition-all duration-300 group-data-[state=collapsed]:justify-center">
@@ -233,7 +236,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       onClick={handleContentClick} 
       className="flex-1 flex flex-col min-h-svh bg-indigo-900 relative overflow-hidden"
     >
-      <main className="flex-1 overflow-auto bg-white transition-all duration-300 rounded-none shadow-none">
+      <main className="flex-1 overflow-auto bg-white transition-all duration-300 rounded-none shadow-none no-scrollbar">
         <div className="mx-auto max-w-[1600px] p-4 md:p-8 space-y-8">
           {children}
         </div>

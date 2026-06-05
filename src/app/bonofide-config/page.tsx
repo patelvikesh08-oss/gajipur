@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Save, FileText, Image as ImageIcon, FileUp, X, Settings2, CheckCircle2, Info, Copy, Eye, ExternalLink } from "lucide-react";
+import { Upload, Save, FileText, X, Settings2, CheckCircle2, Info, Copy, Eye, ExternalLink, FileUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
 
 export default function BonofideConfigPage() {
   const [isSaving, setIsSaving] = useState(false);
@@ -28,7 +27,6 @@ export default function BonofideConfigPage() {
 
   const handleSave = () => {
     setIsSaving(true);
-    // Simulate a save process
     setTimeout(() => {
       setIsSaving(false);
       toast({
@@ -42,11 +40,8 @@ export default function BonofideConfigPage() {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setSelectedFile(file);
-
-      // Immediate UI Preview
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
-
       toast({
         title: "File Loaded / ફાઇલ પસંદ કરી",
         description: `Selected: ${file.name}. View preview below.`,
