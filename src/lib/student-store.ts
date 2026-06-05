@@ -3,6 +3,8 @@
 import { useFirestore, useCollection } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import { useMemo } from 'react';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 export type Gender = 'Male' | 'Female' | 'Other';
 
@@ -46,18 +48,44 @@ export function useStudentStore() {
 
   const addStudent = (student: Omit<Student, 'id'>) => {
     if (!firestore) return;
-    addDoc(collection(firestore, 'students'), student);
+    const colRef = collection(firestore, 'students');
+    addDoc(colRef, student)
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: colRef.path,
+          operation: 'create',
+          requestResourceData: student,
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   };
 
   const updateStudent = (updatedStudent: Student) => {
     if (!firestore) return;
     const { id, ...data } = updatedStudent;
-    updateDoc(doc(firestore, 'students', id), data);
+    const docRef = doc(firestore, 'students', id);
+    updateDoc(docRef, data)
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: data,
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   };
 
   const deleteStudent = (id: string) => {
     if (!firestore) return;
-    deleteDoc(doc(firestore, 'students', id));
+    const docRef = doc(firestore, 'students', id);
+    deleteDoc(docRef)
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'delete',
+        } satisfies SecurityRuleContext);
+        errorEmitter.emit('permission-error', permissionError);
+      });
   };
 
   const bulkAddStudents = async (newStudents: any[]) => {
@@ -85,7 +113,14 @@ export function useStudentStore() {
         mobileNumber: ""
       });
     });
-    await batch.commit();
+    
+    batch.commit().catch(async (error) => {
+      const permissionError = new FirestorePermissionError({
+        path: 'students (batch)',
+        operation: 'write',
+      } satisfies SecurityRuleContext);
+      errorEmitter.emit('permission-error', permissionError);
+    });
   };
 
   return { 

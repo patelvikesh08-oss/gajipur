@@ -1,27 +1,27 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read/write access to all collections for authenticated users
-    // In a production app, you would restrict this further based on user roles or IDs
+    // For prototyping: Allow public access. 
+    // WARNING: In a production app, you MUST restrict this to authenticated users.
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true;
     }
     
-    // Explicit rules for entities defined in backend.json
+    // Explicit paths for entities defined in backend.json
     match /students/{studentId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true;
     }
     
     match /subjectMappings/{mappingId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true;
     }
     
     match /marksMappings/{mappingId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true;
     }
     
     match /configs/{configId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true;
     }
   }
 }
