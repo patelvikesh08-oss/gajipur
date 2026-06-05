@@ -7,7 +7,7 @@ import { useReportCardConfigStore } from "@/lib/report-card-config-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GraduationCap, Users, Calendar, Printer, School, UserCircle, Layout, Info, CheckCircle2 } from "lucide-react";
+import { GraduationCap, Users, Calendar, Printer, School, UserCircle, Layout, CheckCircle2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -51,7 +51,6 @@ export default function ReportCardPage() {
     ? students.filter(s => selectedStudentIds.includes(s.id))
     : (selectedStudentIds[0] ? [students.find(s => s.id === selectedStudentIds[0])!] : []);
 
-  // Mock data resolver for template fields
   const resolveField = (fieldName: string, student: any) => {
     const data: Record<string, string | number> = {
       "{{student_name}}": student.name,
@@ -65,9 +64,9 @@ export default function ReportCardPage() {
       "{{total_marks}}": 255,
       "{{percentage}}": "85%",
       "{{grade}}": "A",
-      "{{attendance}}": student.attendance + "%"
+      "{{attendance}}": (student.attendance || 0) + "%"
     };
-    return data[fieldName] || "N/A";
+    return data[fieldName] || "";
   };
 
   const mockSubjects = [
@@ -134,10 +133,10 @@ export default function ReportCardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {config.templateUrl && (
+              {(config.templateUrlPage1 || config.templateUrlPage2) && (
                 <Badge className="w-full bg-emerald-100 text-emerald-700 border-none py-2 justify-center gap-2 rounded-xl mb-2">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Mapping Template Active
+                  {config.templateUrlPage1 && config.templateUrlPage2 ? "Two-Page Layout Active" : "One-Page Layout Active"}
                 </Badge>
               )}
 
@@ -212,33 +211,47 @@ export default function ReportCardPage() {
             <div className="space-y-8">
               {activeReports.length > 0 ? (
                 activeReports.map((student) => {
-                  if (config.templateUrl && config.templateType === 'image') {
+                  const hasCustomTemplates = config.templateUrlPage1 || config.templateUrlPage2;
+
+                  if (hasCustomTemplates) {
                     return (
-                      <div key={student.id} className="relative bg-white shadow-2xl rounded-sm overflow-hidden print:shadow-none min-h-[1000px] flex flex-col items-center">
-                        <div className="relative w-full">
-                          <img src={config.templateUrl} alt="Report Template" className="w-full h-auto" />
-                          
-                          {/* Dynamically Overlay Mapped Fields */}
-                          {config.fieldMappings.map((m) => (
-                            <div 
-                              key={m.field}
-                              style={{ 
-                                left: `${m.x}%`, 
-                                top: `${m.y}%`,
-                                position: 'absolute'
-                              }}
-                              className="transform -translate-x-1/2 -translate-y-1/2"
-                            >
-                              <span className="font-bold text-slate-900 text-[10pt] whitespace-nowrap bg-white/40 px-1 rounded print:bg-transparent">
-                                {resolveField(m.field, student)}
-                              </span>
+                      <div key={student.id} className="flex flex-col gap-12">
+                        {/* Page 1 */}
+                        {config.templateUrlPage1 && (
+                          <div className="relative bg-white shadow-2xl rounded-sm overflow-hidden print:shadow-none min-h-[1000px] flex flex-col items-center print:page-break-after-always">
+                            <div className="relative w-full">
+                              <img src={config.templateUrlPage1} alt="Report Page 1" className="w-full h-auto" />
+                              {config.fieldMappingsPage1.map((m) => (
+                                <div key={m.field} style={{ left: `${m.x}%`, top: `${m.y}%`, position: 'absolute' }} className="transform -translate-x-1/2 -translate-y-1/2">
+                                  <span className="font-bold text-slate-900 text-[10pt] whitespace-nowrap bg-white/40 px-1 rounded print:bg-transparent">
+                                    {resolveField(m.field, student)}
+                                  </span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        )}
+
+                        {/* Page 2 */}
+                        {config.templateUrlPage2 && (
+                          <div className="relative bg-white shadow-2xl rounded-sm overflow-hidden print:shadow-none min-h-[1000px] flex flex-col items-center print:page-break-after-always">
+                            <div className="relative w-full">
+                              <img src={config.templateUrlPage2} alt="Report Page 2" className="w-full h-auto" />
+                              {config.fieldMappingsPage2.map((m) => (
+                                <div key={m.field} style={{ left: `${m.x}%`, top: `${m.y}%`, position: 'absolute' }} className="transform -translate-x-1/2 -translate-y-1/2">
+                                  <span className="font-bold text-slate-900 text-[10pt] whitespace-nowrap bg-white/40 px-1 rounded print:bg-transparent">
+                                    {resolveField(m.field, student)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   }
 
+                  // Default System Template (Fallback)
                   const parts = [
                     { id: 'patrakc', title: 'PATRAK-C PERFORMANCE RECORD / પત્રક-સી પ્રગતિ પત્રક', pageNum: 1 },
                     { id: 'marksheet', title: 'MARKSHEET / ગુણપત્રક', pageNum: 2 }
@@ -374,7 +387,7 @@ export default function ReportCardPage() {
               ) : (
                 <div className="bg-white border-2 border-dashed rounded-3xl p-32 text-center shadow-sm">
                   <Layout className="w-16 h-16 text-slate-200 mx-auto mb-6" />
-                  <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Select a student to generate custom report card</p>
+                  <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Select a student to generate report card</p>
                 </div>
               )}
             </div>

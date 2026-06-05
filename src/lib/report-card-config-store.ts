@@ -10,17 +10,22 @@ export interface FieldMapping {
 }
 
 export interface ReportCardConfig {
-  templateUrl: string | null;
+  templateUrlPage1: string | null;
+  templateUrlPage2: string | null;
+  fieldMappingsPage1: FieldMapping[];
+  fieldMappingsPage2: FieldMapping[];
   templateType: 'pdf' | 'image' | 'default';
   schoolName: string;
   schoolIndex: string;
   districtBlock: string;
   conductItems: { id: string; label: string; checked: boolean }[];
-  fieldMappings: FieldMapping[];
 }
 
 const DEFAULT_CONFIG: ReportCardConfig = {
-  templateUrl: null,
+  templateUrlPage1: null,
+  templateUrlPage2: null,
+  fieldMappingsPage1: [],
+  fieldMappingsPage2: [],
   templateType: 'default',
   schoolName: 'EduPulse Global Academy',
   schoolIndex: 'SCH-IDX-998877',
@@ -32,7 +37,6 @@ const DEFAULT_CONFIG: ReportCardConfig = {
     { id: "leadership", label: "Leadership / નેતૃત્વ", checked: true },
     { id: "discipline", label: "Discipline / શિસ્ત", checked: true },
   ],
-  fieldMappings: [],
 };
 
 export function useReportCardConfigStore() {
@@ -40,14 +44,28 @@ export function useReportCardConfigStore() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('edupulse_report_config');
+    const saved = localStorage.getItem('edupulse_report_config_v2');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Ensure fieldMappings exists for backward compatibility
-        setConfig({ ...DEFAULT_CONFIG, ...parsed, fieldMappings: parsed.fieldMappings || [] });
+        setConfig({ ...DEFAULT_CONFIG, ...parsed });
       } catch (e) {
         console.error("Failed to load config", e);
+      }
+    } else {
+      // Migration from v1
+      const oldSaved = localStorage.getItem('edupulse_report_config');
+      if (oldSaved) {
+        try {
+          const parsed = JSON.parse(oldSaved);
+          const migrated = {
+            ...DEFAULT_CONFIG,
+            ...parsed,
+            templateUrlPage1: parsed.templateUrl,
+            fieldMappingsPage1: parsed.fieldMappings || []
+          };
+          setConfig(migrated);
+        } catch (e) {}
       }
     }
     setIsLoaded(true);
@@ -56,7 +74,7 @@ export function useReportCardConfigStore() {
   const updateConfig = useCallback((updates: Partial<ReportCardConfig>) => {
     setConfig(prev => {
       const newConfig = { ...prev, ...updates };
-      localStorage.setItem('edupulse_report_config', JSON.stringify(newConfig));
+      localStorage.setItem('edupulse_report_config_v2', JSON.stringify(newConfig));
       return newConfig;
     });
   }, []);
