@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -52,29 +53,39 @@ export default function ReportCardPage() {
     : (selectedStudentIds[0] ? [students.find(s => s.id === selectedStudentIds[0])!] : []);
 
   const resolveField = (fieldName: string, student: any) => {
+    // Generate some deterministic mock scores based on student ID for consistency
+    const getScore = (seed: string, factor: number) => {
+      const charCode = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+      return (charCode % 30) + 70; // Range 70-99
+    };
+
     const data: Record<string, string | number> = {
       "{{student_name}}": student.name,
       "{{roll_number}}": student.rollNumber,
       "{{gr_number}}": student.grNumber,
       "{{standard}}": student.academicStandard,
       "{{academic_year}}": academicYear,
-      "{{math_marks}}": 85,
-      "{{sci_marks}}": 78,
-      "{{eng_marks}}": 92,
-      "{{total_marks}}": 255,
-      "{{percentage}}": "85%",
-      "{{grade}}": "A",
+      "{{math_marks}}": getScore(student.id, 1),
+      "{{sci_marks}}": getScore(student.id, 2),
+      "{{eng_marks}}": getScore(student.id, 3),
+      "{{social_marks}}": getScore(student.id, 4),
+      "{{env_marks}}": getScore(student.id, 5),
+      "{{guj_marks}}": getScore(student.id, 6),
+      "{{hindi_marks}}": getScore(student.id, 7),
+      "{{sans_marks}}": getScore(student.id, 8),
+      "{{comp_marks}}": getScore(student.id, 9),
+      "{{pt_marks}}": getScore(student.id, 10),
+      "{{art_marks}}": getScore(student.id, 11),
+      "{{music_marks}}": getScore(student.id, 12),
+      "{{gk_marks}}": getScore(student.id, 13),
+      "{{moral_marks}}": getScore(student.id, 14),
+      "{{total_marks}}": 345,
+      "{{percentage}}": "86%",
+      "{{grade}}": "A+",
       "{{attendance}}": (student.attendance || 0) + "%"
     };
     return data[fieldName] || "";
   };
-
-  const mockSubjects = [
-    { name: "Mathematics / ગણિત", marks: 85, grade: "A" },
-    { name: "Science / વિજ્ઞાન", marks: 78, grade: "B+" },
-    { name: "English / અંગ્રેજી", marks: 92, grade: "A+" },
-    { name: "Social Studies / સા. વિજ્ઞાન", marks: 88, grade: "A" },
-  ];
 
   return (
     <MainLayout>
@@ -94,7 +105,7 @@ export default function ReportCardPage() {
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
                 <Calendar className="w-4 h-4 text-blue-200" />
                 <Select value={academicYear} onValueChange={setAcademicYear}>
-                  <SelectTrigger className="w-[110px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold text-white">
+                  <SelectTrigger className="w-[110px] border-none bg-transparent shadow-none focus:ring-0 h-7 text-xs font-bold text-white">
                     <SelectValue placeholder="Year" />
                   </SelectTrigger>
                   <SelectContent>
@@ -216,7 +227,6 @@ export default function ReportCardPage() {
                   if (hasCustomTemplates) {
                     return (
                       <div key={student.id} className="flex flex-col gap-12">
-                        {/* Page 1 */}
                         {config.templateUrlPage1 && (
                           <div className="relative bg-white shadow-2xl rounded-sm overflow-hidden print:shadow-none min-h-[1000px] flex flex-col items-center print:page-break-after-always">
                             <div className="relative w-full">
@@ -232,7 +242,6 @@ export default function ReportCardPage() {
                           </div>
                         )}
 
-                        {/* Page 2 */}
                         {config.templateUrlPage2 && (
                           <div className="relative bg-white shadow-2xl rounded-sm overflow-hidden print:shadow-none min-h-[1000px] flex flex-col items-center print:page-break-after-always">
                             <div className="relative w-full">
@@ -251,136 +260,45 @@ export default function ReportCardPage() {
                     );
                   }
 
-                  // Default System Template (Fallback)
-                  const parts = [
-                    { id: 'patrakc', title: 'PATRAK-C PERFORMANCE RECORD / પત્રક-સી પ્રગતિ પત્રક', pageNum: 1 },
-                    { id: 'marksheet', title: 'MARKSHEET / ગુણપત્રક', pageNum: 2 }
-                  ];
-
                   return (
-                    <div key={student.id} className="flex flex-col gap-8 print:gap-0">
-                      {parts.map((part) => (
-                        <div 
-                          key={`${student.id}-${part.id}`} 
-                          className="bg-white p-12 border border-slate-200 shadow-2xl rounded-sm flex flex-col justify-between min-h-[900px] print:shadow-none print:border-black print:mb-0 print:page-break-after-always"
-                        >
-                          <div className="report-content">
-                            <div className="text-center mb-10 space-y-2">
-                              <h2 className="text-sm font-black text-indigo-600 uppercase tracking-[0.3em] mb-1">PATRAK-C / પત્રક-સી</h2>
-                              <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">{config.schoolName}</h1>
-                              <div className="flex items-center justify-center gap-4 text-[10px] font-black text-slate-500 uppercase tracking-widest print:text-black">
-                                <span>Academic Year: {academicYear}</span>
-                                <span className="w-1.5 h-1.5 rounded-full bg-slate-300 print:bg-black" />
-                                <span>Semester: {semester}</span>
-                              </div>
-                              <div className="flex items-center justify-between border-y-2 border-slate-900 py-2.5 mt-6 print:border-black">
-                                <span className="text-xs font-black px-4">{part.title}</span>
-                                <span className="text-xs font-black px-4">PAGE NO: {part.pageNum}</span>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-10 mb-10">
-                              <div className="space-y-4">
-                                <h3 className="text-[10px] font-black bg-slate-900 text-white px-3 py-1.5 uppercase rounded-sm inline-flex items-center gap-2 print:bg-black">
-                                  <School className="w-3.5 h-3.5" /> School Detail
-                                </h3>
-                                <div className="bg-slate-50 p-5 rounded-xl space-y-3 border-l-4 border-slate-300 print:bg-white print:border-black shadow-sm">
-                                  <div className="space-y-0.5">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase">School Name</p>
-                                    <p className="text-[11px] font-black text-slate-800 uppercase">{config.schoolName}</p>
-                                  </div>
-                                  <div className="space-y-0.5">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase">School Index Number</p>
-                                    <p className="text-[11px] font-black text-slate-800">{config.schoolIndex}</p>
-                                  </div>
-                                  <div className="space-y-0.5">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase">District / Block</p>
-                                    <p className="text-[11px] font-black text-slate-800 uppercase">{config.districtBlock}</p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="space-y-4">
-                                <h3 className="text-[10px] font-black bg-indigo-900 text-white px-3 py-1.5 uppercase rounded-sm inline-flex items-center gap-2 print:bg-black">
-                                  <UserCircle className="w-3.5 h-3.5" /> Student Detail
-                                </h3>
-                                <div className="bg-indigo-50/50 p-5 rounded-xl space-y-3 border-l-4 border-indigo-600 print:bg-white print:border-black shadow-sm">
-                                  <div className="flex justify-between gap-4">
-                                    <div className="space-y-0.5">
-                                      <p className="text-[8px] font-black text-slate-400 uppercase">Full Name / નામ</p>
-                                      <p className="text-[11px] font-black text-indigo-900 uppercase">{student.name}</p>
-                                    </div>
-                                    <div className="space-y-0.5 text-right">
-                                      <p className="text-[8px] font-black text-slate-400 uppercase">Roll No</p>
-                                      <p className="text-[11px] font-black text-indigo-900">{student.rollNumber}</p>
-                                    </div>
-                                  </div>
-                                  <div className="flex justify-between gap-4">
-                                    <div className="space-y-0.5">
-                                      <p className="text-[8px] font-black text-slate-400 uppercase">Standard / ધોરણ</p>
-                                      <p className="text-[11px] font-black text-indigo-900 uppercase">{student.academicStandard}</p>
-                                    </div>
-                                    <div className="space-y-0.5 text-right">
-                                      <p className="text-[8px] font-black text-slate-400 uppercase">G.R. No</p>
-                                      <p className="text-[11px] font-black text-indigo-900">{student.grNumber}</p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {part.id === 'patrakc' ? (
-                              <div className="space-y-10">
-                                <div className="space-y-4">
-                                  <h3 className="text-[10px] font-black border-b-2 border-slate-900 pb-1.5 uppercase inline-block print:border-black">Qualities & Conduct / ગુણ અને વર્તણૂક</h3>
-                                  <Table className="border-2 border-slate-200 text-xs print:border-black">
-                                    <TableBody>
-                                      {config.conductItems.filter(i => i.checked).map(t => (
-                                        <TableRow key={t.id} className="h-11 border-slate-200 print:border-black">
-                                          <TableCell className="py-2.5 font-bold text-slate-700 print:text-black print:border-black">{t.label}</TableCell>
-                                          <TableCell className="py-2.5 text-center font-black text-indigo-700 text-sm print:text-black">A+</TableCell>
-                                        </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="space-y-8">
-                                <Table className="border-2 border-slate-900 text-xs print:border-black">
-                                  <TableHeader className="bg-slate-900 print:bg-white">
-                                    <TableRow className="hover:bg-slate-900 border-none print:border-black">
-                                      <TableHead className="text-white h-11 print:text-black print:border-black font-black uppercase text-[10px]">Subject / વિષય</TableHead>
-                                      <TableHead className="text-white h-11 text-center print:text-black print:border-black font-black uppercase text-[10px]">Marks Obtain / ગુણ</TableHead>
-                                      <TableHead className="text-white h-11 text-right print:text-black print:border-black font-black uppercase text-[10px]">Grade / ગ્રેડ</TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    {mockSubjects.map(sub => (
-                                      <TableRow key={sub.name} className="h-11 border-slate-200 print:border-black">
-                                        <TableCell className="py-2.5 font-bold text-slate-700 print:text-black print:border-black">{sub.name}</TableCell>
-                                        <TableCell className="py-2.5 text-center font-black print:text-black print:border-black">{sub.marks}</TableCell>
-                                        <TableCell className="py-2.5 text-right font-black text-indigo-700 print:text-black print:border-black">{sub.grade}</TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </div>
-                            )}
+                    <div key={student.id} className="bg-white p-12 border border-slate-200 shadow-2xl rounded-sm flex flex-col justify-between min-h-[900px] print:shadow-none print:border-black">
+                      <div className="text-center space-y-4">
+                        <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">{config.schoolName}</h1>
+                        <h2 className="text-sm font-black text-indigo-600 uppercase tracking-[0.3em]">Official Performance Report</h2>
+                        <div className="grid grid-cols-2 gap-10 mt-12 text-left">
+                          <div className="bg-indigo-50/50 p-6 rounded-2xl border-l-4 border-indigo-600">
+                            <p className="text-[10px] font-black text-indigo-400 uppercase">Student Name</p>
+                            <p className="text-lg font-black text-slate-800">{student.name}</p>
                           </div>
-
-                          <div className="mt-20 flex justify-between px-6">
-                            <div className="text-center space-y-2.5">
-                              <div className="w-40 h-px bg-slate-300 mx-auto print:bg-black" />
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest print:text-black">Class Teacher / વર્ગ શિક્ષક</p>
-                            </div>
-                            <div className="text-center space-y-2.5">
-                              <div className="w-40 h-px bg-slate-300 mx-auto print:bg-black" />
-                              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest print:text-black">Principal / આચાર્ય</p>
-                            </div>
+                          <div className="bg-slate-50 p-6 rounded-2xl border-l-4 border-slate-400">
+                            <p className="text-[10px] font-black text-slate-400 uppercase">G.R. Number</p>
+                            <p className="text-lg font-black text-slate-800">{student.grNumber || "N/A"}</p>
                           </div>
                         </div>
-                      ))}
+                        <div className="mt-12">
+                          <Table className="border-2">
+                            <TableHeader className="bg-slate-900">
+                              <TableRow>
+                                <TableHead className="text-white font-black uppercase text-xs">Subject / વિષય</TableHead>
+                                <TableHead className="text-white font-black uppercase text-xs text-center">Marks Obtain</TableHead>
+                                <TableHead className="text-white font-black uppercase text-xs text-right">Grade</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              <TableRow className="h-12">
+                                <TableCell className="font-bold">Mathematics / ગણિત</TableCell>
+                                <TableCell className="text-center font-black">85</TableCell>
+                                <TableCell className="text-right font-black text-indigo-700">A</TableCell>
+                              </TableRow>
+                              <TableRow className="h-12">
+                                <TableCell className="font-bold">Science / વિજ્ઞાન</TableCell>
+                                <TableCell className="text-center font-black">78</TableCell>
+                                <TableCell className="text-right font-black text-indigo-700">B+</TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </div>
                     </div>
                   );
                 })

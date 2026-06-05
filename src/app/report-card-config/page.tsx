@@ -22,7 +22,8 @@ import {
   Eye,
   PlusCircle,
   Layers,
-  Loader2
+  Loader2,
+  BookOpen
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -71,7 +72,6 @@ export default function ReportCardConfigPage() {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
-        // Using JPEG with 0.7 quality to significantly reduce storage footprint
         resolve(canvas.toDataURL('image/jpeg', 0.7));
       };
       img.src = dataUrl;
@@ -142,7 +142,7 @@ export default function ReportCardConfigPage() {
     }
     
     setActiveField(null);
-    toast({ title: "Field Placed", description: `${activeField.label} positioned on ${activePage === "page1" ? "Page 1" : "Page 2"}.` });
+    toast({ title: "Field Placed", description: `${activeField.label} positioned.` });
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -184,10 +184,24 @@ export default function ReportCardConfigPage() {
     { field: "{{academic_year}}", label: "Year" },
   ];
 
-  const marksFields = [
-    { field: "{{math_marks}}", label: "Maths Score" },
-    { field: "{{sci_marks}}", label: "Science Score" },
-    { field: "{{eng_marks}}", label: "English Score" },
+  const curriculumSubjects = [
+    { field: "{{math_marks}}", label: "Mathematics / ગણિત" },
+    { field: "{{sci_marks}}", label: "Science / વિજ્ઞાન" },
+    { field: "{{eng_marks}}", label: "English / અંગ્રેજી" },
+    { field: "{{social_marks}}", label: "Social Studies / સા. વિજ્ઞાન" },
+    { field: "{{env_marks}}", label: "Env. Studies / પર્યાવરણ" },
+    { field: "{{guj_marks}}", label: "Gujarati / ગુજરાતી" },
+    { field: "{{hindi_marks}}", label: "Hindi / હિન્દી" },
+    { field: "{{sans_marks}}", label: "Sanskrit / સંસ્કૃત" },
+    { field: "{{comp_marks}}", label: "Computer / કમ્પ્યુટર" },
+    { field: "{{pt_marks}}", label: "P.T. / પી.ટી." },
+    { field: "{{art_marks}}", label: "Art & Craft / ચિત્ર" },
+    { field: "{{music_marks}}", label: "Music / સંગીત" },
+    { field: "{{gk_marks}}", label: "G.K. / સામાન્ય જ્ઞાન" },
+    { field: "{{moral_marks}}", label: "Moral Science / નીતિ" },
+  ];
+
+  const resultFields = [
     { field: "{{total_marks}}", label: "Grand Total" },
     { field: "{{percentage}}", label: "Total %" },
     { field: "{{grade}}", label: "Final Grade" },
@@ -203,7 +217,7 @@ export default function ReportCardConfigPage() {
               <Settings2 className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Two-Page Template Designer</h1>
+              <h1 className="text-3xl font-bold tracking-tight">Report Card Designer</h1>
               <p className="text-indigo-100 text-sm font-medium mt-1">Configure Page 1 and Page 2 templates independently</p>
             </div>
           </div>
@@ -284,7 +298,7 @@ export default function ReportCardConfigPage() {
                           >
                             <div className="relative">
                               <Badge className={cn(
-                                "font-bold whitespace-nowrap shadow-lg transition-transform",
+                                "font-bold whitespace-nowrap shadow-lg transition-transform text-[10px] px-2 py-1",
                                 draggingField === m.field ? "bg-purple-600 scale-110 ring-4 ring-purple-100" : "bg-indigo-600"
                               )}>
                                 {m.label}
@@ -376,11 +390,39 @@ export default function ReportCardConfigPage() {
 
                     <div className="space-y-4 pt-4 border-t">
                       <div className="flex items-center gap-2 text-rose-600">
-                        <Database className="w-4 h-4" />
-                        <span className="text-xs font-black uppercase tracking-widest">Marks & Results</span>
+                        <BookOpen className="w-4 h-4" />
+                        <span className="text-xs font-black uppercase tracking-widest">Subject Scores</span>
                       </div>
                       <div className="grid grid-cols-1 gap-2">
-                        {marksFields.map((item) => {
+                        {curriculumSubjects.map((item) => {
+                          const isMapped = currentMappings.some(m => m.field === item.field);
+                          const isActive = activeField?.field === item.field;
+                          return (
+                            <Button 
+                              key={item.field}
+                              variant={isActive ? "default" : "outline"}
+                              className={cn(
+                                "justify-between h-12 rounded-xl border-slate-100 px-4",
+                                isMapped && !isActive && "bg-emerald-50 border-emerald-100 text-emerald-700 hover:bg-emerald-100",
+                                isActive && "bg-indigo-600 scale-[1.02] shadow-indigo-100"
+                              )}
+                              onClick={() => setActiveField(isActive ? null : item)}
+                            >
+                              <span className="text-xs font-bold">{item.label}</span>
+                              {isMapped ? <CheckCircle2 className="w-4 h-4" /> : <PlusCircle className="w-4 h-4 opacity-30" />}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t">
+                      <div className="flex items-center gap-2 text-purple-600">
+                        <Database className="w-4 h-4" />
+                        <span className="text-xs font-black uppercase tracking-widest">Final Results</span>
+                      </div>
+                      <div className="grid grid-cols-1 gap-2">
+                        {resultFields.map((item) => {
                           const isMapped = currentMappings.some(m => m.field === item.field);
                           const isActive = activeField?.field === item.field;
                           return (
