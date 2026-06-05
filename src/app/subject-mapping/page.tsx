@@ -85,7 +85,7 @@ export default function SubjectMappingPage() {
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto space-y-8 pb-12">
-        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 p-8 rounded-3xl text-white shadow-2xl">
+        <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-900 p-8 rounded-3xl text-white shadow-2xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">

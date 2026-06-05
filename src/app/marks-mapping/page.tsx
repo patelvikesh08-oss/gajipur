@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useMarksMappingStore, AssessmentType } from "@/lib/marks-mapping-store";
 import { useStudentStore } from "@/lib/student-store";
@@ -39,14 +39,12 @@ export default function MarksMappingPage() {
     'PATRAK-B': ''
   });
 
-  // Automatically switch away from Annual if it was selected elsewhere
   useEffect(() => {
     if (semester === 'Annual') {
       updateSemester('Semester 1');
     }
   }, [semester, updateSemester]);
 
-  // Sync local marks when standard or semester changes
   useEffect(() => {
     if (selectedStandard && marksLoaded && semester !== 'Annual') {
       setLocalMarks({
@@ -95,7 +93,7 @@ export default function MarksMappingPage() {
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto space-y-8">
-        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 p-8 rounded-3xl text-white shadow-2xl no-print">
+        <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-900 p-8 rounded-3xl text-white shadow-2xl no-print">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
