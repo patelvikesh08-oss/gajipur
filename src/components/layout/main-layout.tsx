@@ -71,6 +71,7 @@ const settingsSubItems = [
   { name: "Marks Mapping / ગુણ", href: "/marks-mapping", icon: Calculator },
   { name: "Patrak-B Config / પત્રક-બ સેટિંગ", href: "/patrak-b-config", icon: Settings2 },
   { name: "FLN Config / FLN સેટિંગ", href: "/fln-config", icon: SpellCheck },
+  { name: "Bonofide Config / બોનાફાઇડ સેટિંગ", href: "/bonofide-config", icon: IdCard },
 ];
 
 function AppSidebar() {
