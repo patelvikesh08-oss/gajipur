@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
+import { useReportCardConfigStore } from "@/lib/report-card-config-store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,6 @@ import {
   Save, 
   FileText, 
   CheckCircle2, 
-  Image as ImageIcon, 
   FileUp, 
   X, 
   ListChecks, 
@@ -26,28 +26,14 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ReportCardConfigPage() {
+  const { config, updateConfig, isLoaded } = useReportCardConfigStore();
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [conductItems, setConductItems] = useState([
-    { id: "punctuality", label: "Punctuality / સમયપાલન", checked: true },
-    { id: "cleanliness", label: "Cleanliness / સ્વચ્છતા", checked: true },
-    { id: "behavior", label: "Social Behavior / સામાજિક વર્તન", checked: true },
-    { id: "leadership", label: "Leadership / નેતૃત્વ", checked: true },
-    { id: "discipline", label: "Discipline / શિસ્ત", checked: true },
-  ]);
-
-  useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [previewUrl]);
+  if (!isLoaded) return null;
 
   const handleSave = () => {
     setIsSaving(true);
@@ -55,7 +41,7 @@ export default function ReportCardConfigPage() {
       setIsSaving(false);
       toast({
         title: "Configuration Saved / માહિતી સાચવવામાં આવી",
-        description: "Report card template and grading mappings have been updated.",
+        description: "Report card template and grading mappings have been updated and are now live.",
       });
     }, 800);
   };
@@ -63,16 +49,22 @@ export default function ReportCardConfigPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setSelectedFile(file);
+      const reader = new FileReader();
       
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      reader.onload = (event) => {
+        const url = event.target?.result as string;
+        updateConfig({
+          templateUrl: url,
+          templateType: file.type === 'application/pdf' ? 'pdf' : 'image'
+        });
 
-      toast({
-        title: "File Selected / ફાઇલ પસંદ કરી",
-        description: `Template: ${file.name}`,
-      });
+        toast({
+          title: "Template Loaded / ફાઇલ લોડ કરી",
+          description: `Active template: ${file.name}`,
+        });
+      };
+
+      reader.readAsDataURL(file);
     }
   };
 
@@ -105,7 +97,7 @@ export default function ReportCardConfigPage() {
   return (
     <MainLayout>
       <div className="max-w-7xl mx-auto space-y-8 pb-12">
-        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 p-8 rounded-3xl text-white shadow-2xl no-print">
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 p-8 rounded-3xl text-white shadow-2xl">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md border border-white/20">
               <Settings2 className="w-8 h-8 text-white" />
@@ -150,7 +142,7 @@ export default function ReportCardConfigPage() {
                       accept=".doc,.docx,.pdf,image/*"
                     />
                     
-                    {!selectedFile ? (
+                    {!config.templateUrl ? (
                       <div 
                         onClick={() => fileInputRef.current?.click()}
                         className="border-2 border-dashed border-indigo-200 rounded-3xl p-16 flex flex-col items-center justify-center bg-white gap-4 transition-all hover:border-indigo-400 hover:bg-indigo-50/50 cursor-pointer group"
@@ -160,7 +152,7 @@ export default function ReportCardConfigPage() {
                         </div>
                         <div className="text-center">
                           <p className="font-black text-slate-700 text-lg">Upload Report Card Template</p>
-                          <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Supports .DOCX, PDF or High-Res Images</p>
+                          <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Supports PDF or High-Res Images</p>
                         </div>
                       </div>
                     ) : (
@@ -170,8 +162,8 @@ export default function ReportCardConfigPage() {
                             <FileUp className="w-6 h-6" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-black text-slate-800 truncate">{selectedFile.name}</p>
-                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{(selectedFile.size / 1024).toFixed(1)} KB • Template Loaded</p>
+                            <p className="text-sm font-black text-slate-800 truncate">Custom_Template_Loaded</p>
+                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Active System Template</p>
                           </div>
                           <div className="flex items-center gap-2">
                              <Button 
@@ -185,7 +177,7 @@ export default function ReportCardConfigPage() {
                             <Button 
                               variant="ghost" 
                               size="icon" 
-                              onClick={(e) => { e.stopPropagation(); setSelectedFile(null); setPreviewUrl(null); }}
+                              onClick={(e) => { e.stopPropagation(); updateConfig({ templateUrl: null, templateType: 'default' }); }}
                               className="rounded-xl h-10 w-10 text-slate-300 hover:text-rose-500 hover:bg-rose-50"
                             >
                               <X className="w-5 h-5" />
@@ -193,7 +185,7 @@ export default function ReportCardConfigPage() {
                           </div>
                         </div>
 
-                        {previewUrl && (
+                        {config.templateUrl && (
                           <div className="rounded-3xl border-2 border-indigo-100 overflow-hidden bg-white shadow-2xl animate-in zoom-in-95 duration-500">
                             <div className="bg-indigo-900 p-4 border-b border-white/10 flex items-center justify-between text-white">
                               <div className="flex items-center gap-2">
@@ -204,24 +196,16 @@ export default function ReportCardConfigPage() {
                                 variant="ghost" 
                                 size="sm" 
                                 className="text-white hover:bg-white/10 h-8 font-bold text-xs gap-2"
-                                onClick={() => window.open(previewUrl)}
+                                onClick={() => window.open(config.templateUrl!)}
                               >
                                 <ExternalLink className="w-3.5 h-3.5" /> Full Screen
                               </Button>
                             </div>
                             <div className="bg-slate-100 flex items-center justify-center min-h-[600px]">
-                              {selectedFile?.type === 'application/pdf' ? (
-                                <iframe src={previewUrl} className="w-full h-[800px] border-none" />
-                              ) : selectedFile?.type.startsWith('image/') ? (
-                                <img src={previewUrl} alt="Template Preview" className="max-w-full h-auto shadow-lg" />
+                              {config.templateType === 'pdf' ? (
+                                <iframe src={config.templateUrl} className="w-full h-[800px] border-none" />
                               ) : (
-                                <div className="text-center p-12 max-w-sm">
-                                  <FileText className="w-16 h-16 text-indigo-300 mx-auto mb-6" />
-                                  <h4 className="text-lg font-black text-slate-800">Word Document Structure</h4>
-                                  <p className="text-xs font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-wider">
-                                    Browser-based direct preview for .docx files is limited. Please use the merge fields on the right to edit your template in Word and re-upload to verify.
-                                  </p>
-                                </div>
+                                <img src={config.templateUrl} alt="Template Preview" className="max-w-full h-auto shadow-lg" />
                               )}
                             </div>
                           </div>
@@ -244,16 +228,28 @@ export default function ReportCardConfigPage() {
                   <CardContent className="space-y-6 pt-8 px-8 pb-8">
                     <div className="grid gap-3">
                       <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">School Name / શાળાનું નામ</Label>
-                      <Input defaultValue="EduPulse Global Academy" className="font-black h-12 rounded-xl bg-slate-50 border-none focus:bg-white transition-all" />
+                      <Input 
+                        value={config.schoolName} 
+                        onChange={(e) => updateConfig({ schoolName: e.target.value })}
+                        className="font-black h-12 rounded-xl bg-slate-50 border-none focus:bg-white transition-all" 
+                      />
                     </div>
                     <div className="grid grid-cols-2 gap-6">
                       <div className="grid gap-3">
                         <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">School Index</Label>
-                        <Input defaultValue="SCH-IDX-998877" className="font-bold h-12 rounded-xl bg-slate-50 border-none focus:bg-white transition-all" />
+                        <Input 
+                          value={config.schoolIndex} 
+                          onChange={(e) => updateConfig({ schoolIndex: e.target.value })}
+                          className="font-bold h-12 rounded-xl bg-slate-50 border-none focus:bg-white transition-all" 
+                        />
                       </div>
                       <div className="grid gap-3">
                         <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">District/Block</Label>
-                        <Input defaultValue="Springfield / Central" className="font-bold h-12 rounded-xl bg-slate-50 border-none focus:bg-white transition-all" />
+                        <Input 
+                          value={config.districtBlock} 
+                          onChange={(e) => updateConfig({ districtBlock: e.target.value })}
+                          className="font-bold h-12 rounded-xl bg-slate-50 border-none focus:bg-white transition-all" 
+                        />
                       </div>
                     </div>
                   </CardContent>
@@ -271,13 +267,14 @@ export default function ReportCardConfigPage() {
                   </CardHeader>
                   <CardContent className="p-8">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {conductItems.map((item) => (
+                      {config.conductItems.map((item) => (
                         <div key={item.id} className="flex items-center space-x-3 p-5 rounded-2xl border-2 border-slate-50 hover:border-indigo-100 hover:bg-indigo-50/30 transition-all cursor-pointer">
                           <Checkbox 
                             id={item.id} 
                             checked={item.checked} 
                             onCheckedChange={() => {
-                              setConductItems(items => items.map(i => i.id === item.id ? { ...i, checked: !i.checked } : i));
+                              const newItems = config.conductItems.map(i => i.id === item.id ? { ...i, checked: !i.checked } : i);
+                              updateConfig({ conductItems: newItems });
                             }}
                             className="rounded-md h-5 w-5"
                           />
@@ -372,9 +369,9 @@ export default function ReportCardConfigPage() {
                     <CheckCircle2 className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-slate-800 truncate">{selectedFile ? selectedFile.name : "Academic_V2_Base.docx"}</p>
+                    <p className="text-xs font-black text-slate-800 truncate">{config.templateUrl ? "Custom Loaded" : "System Default"}</p>
                     <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">
-                      {selectedFile ? "Ready to sync" : "Current Template Active"}
+                      {config.templateUrl ? "Ready for generation" : "Default Mode Active"}
                     </p>
                   </div>
                 </div>
@@ -389,4 +386,3 @@ export default function ReportCardConfigPage() {
     </MainLayout>
   );
 }
-

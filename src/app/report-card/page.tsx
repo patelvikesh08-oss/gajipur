@@ -4,10 +4,11 @@
 import { useState, useMemo } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
+import { useReportCardConfigStore } from "@/lib/report-card-config-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, GraduationCap, Layers, Users, Calendar, Printer, School, UserCircle } from "lucide-react";
+import { FileText, GraduationCap, Users, Calendar, Printer, School, UserCircle, Layout, Info } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -15,7 +16,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
 export default function ReportCardPage() {
-  const { students, isLoaded } = useStudentStore();
+  const { students, isLoaded: studentsLoaded } = useStudentStore();
+  const { config, isLoaded: configLoaded } = useReportCardConfigStore();
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [isBulkMode, setIsBulkMode] = useState(false);
   const [academicYear, setAcademicYear] = useState("2024-25");
@@ -30,7 +32,7 @@ export default function ReportCardPage() {
     return students.filter(s => selectedStandard === "all" || s.academicStandard === selectedStandard);
   }, [students, selectedStandard]);
 
-  if (!isLoaded) return null;
+  if (!studentsLoaded || !configLoaded) return null;
 
   const handleToggleStudent = (id: string) => {
     setSelectedStudentIds(prev => 
@@ -51,10 +53,10 @@ export default function ReportCardPage() {
     : (selectedStudentIds[0] ? [students.find(s => s.id === selectedStudentIds[0])!] : []);
 
   const mockSubjects = [
-    { name: "Mathematics / ગણિત", marks: 0, grade: "-" },
-    { name: "Science / વિજ્ઞાન", marks: 0, grade: "-" },
-    { name: "English / અંગ્રેજી", marks: 0, grade: "-" },
-    { name: "Social Studies / સા. વિજ્ઞાન", marks: 0, grade: "-" },
+    { name: "Mathematics / ગણિત", marks: 85, grade: "A" },
+    { name: "Science / વિજ્ઞાન", marks: 78, grade: "B+" },
+    { name: "English / અંગ્રેજી", marks: 92, grade: "A+" },
+    { name: "Social Studies / સા. વિજ્ઞાન", marks: 88, grade: "A" },
   ];
 
   return (
@@ -114,6 +116,13 @@ export default function ReportCardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              {config.templateUrl && (
+                <Badge className="w-full bg-emerald-100 text-emerald-700 border-none py-2 justify-center gap-2 rounded-xl mb-2">
+                  <Layout className="w-3.5 h-3.5" />
+                  Custom Template Active
+                </Badge>
+              )}
+
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Filter Standard / ધોરણ</Label>
                 <Select value={selectedStandard} onValueChange={(val) => {
@@ -185,6 +194,37 @@ export default function ReportCardPage() {
             <div className="space-y-8">
               {activeReports.length > 0 ? (
                 activeReports.map((student) => {
+                  if (config.templateUrl) {
+                    return (
+                      <div key={student.id} className="relative bg-white shadow-2xl rounded-sm overflow-hidden print:shadow-none min-h-[1000px] flex flex-col items-center">
+                        <div className="absolute top-4 right-4 no-print">
+                          <Badge className="bg-indigo-600">Custom Template Overlay</Badge>
+                        </div>
+                        {config.templateType === 'pdf' ? (
+                          <iframe src={config.templateUrl} className="w-full h-[1100px] border-none" />
+                        ) : (
+                          <div className="relative w-full">
+                            <img src={config.templateUrl} alt="Report Template" className="w-full h-auto" />
+                            {/* In a real app, these would use absolute positioning based on config mapping */}
+                            <div className="absolute top-1/4 left-1/4 bg-white/80 p-4 border border-indigo-200 rounded-xl shadow-lg no-print">
+                              <p className="text-[10px] font-bold text-indigo-500 uppercase">Data Mapping Overlay</p>
+                              <p className="text-sm font-black text-slate-800">{student.name} - Grade {student.academicStandard}</p>
+                              <div className="mt-2 space-y-1">
+                                {mockSubjects.map(s => (
+                                  <p key={s.name} className="text-xs font-bold">{s.name}: <span className="text-indigo-600">{s.marks}</span></p>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="p-8 bg-indigo-50/30 no-print flex items-center gap-3">
+                              <Info className="w-5 h-5 text-indigo-600" />
+                              <p className="text-xs font-bold text-indigo-900 uppercase">This view displays your uploaded template. Student data will be mapped to the placeholders you defined in Word/PDF.</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+
                   const parts = [
                     { id: 'patrakc', title: 'PATRAK-C PERFORMANCE RECORD / પત્રક-સી પ્રગતિ પત્રક', pageNum: 1 },
                     { id: 'marksheet', title: 'MARKSHEET / ગુણપત્રક', pageNum: 2 }
@@ -200,7 +240,7 @@ export default function ReportCardPage() {
                           <div className="report-content">
                             <div className="text-center mb-10 space-y-2">
                               <h2 className="text-sm font-black text-indigo-600 uppercase tracking-[0.3em] mb-1">PATRAK-C / પત્રક-સી</h2>
-                              <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">EduPulse Global Academy</h1>
+                              <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">{config.schoolName}</h1>
                               <div className="flex items-center justify-center gap-4 text-[10px] font-black text-slate-500 uppercase tracking-widest print:text-black">
                                 <span>Academic Year: {academicYear}</span>
                                 <span className="w-1.5 h-1.5 rounded-full bg-slate-300 print:bg-black" />
@@ -220,15 +260,15 @@ export default function ReportCardPage() {
                                 <div className="bg-slate-50 p-5 rounded-xl space-y-3 border-l-4 border-slate-300 print:bg-white print:border-black shadow-sm">
                                   <div className="space-y-0.5">
                                     <p className="text-[8px] font-black text-slate-400 uppercase">School Name</p>
-                                    <p className="text-[11px] font-black text-slate-800">EDUPULSE GLOBAL ACADEMY</p>
+                                    <p className="text-[11px] font-black text-slate-800 uppercase">{config.schoolName}</p>
                                   </div>
                                   <div className="space-y-0.5">
                                     <p className="text-[8px] font-black text-slate-400 uppercase">School Index Number</p>
-                                    <p className="text-[11px] font-black text-slate-800">SCH-IDX-998877</p>
+                                    <p className="text-[11px] font-black text-slate-800">{config.schoolIndex}</p>
                                   </div>
                                   <div className="space-y-0.5">
                                     <p className="text-[8px] font-black text-slate-400 uppercase">District / Block</p>
-                                    <p className="text-[11px] font-black text-slate-800 uppercase">SPRINGFIELD / CENTRAL</p>
+                                    <p className="text-[11px] font-black text-slate-800 uppercase">{config.districtBlock}</p>
                                   </div>
                                 </div>
                               </div>
@@ -268,9 +308,9 @@ export default function ReportCardPage() {
                                   <h3 className="text-[10px] font-black border-b-2 border-slate-900 pb-1.5 uppercase inline-block print:border-black">Qualities & Conduct / ગુણ અને વર્તણૂક</h3>
                                   <Table className="border-2 border-slate-200 text-xs print:border-black">
                                     <TableBody>
-                                      {["Punctuality / સમયપાલન", "Cleanliness / સ્વચ્છતા", "Social Behavior / સામાજિક વર્તન", "Leadership / નેતૃત્વ", "Discipline / શિસ્ત"].map(t => (
-                                        <TableRow key={t} className="h-11 border-slate-200 print:border-black">
-                                          <TableCell className="py-2.5 font-bold text-slate-700 print:text-black print:border-black">{t}</TableCell>
+                                      {config.conductItems.filter(i => i.checked).map(t => (
+                                        <TableRow key={t.id} className="h-11 border-slate-200 print:border-black">
+                                          <TableCell className="py-2.5 font-bold text-slate-700 print:text-black print:border-black">{t.label}</TableCell>
                                           <TableCell className="py-2.5 text-center font-black text-indigo-700 text-sm print:text-black">A+</TableCell>
                                         </TableRow>
                                       ))}
