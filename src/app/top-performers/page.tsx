@@ -15,7 +15,7 @@ export default function TopPerformersPage() {
 
   if (!isLoaded) return null;
 
-  const topStudents = students.slice(0, 5).map((s, index) => {
+  const topStudents = students.slice(0, 10).map((s, index) => {
     const scores = [
       { subject: "Mathematics / ગણિત", score: 98 - index * 2 },
       { subject: "Science / વિજ્ઞાન", score: 95 - index * 3 },
@@ -34,18 +34,18 @@ export default function TopPerformersPage() {
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
-      case 1: return <Trophy className="w-8 h-8 text-yellow-500" />;
-      case 2: return <Medal className="w-8 h-8 text-slate-400" />;
-      case 3: return <Medal className="w-8 h-8 text-amber-600" />;
+      case 1: return <Trophy className="w-10 h-10 text-yellow-500" />;
+      case 2: return <Medal className="w-10 h-10 text-slate-400" />;
+      case 3: return <Medal className="w-10 h-10 text-amber-600" />;
       default: return null;
     }
   };
 
   const getRankColor = (rank: number) => {
     switch (rank) {
-      case 1: return "bg-yellow-50 border-yellow-200";
-      case 2: return "bg-slate-50 border-slate-200";
-      case 3: return "bg-amber-50 border-amber-100";
+      case 1: return "bg-gradient-to-br from-yellow-50 to-white border-yellow-200";
+      case 2: return "bg-gradient-to-br from-slate-50 to-white border-slate-200";
+      case 3: return "bg-gradient-to-br from-amber-50 to-white border-amber-100";
       default: return "bg-white";
     }
   };
@@ -53,54 +53,59 @@ export default function TopPerformersPage() {
   return (
     <MainLayout>
       <div className="space-y-8">
-        <div className="flex items-center justify-between no-print">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Star className="w-6 h-6 text-yellow-600" />
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 p-8 rounded-3xl text-white shadow-2xl no-print">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+                <Star className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Top Performers / તેજસ્વી વિદ્યાર્થીઓ</h1>
+                <p className="text-indigo-100 text-sm font-medium mt-1">Honoring academic excellence across all standards</p>
+              </div>
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">Top Performers / તેજસ્વી વિદ્યાર્થીઓ</h1>
+            <Button variant="outline" onClick={() => window.print()} className="bg-white/10 border-white/20 text-white hover:bg-white/20 font-bold h-10 px-8 rounded-xl shadow-lg">
+              <Printer className="w-4 h-4 mr-2" />
+              Print Rankings
+            </Button>
           </div>
-          <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
-            <Printer className="w-4 h-4 mr-2" />
-            Print Rankings / પ્રિન્ટ
-          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 no-print">
           {topStudents.slice(0, 3).map((student) => (
-            <Card key={student.id} className={`border-2 transition-all hover:shadow-lg ${getRankColor(student.rank)} overflow-hidden`}>
+            <Card key={student.id} className={`border-2 shadow-xl transition-all hover:scale-[1.02] rounded-3xl ${getRankColor(student.rank)} overflow-hidden`}>
               <CardHeader className="relative pb-2">
-                <div className="absolute top-4 right-4">
+                <div className="absolute top-6 right-6 opacity-80">
                   {getRankIcon(student.rank)}
                 </div>
-                <div className="space-y-1">
-                  <Badge variant="outline" className="font-bold border-primary/20 text-primary">
-                    Rank / નંબર #{student.rank}
+                <div className="space-y-2">
+                  <Badge className="font-black px-3 bg-indigo-600 border-none">
+                    RANK #{student.rank}
                   </Badge>
-                  <CardTitle className="text-xl font-bold truncate pr-10">{student.name}</CardTitle>
-                  <CardDescription className="font-medium">{student.academicStandard}</CardDescription>
+                  <CardTitle className="text-2xl font-black text-slate-800 truncate pr-14 tracking-tight">{student.name}</CardTitle>
+                  <CardDescription className="font-bold text-indigo-600 uppercase text-[10px] tracking-widest">{student.academicStandard}</CardDescription>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-8 mt-4">
                 <div className="space-y-4">
                   <div className="flex items-end justify-between">
-                    <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">Overall Proficiency / કુલ પરિણામ</span>
-                    <span className="text-3xl font-black text-primary">{student.overall}%</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Overall Proficiency</span>
+                    <span className="text-4xl font-black text-indigo-700">{student.overall}%</span>
                   </div>
-                  <Progress value={student.overall} className="h-2" />
+                  <Progress value={student.overall} className="h-3 bg-indigo-50" />
                 </div>
 
-                <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                    Subject Performance / વિષય મુજબ
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    Subject Performance
                   </h4>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {student.scores.map((score) => (
-                      <div key={score.subject} className="flex items-center justify-between text-sm">
-                        <span className="font-medium text-slate-600">{score.subject}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold">{score.score}</span>
-                          <ArrowUpRight className="w-3 h-3 text-green-500" />
+                      <div key={score.subject} className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-slate-600">{score.subject}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="font-black text-slate-800">{score.score}</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500" />
                         </div>
                       </div>
                     ))}
@@ -111,26 +116,26 @@ export default function TopPerformersPage() {
           ))}
         </div>
 
-        <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white print:border-black">
-          <CardHeader className="border-b px-8 py-6 print:border-black">
-            <CardTitle className="text-xl font-bold text-slate-700">Detailed Rankings / વિગતવાર ગુણક્રમ</CardTitle>
+        <Card className="border-none shadow-2xl rounded-3xl overflow-hidden bg-white print:border-black">
+          <CardHeader className="bg-slate-50/50 border-b px-10 py-8 print:border-black">
+            <CardTitle className="text-xl font-bold text-slate-800">Detailed Rankings / વિગતવાર ગુણક્રમ</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table className="print:border-black">
-              <TableHeader className="bg-slate-50/50 print:bg-white">
+              <TableHeader className="bg-slate-50/30 print:bg-white">
                 <TableRow className="print:border-black">
-                  <TableHead className="px-8 font-bold text-slate-500 uppercase text-xs tracking-wider print:text-black print:border-black">Student / નામ</TableHead>
-                  <TableHead className="font-bold text-slate-500 uppercase text-xs tracking-wider print:text-black print:border-black">Standard / ધોરણ</TableHead>
-                  <TableHead className="px-8 font-bold text-slate-500 uppercase text-xs tracking-wider text-right print:text-black print:border-black">Aggregate / કુલ ટકા</TableHead>
+                  <TableHead className="px-10 font-black text-slate-400 uppercase text-[10px] tracking-wider print:text-black print:border-black h-14">Student / નામ</TableHead>
+                  <TableHead className="font-black text-slate-400 uppercase text-[10px] tracking-wider print:text-black print:border-black h-14">Standard / ધોરણ</TableHead>
+                  <TableHead className="px-10 font-black text-slate-400 uppercase text-[10px] tracking-wider text-right print:text-black print:border-black h-14">Aggregate / ટકા</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {topStudents.map((student) => (
-                  <TableRow key={student.id} className="hover:bg-slate-50 transition-colors print:border-black">
-                    <TableCell className="px-8 font-bold text-slate-700 print:text-black print:border-black">{student.name}</TableCell>
-                    <TableCell className="font-medium text-slate-600 print:text-black print:border-black">{student.academicStandard}</TableCell>
-                    <TableCell className="px-8 text-right print:border-black">
-                      <Badge className="bg-primary font-bold px-3 py-1 rounded-full print:border-none print:bg-transparent print:text-black print:font-black">
+                  <TableRow key={student.id} className="hover:bg-indigo-50/20 transition-colors print:border-black border-slate-100 h-14">
+                    <TableCell className="px-10 font-bold text-slate-700 text-sm print:text-black print:border-black">{student.name}</TableCell>
+                    <TableCell className="font-bold text-slate-500 text-[11px] print:text-black print:border-black uppercase">{student.academicStandard}</TableCell>
+                    <TableCell className="px-10 text-right print:border-black">
+                      <Badge className="bg-indigo-600 font-black px-4 py-1.5 rounded-full text-xs print:border-none print:bg-transparent print:text-black print:font-black">
                         {student.overall}%
                       </Badge>
                     </TableCell>

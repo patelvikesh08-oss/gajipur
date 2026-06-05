@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Settings, Upload, Save, FileText, CheckCircle2, Image as ImageIcon, FileUp, X } from "lucide-react";
+import { Settings, Upload, Save, FileText, CheckCircle2, Image as ImageIcon, FileUp, X, Settings2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 export default function BonofideConfigPage() {
@@ -53,55 +53,57 @@ export default function BonofideConfigPage() {
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto space-y-8 pb-12">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Settings className="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">Bonafide Certificate Settings / સેટિંગ્સ</h1>
-            <p className="text-xs text-muted-foreground font-medium">Configure template details and upload blank formats</p>
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 p-8 rounded-3xl text-white shadow-2xl no-print">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+              <Settings2 className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Bonafide Certificate Settings / સેટિંગ્સ</h1>
+              <p className="text-indigo-100 text-sm font-medium mt-1">Configure template details and upload blank formats</p>
+            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-primary" />
+            <Card className="rounded-2xl border-none shadow-xl overflow-hidden">
+              <CardHeader className="bg-slate-50/50 border-b">
+                <CardTitle className="text-lg font-bold flex items-center gap-2 text-indigo-900">
+                  <FileText className="w-5 h-5" />
                   Header Details / શાળાની વિગતો
                 </CardTitle>
-                <CardDescription>This information will appear at the top of all generated certificates.</CardDescription>
+                <CardDescription className="font-medium">This information will appear at the top of all generated certificates.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6 pt-6">
                 <div className="grid gap-2">
-                  <Label>School Name / શાળાનું નામ</Label>
-                  <Input defaultValue="EduPulse Global Academy" placeholder="Enter school name..." className="font-bold" />
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">School Name / શાળાનું નામ</Label>
+                  <Input defaultValue="EduPulse Global Academy" placeholder="Enter school name..." className="font-black h-12 rounded-xl bg-slate-50 border-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label>School Index / ઇન્ડેક્સ નંબર</Label>
-                    <Input defaultValue="SCH-IDX-998877" placeholder="e.g. 12.03.01" />
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">School Index / ઇન્ડેક્સ નંબર</Label>
+                    <Input defaultValue="SCH-IDX-998877" placeholder="e.g. 12.03.01" className="font-bold h-12 rounded-xl bg-slate-50 border-none" />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Trust Reg. No / રજી. નંબર</Label>
-                    <Input defaultValue="TR-REG-4455" />
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">Trust Reg. No / રજી. નંબર</Label>
+                    <Input defaultValue="TR-REG-4455" className="font-bold h-12 rounded-xl bg-slate-50 border-none" />
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label>Address / સરનામું</Label>
-                  <Textarea defaultValue="123 Education Hub, Springfield, Central District" rows={3} />
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">Address / સરનામું</Label>
+                  <Textarea defaultValue="123 Education Hub, Springfield, Central District" rows={3} className="font-bold rounded-xl bg-slate-50 border-none" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-primary/20 bg-primary/5">
+            <Card className="border-none bg-indigo-50/50 shadow-xl rounded-2xl overflow-hidden">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Upload className="w-5 h-5 text-primary" />
+                <CardTitle className="text-lg font-bold flex items-center gap-2 text-indigo-900">
+                  <Upload className="w-5 h-5" />
                   Blank Template Upload / નમૂનો અપલોડ
                 </CardTitle>
-                <CardDescription>Upload a JPG/PNG or Word background template if you wish to use a custom printed letterhead.</CardDescription>
+                <CardDescription className="font-medium">Upload a JPG/PNG or Word background template if you wish to use a custom printed letterhead.</CardDescription>
               </CardHeader>
               <CardContent>
                 <input 
@@ -115,35 +117,35 @@ export default function BonofideConfigPage() {
                 {!selectedFile ? (
                   <div 
                     onClick={triggerFileInput}
-                    className="border-2 border-dashed border-primary/30 rounded-xl p-10 flex flex-col items-center justify-center bg-white gap-4 transition-all hover:border-primary hover:bg-primary/5 cursor-pointer"
+                    className="border-2 border-dashed border-indigo-200 rounded-2xl p-12 flex flex-col items-center justify-center bg-white gap-4 transition-all hover:border-indigo-400 hover:bg-indigo-50/30 cursor-pointer group"
                   >
-                    <div className="p-4 rounded-full bg-primary/10">
-                      <ImageIcon className="w-10 h-10 text-primary" />
+                    <div className="p-5 rounded-2xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
+                      <ImageIcon className="w-10 h-10" />
                     </div>
                     <div className="text-center">
-                      <p className="font-bold text-slate-700">Click to select template / ફાઇલ પસંદ કરવા ક્લિક કરો</p>
-                      <p className="text-xs text-muted-foreground mt-1">Images (JPG/PNG) or Documents (DOCX/PDF)</p>
+                      <p className="font-black text-slate-700">Click to select template / ફાઇલ પસંદ કરો</p>
+                      <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Images (JPG/PNG) or Documents (DOCX/PDF)</p>
                     </div>
-                    <Button variant="outline" className="font-bold pointer-events-none">
-                      Select File / ફાઇલ પસંદ કરો
+                    <Button variant="outline" className="font-black h-11 rounded-xl px-8 border-indigo-100 text-indigo-700 mt-4 pointer-events-none">
+                      Browse Files
                     </Button>
                   </div>
                 ) : (
-                  <div className="bg-white border rounded-xl p-6 flex items-center gap-4 relative group">
-                    <div className="w-12 h-12 rounded bg-primary/10 flex items-center justify-center text-primary">
-                      <FileUp className="w-6 h-6" />
+                  <div className="bg-white border-2 border-indigo-100 rounded-2xl p-8 flex items-center gap-6 relative group shadow-sm">
+                    <div className="w-14 h-14 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                      <FileUp className="w-7 h-7" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold truncate">{selectedFile.name}</p>
-                      <p className="text-xs text-muted-foreground">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                      <p className="text-sm font-black text-slate-800 truncate">{selectedFile.name}</p>
+                      <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{(selectedFile.size / 1024).toFixed(1)} KB • Ready for use</p>
                     </div>
                     <Button 
                       variant="ghost" 
                       size="icon" 
                       onClick={clearFile}
-                      className="text-muted-foreground hover:text-destructive"
+                      className="rounded-xl h-10 w-10 text-slate-400 hover:text-rose-500 hover:bg-rose-50"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                     </Button>
                   </div>
                 )}
@@ -152,30 +154,31 @@ export default function BonofideConfigPage() {
           </div>
 
           <div className="space-y-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-bold uppercase tracking-widest text-slate-500">Active Template</CardTitle>
+            <Card className="rounded-2xl border-none shadow-xl overflow-hidden">
+              <CardHeader className="pb-3 bg-slate-50/50 border-b">
+                <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Active Template</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-3 bg-muted rounded-lg flex items-center gap-3">
-                  <div className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5 text-primary" />
+              <CardContent className="space-y-6 pt-6">
+                <div className="p-4 bg-indigo-50/30 rounded-2xl flex items-center gap-4">
+                  <div className="w-12 h-14 rounded-lg bg-white border border-indigo-100 flex items-center justify-center shrink-0 shadow-sm">
+                    <FileText className="w-6 h-6 text-indigo-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate">{selectedFile ? selectedFile.name : templateName}</p>
-                    <p className="text-[10px] text-muted-foreground">{selectedFile ? "Just selected" : "Updated 2 days ago"}</p>
+                    <p className="text-xs font-black text-slate-800 truncate">{selectedFile ? selectedFile.name : templateName}</p>
+                    <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> {selectedFile ? "Just selected" : "Active"}
+                    </p>
                   </div>
-                  <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
                 </div>
-                <Button variant="outline" className="w-full text-xs font-bold h-8">
-                  View Full Size
+                <Button variant="outline" className="w-full text-[10px] font-black uppercase tracking-widest h-11 rounded-xl border-indigo-100 text-indigo-700">
+                  Preview Template
                 </Button>
               </CardContent>
             </Card>
 
             <div className="pt-4">
-              <Button onClick={handleSave} className="w-full font-bold shadow-lg" size="lg" disabled={isSaving}>
-                {isSaving ? "Saving..." : <><Save className="w-4 h-4 mr-2" /> Save Configuration</>}
+              <Button onClick={handleSave} className="w-full font-black h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-100 text-sm uppercase tracking-widest" disabled={isSaving}>
+                {isSaving ? "Saving..." : <><Save className="w-5 h-5 mr-2" /> Save Configuration</>}
               </Button>
             </div>
           </div>
