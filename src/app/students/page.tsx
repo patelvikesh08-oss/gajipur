@@ -132,23 +132,23 @@ export default function StudentsPage() {
     
     const headers = ["Roll No", "G.R. No", "Name", "Gender", "Standard", "Birthday", "Attendance (%)", "Caste", "Child UID", "Aadhar", "Father", "Mother", "Bank", "Account", "IFSC", "Mobile", "Address"];
     const rows = filteredStudents.map(s => [
-      `"${s.rollNumber}"`,
-      `"${s.grNumber}"`,
-      `"${s.name}"`,
-      `"${s.gender}"`,
-      `"${s.academicStandard}"`,
-      `"${s.birthday}"`,
-      s.attendance,
-      `"${s.caste}"`,
-      `"${s.childUniqueId}"`,
-      `"${s.aadharCard}"`,
-      `"${s.fatherName}"`,
-      `"${s.motherName}"`,
-      `"${s.bankName}"`,
-      `"${s.bankAccountNumber}"`,
-      `"${s.ifscCode}"`,
-      `"${s.mobileNumber}"`,
-      `"${s.address.replace(/"/g, '""')}"`
+      `"${s.rollNumber || ""}"`,
+      `"${s.grNumber || ""}"`,
+      `"${s.name || ""}"`,
+      `"${s.gender || ""}"`,
+      `"${s.academicStandard || ""}"`,
+      `"${s.birthday || ""}"`,
+      s.attendance || 0,
+      `"${s.caste || ""}"`,
+      `"${s.childUniqueId || ""}"`,
+      `"${s.aadharCard || ""}"`,
+      `"${s.fatherName || ""}"`,
+      `"${s.motherName || ""}"`,
+      `"${s.bankName || ""}"`,
+      `"${s.bankAccountNumber || ""}"`,
+      `"${s.ifscCode || ""}"`,
+      `"${s.mobileNumber || ""}"`,
+      `"${(s.address || "").replace(/"/g, '""')}"`
     ]);
 
     const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
