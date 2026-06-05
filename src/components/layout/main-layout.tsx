@@ -85,7 +85,7 @@ function AppSidebar() {
       collapsible="icon" 
       onMouseEnter={() => !isMobile && setOpen(true)}
       onMouseLeave={() => !isMobile && setOpen(false)}
-      className="border-none bg-gradient-to-b from-emerald-700 via-emerald-600 to-emerald-800 text-white no-print"
+      className="border-none bg-gradient-to-b from-emerald-700 via-emerald-600 to-emerald-800 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
     >
       <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
         <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center overflow-hidden">
@@ -102,12 +102,12 @@ function AppSidebar() {
           <div className="flex flex-col overflow-hidden group-data-[state=collapsed]:hidden">
             <span className="text-sm font-bold truncate text-white">Admin User</span>
             <span className="text-[10px] text-white/60 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Online / ઓનલાઇન
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Online
             </span>
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-2 py-4 pl-4 bg-transparent">
+      <SidebarContent className="px-2 py-4 pl-4 bg-transparent overflow-x-hidden">
         <SidebarMenu className="space-y-1">
           {mainNavigation.map((item) => {
             const isActive = pathname === item.href;
@@ -117,16 +117,16 @@ function AppSidebar() {
                   asChild
                   isActive={isActive}
                   className={cn(
-                    "px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none",
-                    "text-white/80 hover:bg-white/10 hover:text-white",
+                    "px-4 py-6 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none",
+                    "text-white hover:bg-white/10",
                     isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
                   )}
                 >
-                  <Link href={item.href}>
-                    <span className="font-bold group-data-[state=collapsed]:hidden">
+                  <Link href={item.href} className="flex items-center gap-3 w-full">
+                    <item.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-emerald-700" : "text-white")} />
+                    <span className="font-bold truncate group-data-[state=collapsed]:hidden">
                       {item.name}
                     </span>
-                    <item.icon className={cn("w-5 h-5", isActive ? "text-emerald-700" : "text-white/80 group-hover:text-white")} />
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -140,12 +140,12 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white/80 hover:bg-white/10 hover:text-white data-[state=open]:bg-white/5">
-                  <span className="font-bold group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
-                  <div className="flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5" />
-                    <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white hover:bg-white/10 data-[state=open]:bg-white/5">
+                  <div className="flex items-center gap-3">
+                    <GraduationCap className="w-5 h-5 shrink-0" />
+                    <span className="font-bold group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
                   </div>
+                  <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -158,16 +158,16 @@ function AppSidebar() {
                           asChild 
                           isActive={isActive}
                           className={cn(
-                            "px-4 py-4 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
-                            "text-white/70 hover:bg-white/10 hover:text-white",
+                            "px-4 py-4 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
+                            "text-white/80 hover:bg-white/10 hover:text-white",
                             isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
                           )}
                         >
-                          <Link href={item.href}>
-                            <span className="text-sm font-medium group-data-[state=collapsed]:hidden">
+                          <Link href={item.href} className="flex items-center gap-3 w-full">
+                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-emerald-700" : "text-white/80")} />
+                            <span className="text-sm font-medium truncate group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
-                            <item.icon className={cn("w-4 h-4", isActive ? "text-emerald-700" : "text-white/70 group-hover:text-white")} />
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
@@ -185,12 +185,12 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white/80 hover:bg-white/10 hover:text-white data-[state=open]:bg-white/5">
-                  <span className="font-bold group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
-                  <div className="flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white hover:bg-white/10 data-[state=open]:bg-white/5">
+                  <div className="flex items-center gap-3">
+                    <Settings className="w-5 h-5 shrink-0" />
+                    <span className="font-bold group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
                   </div>
+                  <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -203,16 +203,16 @@ function AppSidebar() {
                           asChild 
                           isActive={isActive}
                           className={cn(
-                            "px-4 py-4 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
-                            "text-white/70 hover:bg-white/10 hover:text-white",
+                            "px-4 py-4 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
+                            "text-white/80 hover:bg-white/10 hover:text-white",
                             isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
                           )}
                         >
-                          <Link href={item.href}>
-                            <span className="text-sm font-medium group-data-[state=collapsed]:hidden">
+                          <Link href={item.href} className="flex items-center gap-3 w-full">
+                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-emerald-700" : "text-white/80")} />
+                            <span className="text-sm font-medium truncate group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
-                            <item.icon className={cn("w-4 h-4", isActive ? "text-emerald-700" : "text-white/70 group-hover:text-white")} />
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
@@ -249,7 +249,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
           <div className="relative w-64 max-sm:hidden">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search Dashboard... / શોધો..."
+              placeholder="Search Dashboard..."
               className="pl-9 border-none bg-slate-50/50 shadow-none focus-visible:ring-0"
             />
           </div>
@@ -260,7 +260,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
             <Avatar className="w-8 h-8 border border-emerald-500 p-0.5">
               <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             </Avatar>
-            <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account / એડમિન</span>
+            <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account</span>
           </div>
           <div className="flex items-center gap-2">
             <button className="p-2 hover:bg-muted rounded-full relative">
