@@ -111,13 +111,13 @@ function AppSidebar() {
               <SidebarMenuButton
                 asChild
                 isActive={pathname === item.href}
-                className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg"
+                className="px-4 py-6 group flex justify-between items-center transition-all duration-200 hover:bg-sidebar-accent rounded-lg data-[active=true]:bg-primary data-[active=true]:shadow-lg data-[active=true]:shadow-primary/20"
               >
                 <Link href={item.href}>
-                  <span className="font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold group-data-[state=collapsed]:hidden">
+                  <span className="font-bold text-muted-foreground group-data-[active=true]:text-white group-data-[state=collapsed]:hidden">
                     {item.name}
                   </span>
-                  <item.icon className="w-4 h-4 text-muted-foreground group-data-[active=true]:text-primary" />
+                  <item.icon className="w-5 h-5 text-muted-foreground group-data-[active=true]:text-white" />
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -130,10 +130,10 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg">
-                  <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-200 hover:bg-sidebar-accent rounded-lg data-[state=open]:bg-blue-50 data-[state=open]:text-primary">
+                  <span className="font-bold text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
                   <div className="flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-muted-foreground group-data-[state=open]:text-primary" />
+                    <GraduationCap className="w-5 h-5 text-muted-foreground group-data-[state=open]:text-primary" />
                     <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
                   </div>
                 </SidebarMenuButton>
@@ -145,13 +145,13 @@ function AppSidebar() {
                       <SidebarMenuSubButton 
                         asChild 
                         isActive={pathname === item.href}
-                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto"
+                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto data-[active=true]:bg-white data-[active=true]:border-l-4 data-[active=true]:border-primary data-[active=true]:shadow-sm"
                       >
                         <Link href={item.href}>
-                          <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold group-data-[state=collapsed]:hidden">
+                          <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-black group-data-[state=collapsed]:hidden">
                             {item.name}
                           </span>
-                          <item.icon className="w-3.5 h-3.5 text-muted-foreground group-data-[active=true]:text-primary" />
+                          <item.icon className="w-4 h-4 text-muted-foreground group-data-[active=true]:text-primary" />
                         </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
@@ -168,10 +168,10 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg">
-                  <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-200 hover:bg-sidebar-accent rounded-lg data-[state=open]:bg-slate-50 data-[state=open]:text-slate-900">
+                  <span className="font-bold text-muted-foreground group-data-[state=open]:text-slate-900 group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
                   <div className="flex items-center gap-2">
-                    <Settings className="w-4 h-4 text-muted-foreground group-data-[state=open]:text-primary" />
+                    <Settings className="w-5 h-5 text-muted-foreground group-data-[state=open]:text-slate-900" />
                     <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
                   </div>
                 </SidebarMenuButton>
@@ -183,13 +183,13 @@ function AppSidebar() {
                       <SidebarMenuSubButton 
                         asChild 
                         isActive={pathname === item.href}
-                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto"
+                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto data-[active=true]:bg-white data-[active=true]:border-l-4 data-[active=true]:border-slate-900 data-[active=true]:shadow-sm"
                       >
                         <Link href={item.href}>
-                          <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-bold group-data-[state=collapsed]:hidden">
+                          <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-slate-900 group-data-[active=true]:font-black group-data-[state=collapsed]:hidden">
                             {item.name}
                           </span>
-                          <item.icon className="w-3.5 h-3.5 text-muted-foreground group-data-[active=true]:text-primary" />
+                          <item.icon className="w-4 h-4 text-muted-foreground group-data-[active=true]:text-slate-900" />
                         </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
