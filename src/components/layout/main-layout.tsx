@@ -46,6 +46,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 const mainNavigation = [
   { name: "Dashboard / ડેશબોર્ડ", href: "/", icon: LayoutDashboard },
@@ -84,46 +85,53 @@ function AppSidebar() {
       collapsible="icon" 
       onMouseEnter={() => !isMobile && setOpen(true)}
       onMouseLeave={() => !isMobile && setOpen(false)}
-      className="border-r border-sidebar-border bg-white no-print"
+      className="border-none bg-gradient-to-b from-blue-700 via-blue-600 to-blue-800 text-white no-print"
     >
-      <SidebarHeader className="p-4 border-b border-sidebar-border transition-all duration-300 group-data-[state=collapsed]:p-2">
+      <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
         <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center overflow-hidden">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-             <GraduationCap className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shrink-0">
+             <GraduationCap className="w-5 h-5 text-blue-700" />
           </div>
-          <span className="font-headline font-bold text-xl text-primary tracking-tight truncate group-data-[state=collapsed]:hidden">EduPulse Admin</span>
+          <span className="font-headline font-bold text-xl text-white tracking-tight truncate group-data-[state=collapsed]:hidden">EduPulse Admin</span>
         </div>
-        <div className="flex items-center gap-3 p-2 bg-sidebar-accent/50 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300">
-          <Avatar className="w-10 h-10 border-2 border-green-500 p-0.5 shrink-0">
+        <div className="flex items-center gap-3 p-2 bg-white/10 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300">
+          <Avatar className="w-10 h-10 border-2 border-green-400 p-0.5 shrink-0">
             <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             <AvatarFallback>AD</AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden group-data-[state=collapsed]:hidden">
-            <span className="text-sm font-bold truncate">Admin User</span>
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Online / ઓનલાઇન
+            <span className="text-sm font-bold truncate text-white">Admin User</span>
+            <span className="text-[10px] text-white/60 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Online / ઓનલાઇન
             </span>
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-2 py-4">
-        <SidebarMenu>
-          {mainNavigation.map((item) => (
-            <SidebarMenuItem key={item.name}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.href}
-                className="px-4 py-6 group flex justify-between items-center transition-all duration-300 hover:bg-sidebar-accent rounded-lg data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary data-[active=true]:to-[#4facfe] data-[active=true]:shadow-lg data-[active=true]:shadow-primary/30"
-              >
-                <Link href={item.href}>
-                  <span className="font-bold text-muted-foreground group-data-[active=true]:text-white group-data-[state=collapsed]:hidden">
-                    {item.name}
-                  </span>
-                  <item.icon className="w-5 h-5 text-muted-foreground group-data-[active=true]:text-white" />
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+      <SidebarContent className="px-2 py-4 pl-4">
+        <SidebarMenu className="space-y-1">
+          {mainNavigation.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <SidebarMenuItem key={item.name}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  className={cn(
+                    "px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none",
+                    "text-white/80 hover:bg-white/10 hover:text-white",
+                    isActive && "bg-white text-blue-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-blue-700"
+                  )}
+                >
+                  <Link href={item.href}>
+                    <span className="font-bold group-data-[state=collapsed]:hidden">
+                      {item.name}
+                    </span>
+                    <item.icon className={cn("w-5 h-5", isActive ? "text-blue-700" : "text-white/80 group-hover:text-white")} />
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
 
           <Collapsible 
             asChild 
@@ -132,32 +140,39 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 hover:bg-sidebar-accent rounded-lg data-[state=open]:bg-gradient-to-r data-[state=open]:from-blue-50/80 data-[state=open]:to-white data-[state=open]:text-primary">
-                  <span className="font-bold text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white/80 hover:bg-white/10 hover:text-white data-[state=open]:bg-white/5">
+                  <span className="font-bold group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
                   <div className="flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-muted-foreground group-data-[state=open]:text-primary" />
-                    <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
+                    <GraduationCap className="w-5 h-5" />
+                    <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
                   </div>
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <SidebarMenuSub className="mx-0 px-0 border-l-0 space-y-1 mt-1">
-                  {examinationSubItems.map((item) => (
-                    <SidebarMenuSubItem key={item.name} className="px-2">
-                      <SidebarMenuSubButton 
-                        asChild 
-                        isActive={pathname === item.href}
-                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto data-[active=true]:bg-gradient-to-r data-[active=true]:from-white data-[active=true]:to-blue-50/50 data-[active=true]:border-l-4 data-[active=true]:border-primary data-[active=true]:shadow-sm"
-                      >
-                        <Link href={item.href}>
-                          <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-black group-data-[state=collapsed]:hidden">
-                            {item.name}
-                          </span>
-                          <item.icon className="w-4 h-4 text-muted-foreground group-data-[active=true]:text-primary" />
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
+                <SidebarMenuSub className="mx-0 px-0 border-l-0 space-y-1 mt-1 pl-4">
+                  {examinationSubItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <SidebarMenuSubItem key={item.name}>
+                        <SidebarMenuSubButton 
+                          asChild 
+                          isActive={isActive}
+                          className={cn(
+                            "px-4 py-4 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
+                            "text-white/70 hover:bg-white/10 hover:text-white",
+                            isActive && "bg-white text-blue-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-blue-700"
+                          )}
+                        >
+                          <Link href={item.href}>
+                            <span className="text-sm font-medium group-data-[state=collapsed]:hidden">
+                              {item.name}
+                            </span>
+                            <item.icon className={cn("w-4 h-4", isActive ? "text-blue-700" : "text-white/70 group-hover:text-white")} />
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    );
+                  })}
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>
@@ -170,32 +185,39 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 hover:bg-sidebar-accent rounded-lg data-[state=open]:bg-gradient-to-r data-[state=open]:from-slate-50/80 data-[state=open]:to-white data-[state=open]:text-slate-900">
-                  <span className="font-bold text-muted-foreground group-data-[state=open]:text-slate-900 group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white/80 hover:bg-white/10 hover:text-white data-[state=open]:bg-white/5">
+                  <span className="font-bold group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
                   <div className="flex items-center gap-2">
-                    <Settings className="w-5 h-5 text-muted-foreground group-data-[state=open]:text-slate-900" />
-                    <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
+                    <Settings className="w-5 h-5" />
+                    <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
                   </div>
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <SidebarMenuSub className="mx-0 px-0 border-l-0 space-y-1 mt-1">
-                  {settingsSubItems.map((item) => (
-                    <SidebarMenuSubItem key={item.name} className="px-2">
-                      <SidebarMenuSubButton 
-                        asChild 
-                        isActive={pathname === item.href}
-                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto data-[active=true]:bg-gradient-to-r data-[active=true]:from-white data-[active=true]:to-slate-50/50 data-[active=true]:border-l-4 data-[active=true]:border-slate-900 data-[active=true]:shadow-sm"
-                      >
-                        <Link href={item.href}>
-                          <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-slate-900 group-data-[active=true]:font-black group-data-[state=collapsed]:hidden">
-                            {item.name}
-                          </span>
-                          <item.icon className="w-4 h-4 text-muted-foreground group-data-[active=true]:text-slate-900" />
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
+                <SidebarMenuSub className="mx-0 px-0 border-l-0 space-y-1 mt-1 pl-4">
+                  {settingsSubItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <SidebarMenuSubItem key={item.name}>
+                        <SidebarMenuSubButton 
+                          asChild 
+                          isActive={isActive}
+                          className={cn(
+                            "px-4 py-4 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
+                            "text-white/70 hover:bg-white/10 hover:text-white",
+                            isActive && "bg-white text-blue-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-blue-700"
+                          )}
+                        >
+                          <Link href={item.href}>
+                            <span className="text-sm font-medium group-data-[state=collapsed]:hidden">
+                              {item.name}
+                            </span>
+                            <item.icon className={cn("w-4 h-4", isActive ? "text-blue-700" : "text-white/70 group-hover:text-white")} />
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    );
+                  })}
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>
@@ -220,15 +242,15 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
   };
 
   return (
-    <SidebarInset onClick={handleContentClick} className="bg-[#f3f4f7] transition-all duration-300">
+    <SidebarInset onClick={handleContentClick} className="bg-white transition-all duration-300">
       <header className="flex h-16 shrink-0 items-center justify-between gap-2 bg-white px-6 shadow-sm border-b no-print">
         <div className="flex items-center gap-4 flex-1">
-          <SidebarTrigger />
+          <SidebarTrigger className="text-blue-600 hover:bg-blue-50" />
           <div className="relative w-64 max-sm:hidden">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search Dashboard... / શોધો..."
-              className="pl-9 border-none bg-transparent shadow-none focus-visible:ring-0"
+              className="pl-9 border-none bg-slate-50/50 shadow-none focus-visible:ring-0"
             />
           </div>
         </div>
