@@ -12,9 +12,9 @@ interface StatCardProps {
 
 export function StatCard({ title, value, description, icon: Icon, variant = 'blue' }: StatCardProps) {
   const gradients = {
-    purple: 'from-[#B666D2] to-[#8E54E9]',
-    blue: 'from-[#4FACFE] to-[#00F2FE]',
-    orange: 'from-[#FF9A8B] to-[#FF6A88]',
+    purple: 'from-fuchsia-600 to-indigo-600',
+    blue: 'from-cyan-500 to-blue-600',
+    orange: 'from-amber-500 to-rose-500',
   };
 
   return (
@@ -33,7 +33,7 @@ export function StatCard({ title, value, description, icon: Icon, variant = 'blu
           </p>
         )}
         
-        {/* Decorative bubbles similar to screenshot */}
+        {/* Decorative bubbles */}
         <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
         <div className="absolute right-4 top-4 w-12 h-12 bg-white/5 rounded-full blur-xl" />
       </CardContent>

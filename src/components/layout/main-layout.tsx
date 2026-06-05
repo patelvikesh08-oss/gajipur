@@ -85,24 +85,24 @@ function AppSidebar() {
       collapsible="icon" 
       onMouseEnter={() => !isMobile && setOpen(true)}
       onMouseLeave={() => !isMobile && setOpen(false)}
-      className="border-none bg-gradient-to-b from-emerald-700 via-emerald-600 to-emerald-800 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
+      className="border-none bg-gradient-to-b from-indigo-900 via-blue-800 to-indigo-950 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
     >
       <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
         <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center overflow-hidden">
           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-lg">
-             <GraduationCap className="w-5 h-5 text-emerald-700" />
+             <GraduationCap className="w-5 h-5 text-indigo-800" />
           </div>
           <span className="font-headline font-bold text-xl text-white tracking-tight truncate group-data-[state=collapsed]:hidden">EduPulse Admin</span>
         </div>
         <div className="flex items-center gap-3 p-2 bg-white/10 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300">
-          <Avatar className="w-10 h-10 border-2 border-emerald-400 p-0.5 shrink-0">
+          <Avatar className="w-10 h-10 border-2 border-indigo-400 p-0.5 shrink-0">
             <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             <AvatarFallback>AD</AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden group-data-[state=collapsed]:hidden">
             <span className="text-sm font-bold truncate text-white">Admin User</span>
             <span className="text-[10px] text-white/60 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Online
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" /> Live
             </span>
           </div>
         </div>
@@ -119,11 +119,11 @@ function AppSidebar() {
                   className={cn(
                     "px-4 py-6 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none",
                     "text-white hover:bg-white/10",
-                    isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
+                    isActive && "bg-white text-indigo-900 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-indigo-900"
                   )}
                 >
                   <Link href={item.href} className="flex items-center gap-3 w-full">
-                    <item.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-emerald-700" : "text-white")} />
+                    <item.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-indigo-700" : "text-white")} />
                     <span className="font-bold truncate group-data-[state=collapsed]:hidden">
                       {item.name}
                     </span>
@@ -160,11 +160,11 @@ function AppSidebar() {
                           className={cn(
                             "px-4 py-4 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
                             "text-white/80 hover:bg-white/10 hover:text-white",
-                            isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
+                            isActive && "bg-white text-indigo-900 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-indigo-900"
                           )}
                         >
                           <Link href={item.href} className="flex items-center gap-3 w-full">
-                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-emerald-700" : "text-white/80")} />
+                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-indigo-700" : "text-white/80")} />
                             <span className="text-sm font-medium truncate group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
@@ -205,11 +205,11 @@ function AppSidebar() {
                           className={cn(
                             "px-4 py-4 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
                             "text-white/80 hover:bg-white/10 hover:text-white",
-                            isActive && "bg-white text-emerald-700 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-emerald-700"
+                            isActive && "bg-white text-indigo-900 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-indigo-900"
                           )}
                         >
                           <Link href={item.href} className="flex items-center gap-3 w-full">
-                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-emerald-700" : "text-white/80")} />
+                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-indigo-700" : "text-white/80")} />
                             <span className="text-sm font-medium truncate group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
@@ -248,7 +248,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
     >
       <header className="flex h-16 shrink-0 items-center justify-between gap-2 bg-white px-6 shadow-sm border-b no-print">
         <div className="flex items-center gap-4 flex-1">
-          <SidebarTrigger className="text-emerald-600 hover:bg-emerald-50" />
+          <SidebarTrigger className="text-indigo-600 hover:bg-indigo-50" />
           <div className="relative w-64 max-sm:hidden">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -260,7 +260,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
         
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors cursor-pointer">
-            <Avatar className="w-8 h-8 border border-emerald-500 p-0.5">
+            <Avatar className="w-8 h-8 border border-indigo-500 p-0.5">
               <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             </Avatar>
             <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account</span>
@@ -276,7 +276,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
           </div>
         </div>
       </header>
-      <main className="flex-1 overflow-auto p-4 md:p-8">
+      <main className="flex-1 overflow-auto p-4 md:p-8 bg-white">
         <div className="mx-auto max-w-7xl space-y-8">
           {children}
         </div>
