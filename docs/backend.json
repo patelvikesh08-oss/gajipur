@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Comprehensive student profile record.",
+      "type": "object",
+      "properties": {
+        "rollNumber": { "type": "string" },
+        "name": { "type": "string" },
+        "birthday": { "type": "string", "format": "date" },
+        "gender": { "type": "string", "enum": ["Male", "Female", "Other"] },
+        "academicStandard": { "type": "string" },
+        "attendance": { "type": "number" },
+        "grNumber": { "type": "string" },
+        "caste": { "type": "string" },
+        "childUniqueId": { "type": "string" },
+        "aadharCard": { "type": "string" },
+        "fatherName": { "type": "string" },
+        "motherName": { "type": "string" },
+        "bankName": { "type": "string" },
+        "bankAccountNumber": { "type": "string" },
+        "ifscCode": { "type": "string" },
+        "address": { "type": "string" },
+        "mobileNumber": { "type": "string" }
+      },
+      "required": ["name", "academicStandard"]
+    },
+    "SubjectMapping": {
+      "title": "Subject Mapping",
+      "description": "Defines which subjects are taught in a specific grade and semester.",
+      "type": "object",
+      "properties": {
+        "standard": { "type": "string" },
+        "semester": { "type": "string" },
+        "subjects": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "MarksMapping": {
+      "title": "Marks Mapping",
+      "description": "Configures maximum marks for assessment types.",
+      "type": "object",
+      "properties": {
+        "standard": { "type": "string" },
+        "semester": { "type": "string" },
+        "assessmentType": { "type": "string" },
+        "maxMarks": { "type": "number" }
+      }
+    },
+    "FLNConfig": {
+      "title": "FLN Configuration",
+      "description": "Global milestones for Foundational Literacy and Numeracy.",
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "object",
+          "additionalProperties": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Collection of student records."
+    },
+    "/subjectMappings/{mappingId}": {
+      "schema": "SubjectMapping",
+      "description": "Mapping of subjects to grades."
+    },
+    "/marksMappings/{mappingId}": {
+      "schema": "MarksMapping",
+      "description": "Configuration of assessment score limits."
+    },
+    "/configs/fln": {
+      "schema": "FLNConfig",
+      "description": "Global FLN milestone settings."
+    }
+  }
+}

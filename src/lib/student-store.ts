@@ -1,7 +1,8 @@
+'use client';
 
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useFirestore, useCollection } from '@/firebase';
+import { collection, doc, addDoc, updateDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { useMemo } from 'react';
 
 export type Gender = 'Male' | 'Female' | 'Other';
 
@@ -26,49 +27,6 @@ export interface Student {
   mobileNumber: string;
 }
 
-const DEFAULT_STUDENTS: Student[] = [
-  { 
-    id: '1', 
-    rollNumber: '01',
-    name: 'Alice Johnson', 
-    birthday: '2014-05-15', 
-    gender: 'Female', 
-    academicStandard: '5th Grade',
-    attendance: 92,
-    grNumber: 'GR-1001',
-    caste: 'General',
-    childUniqueId: 'UID-88229911',
-    aadharCard: '1234-5678-9012',
-    fatherName: 'Robert Johnson',
-    motherName: 'Mary Johnson',
-    bankName: 'State Bank',
-    bankAccountNumber: '9988776655',
-    ifscCode: 'SBIN0001234',
-    address: '123 Maple St, Springfield',
-    mobileNumber: '9876543210'
-  },
-  { 
-    id: '2', 
-    rollNumber: '02',
-    name: 'Bob Smith', 
-    birthday: '2013-11-20', 
-    gender: 'Male', 
-    academicStandard: '5th Grade',
-    attendance: 85,
-    grNumber: 'GR-1002',
-    caste: 'OBC',
-    childUniqueId: 'UID-88229922',
-    aadharCard: '2345-6789-0123',
-    fatherName: 'John Smith',
-    motherName: 'Sarah Smith',
-    bankName: 'National Bank',
-    bankAccountNumber: '8877665544',
-    ifscCode: 'NBIN0005678',
-    address: '456 Oak Ave, Springfield',
-    mobileNumber: '8765432109'
-  }
-];
-
 export function calculateAge(birthday: string): number {
   if (!birthday) return 0;
   const birthDate = new Date(birthday);
@@ -82,72 +40,60 @@ export function calculateAge(birthday: string): number {
 }
 
 export function useStudentStore() {
-  const [students, setStudents] = useState<Student[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const firestore = useFirestore();
+  const studentsCollection = useMemo(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+  const { data: students, loading } = useCollection<Student>(studentsCollection);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('edupulse_students');
-    if (saved) {
-      setStudents(JSON.parse(saved));
-    } else {
-      setStudents(DEFAULT_STUDENTS);
-      localStorage.setItem('edupulse_students', JSON.stringify(DEFAULT_STUDENTS));
-    }
-    setIsLoaded(true);
-  }, []);
+  const addStudent = (student: Omit<Student, 'id'>) => {
+    if (!firestore) return;
+    addDoc(collection(firestore, 'students'), student);
+  };
 
-  const addStudent = useCallback((student: Omit<Student, 'id'>) => {
-    const newStudent = { ...student, id: Math.random().toString(36).substr(2, 9) };
-    setStudents(prev => {
-      const updated = [...prev, newStudent];
-      localStorage.setItem('edupulse_students', JSON.stringify(updated));
-      return updated;
+  const updateStudent = (updatedStudent: Student) => {
+    if (!firestore) return;
+    const { id, ...data } = updatedStudent;
+    updateDoc(doc(firestore, 'students', id), data);
+  };
+
+  const deleteStudent = (id: string) => {
+    if (!firestore) return;
+    deleteDoc(doc(firestore, 'students', id));
+  };
+
+  const bulkAddStudents = async (newStudents: any[]) => {
+    if (!firestore) return;
+    const batch = writeBatch(firestore);
+    newStudents.forEach(s => {
+      const newDocRef = doc(collection(firestore, 'students'));
+      batch.set(newDocRef, {
+        rollNumber: s.rollNumber || "",
+        name: s.name || "Unknown Student",
+        birthday: s.birthday || "2015-01-01",
+        gender: s.gender || 'Male',
+        academicStandard: s.academicStandard || "Unknown",
+        attendance: 0,
+        grNumber: "",
+        caste: "",
+        childUniqueId: "",
+        aadharCard: "",
+        fatherName: "",
+        motherName: "",
+        bankName: "",
+        bankAccountNumber: "",
+        ifscCode: "",
+        address: "",
+        mobileNumber: ""
+      });
     });
-  }, []);
+    await batch.commit();
+  };
 
-  const updateStudent = useCallback((updatedStudent: Student) => {
-    setStudents(prev => {
-      const updated = prev.map(s => s.id === updatedStudent.id ? updatedStudent : s);
-      localStorage.setItem('edupulse_students', JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
-
-  const deleteStudent = useCallback((id: string) => {
-    setStudents(prev => {
-      const updated = prev.filter(s => s.id !== id);
-      localStorage.setItem('edupulse_students', JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
-
-  const bulkAddStudents = useCallback((newStudents: any[]) => {
-    const added = newStudents.map(s => ({
-      id: Math.random().toString(36).substr(2, 9),
-      rollNumber: s.rollNumber || "",
-      name: s.name || "Unknown Student",
-      birthday: s.birthday || "2015-01-01",
-      gender: s.gender || 'Male',
-      academicStandard: s.academicStandard || "Unknown",
-      attendance: 0,
-      grNumber: "",
-      caste: "",
-      childUniqueId: "",
-      aadharCard: "",
-      fatherName: "",
-      motherName: "",
-      bankName: "",
-      bankAccountNumber: "",
-      ifscCode: "",
-      address: "",
-      mobileNumber: ""
-    }));
-    setStudents(prev => {
-      const updated = [...prev, ...added];
-      localStorage.setItem('edupulse_students', JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
-
-  return { students, addStudent, updateStudent, deleteStudent, bulkAddStudents, isLoaded };
+  return { 
+    students: students || [], 
+    addStudent, 
+    updateStudent, 
+    deleteStudent, 
+    bulkAddStudents, 
+    isLoaded: !loading 
+  };
 }
