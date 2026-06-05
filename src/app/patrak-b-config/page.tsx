@@ -82,7 +82,7 @@ export default function PatrakBConfigPage() {
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto space-y-8 pb-20">
-        <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-900 p-8 rounded-3xl text-white shadow-2xl no-print">
+        <div className="bg-gradient-to-r from-indigo-600 via-purple-700 to-indigo-900 p-8 rounded-3xl text-white shadow-2xl no-print">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
               <Settings2 className="w-8 h-8 text-white" />

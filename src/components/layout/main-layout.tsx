@@ -9,7 +9,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
@@ -18,9 +17,6 @@ import {
 import { 
   LayoutDashboard,
   ClipboardList,
-  Search, 
-  Bell, 
-  Menu,
   Users,
   ScrollText,
   BookOpen,
@@ -42,7 +38,6 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import React from "react";
 import { cn } from "@/lib/utils";
@@ -84,7 +79,7 @@ function AppSidebar() {
       collapsible="icon" 
       onMouseEnter={() => !isMobile && setOpen(true)}
       onMouseLeave={() => !isMobile && setOpen(false)}
-      className="border-none bg-gradient-to-b from-indigo-900 via-indigo-900 to-indigo-950 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
+      className="border-none bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
     >
       <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
         <div className="flex items-center gap-3 p-2 bg-white/10 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300 border border-white/10">
@@ -100,7 +95,7 @@ function AppSidebar() {
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-2 py-4 pl-4 bg-transparent overflow-x-hidden">
+      <SidebarContent className="px-2 py-4 pl-4 bg-transparent overflow-x-hidden no-scrollbar">
         <SidebarMenu className="space-y-1">
           {mainNavigation.map((item) => {
             const isActive = pathname === item.href;
@@ -111,7 +106,7 @@ function AppSidebar() {
                   isActive={isActive}
                   className={cn(
                     "px-4 py-6 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none",
-                    "text-white hover:bg-white/10",
+                    "text-white/80 hover:bg-white/10 hover:text-white",
                     isActive && "bg-white text-indigo-900 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-indigo-900"
                   )}
                 >
@@ -133,7 +128,7 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white hover:bg-white/10 data-[state=open]:bg-white/5">
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white/80 hover:bg-white/10 data-[state=open]:bg-white/5">
                   <div className="flex items-center gap-3">
                     <GraduationCap className="w-5 h-5 shrink-0" />
                     <span className="font-bold group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
@@ -152,12 +147,12 @@ function AppSidebar() {
                           isActive={isActive}
                           className={cn(
                             "px-4 py-4 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
-                            "text-white/80 hover:bg-white/10 hover:text-white",
+                            "text-white/70 hover:bg-white/10 hover:text-white",
                             isActive && "bg-white text-indigo-900 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-indigo-900"
                           )}
                         >
                           <Link href={item.href} className="flex items-center gap-3 w-full">
-                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-indigo-700" : "text-white/80")} />
+                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-indigo-700" : "text-white/70")} />
                             <span className="text-sm font-medium truncate group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
@@ -178,7 +173,7 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white hover:bg-white/10 data-[state=open]:bg-white/5">
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 rounded-l-full rounded-r-none text-white/80 hover:bg-white/10 data-[state=open]:bg-white/5">
                   <div className="flex items-center gap-3">
                     <Settings className="w-5 h-5 shrink-0" />
                     <span className="font-bold group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
@@ -197,12 +192,12 @@ function AppSidebar() {
                           isActive={isActive}
                           className={cn(
                             "px-4 py-4 group flex items-center transition-all duration-300 rounded-l-full rounded-r-none h-auto",
-                            "text-white/80 hover:bg-white/10 hover:text-white",
+                            "text-white/70 hover:bg-white/10 hover:text-white",
                             isActive && "bg-white text-indigo-900 font-black shadow-[-4px_0_12px_rgba(0,0,0,0.1)] hover:bg-white hover:text-indigo-900"
                           )}
                         >
                           <Link href={item.href} className="flex items-center gap-3 w-full">
-                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-indigo-700" : "text-white/80")} />
+                            <item.icon className={cn("w-4 h-4 shrink-0", isActive ? "text-indigo-700" : "text-white/70")} />
                             <span className="text-sm font-medium truncate group-data-[state=collapsed]:hidden">
                               {item.name}
                             </span>
@@ -221,7 +216,7 @@ function AppSidebar() {
   );
 }
 
-function MainLayoutContent({ children, pathname }: { children: React.ReactNode, pathname: string }) {
+function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const { setOpen, setOpenMobile, isMobile, open } = useSidebar();
 
   const handleContentClick = () => {
@@ -237,10 +232,10 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
   return (
     <SidebarInset 
       onClick={handleContentClick} 
-      className="bg-gradient-to-b from-indigo-900 via-indigo-900 to-indigo-950 transition-all duration-300 h-svh flex flex-col overflow-hidden"
+      className="bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 transition-all duration-300 h-svh flex flex-col overflow-hidden"
     >
-      <main className="flex-1 overflow-auto p-4 md:p-8 bg-white transition-all duration-300">
-        <div className="mx-auto max-w-7xl space-y-8">
+      <main className="flex-1 overflow-auto bg-white transition-all duration-300">
+        <div className="mx-auto max-w-7xl p-4 md:p-8 space-y-8">
           {children}
         </div>
       </main>
@@ -249,12 +244,10 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
 }
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-
   return (
     <SidebarProvider>
       <AppSidebar />
-      <MainLayoutContent pathname={pathname}>{children}</MainLayoutContent>
+      <MainLayoutContent>{children}</MainLayoutContent>
     </SidebarProvider>
   );
 }
