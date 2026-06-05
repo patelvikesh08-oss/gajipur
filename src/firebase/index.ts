@@ -1,3 +1,4 @@
+
 'use client';
 
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
@@ -11,7 +12,6 @@ export function initializeFirebase(): {
   auth: Auth | null;
 } {
   try {
-    // Check if we have at least a project ID to attempt initialization
     if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
       console.warn("Firebase configuration is missing or incomplete. Please check your environment variables.");
       return { firebaseApp: null, firestore: null, auth: null };
@@ -31,5 +31,6 @@ export function initializeFirebase(): {
 export * from './provider';
 export * from './firestore/use-collection';
 export * from './firestore/use-doc';
+export * from './firestore/use-memo-firebase';
 export * from './auth/use-user';
 export * from './client-provider';

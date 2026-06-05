@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Student": {
@@ -56,6 +57,15 @@
           "additionalProperties": { "type": "array", "items": { "type": "string" } }
         }
       }
+    },
+    "PatrakBConfig": {
+      "title": "Patrak-B Configuration",
+      "description": "Grid layout settings for Patrak-B behavioral progress tracking.",
+      "type": "object",
+      "properties": {
+        "fields": { "type": "array" },
+        "maxTotalSubColumns": { "type": "number" }
+      }
     }
   },
   "auth": {
@@ -77,6 +87,10 @@
     "/configs/fln": {
       "schema": "FLNConfig",
       "description": "Global FLN milestone settings."
+    },
+    "/configs/patrakb": {
+      "schema": "PatrakBConfig",
+      "description": "Patrak-B grid configuration settings."
     }
   }
 }

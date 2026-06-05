@@ -1,8 +1,8 @@
+
 'use client';
 
-import { useFirestore, useCollection } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, writeBatch } from 'firebase/firestore';
-import { useMemo } from 'react';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
@@ -48,70 +48,67 @@ export function calculateAge(birthday: string): number {
 
 export function useStudentStore() {
   const firestore = useFirestore();
-  const studentsCollection = useMemo(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+  
+  const studentsCollection = useMemoFirebase(() => 
+    firestore ? collection(firestore, 'students') : null, 
+  [firestore]);
+  
   const { data: students, loading, error: fetchError } = useCollection<Student>(studentsCollection);
 
-  const addStudent = async (student: Omit<Student, 'id'>) => {
+  const addStudent = (student: Omit<Student, 'id'>) => {
     if (!firestore) {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
+      const permissionError = new FirestorePermissionError({
         path: 'students',
         operation: 'create',
         requestResourceData: student,
-      }));
-      return false;
+      });
+      errorEmitter.emit('permission-error', permissionError);
+      return;
     }
+    
     const colRef = collection(firestore, 'students');
-    try {
-      await addDoc(colRef, student);
-      return true;
-    } catch (error) {
+    addDoc(colRef, student).catch(async (serverError) => {
       const permissionError = new FirestorePermissionError({
         path: colRef.path,
         operation: 'create',
         requestResourceData: student,
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
-      return false;
-    }
+    });
   };
 
-  const updateStudent = async (updatedStudent: Student) => {
-    if (!firestore) return false;
+  const updateStudent = (updatedStudent: Student) => {
+    if (!firestore) return;
     const { id, ...data } = updatedStudent;
     const docRef = doc(firestore, 'students', id);
-    try {
-      await updateDoc(docRef, data);
-      return true;
-    } catch (error) {
+    
+    updateDoc(docRef, data).catch(async (serverError) => {
       const permissionError = new FirestorePermissionError({
         path: docRef.path,
         operation: 'update',
         requestResourceData: data,
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
-      return false;
-    }
+    });
   };
 
-  const deleteStudent = async (id: string) => {
-    if (!firestore) return false;
+  const deleteStudent = (id: string) => {
+    if (!firestore) return;
     const docRef = doc(firestore, 'students', id);
-    try {
-      await deleteDoc(docRef);
-      return true;
-    } catch (error) {
+    
+    deleteDoc(docRef).catch(async (serverError) => {
       const permissionError = new FirestorePermissionError({
         path: docRef.path,
         operation: 'delete',
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
-      return false;
-    }
+    });
   };
 
-  const bulkAddStudents = async (newStudents: any[]) => {
+  const bulkAddStudents = (newStudents: any[]) => {
     if (!firestore) return;
     const batch = writeBatch(firestore);
+    
     newStudents.forEach(s => {
       const newDocRef = doc(collection(firestore, 'students'));
       batch.set(newDocRef, {

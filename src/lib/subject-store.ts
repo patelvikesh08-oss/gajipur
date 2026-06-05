@@ -1,7 +1,10 @@
 
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 export interface SubjectMapping {
   id: string;
@@ -10,48 +13,57 @@ export interface SubjectMapping {
   subjects: string[];
 }
 
-const DEFAULT_MAPPINGS: SubjectMapping[] = [
-  { id: '1', standard: '5th Grade', semester: 'Semester 1', subjects: ['Mathematics', 'Science', 'English', 'Social Studies', 'Environmental Studies'] },
-  { id: '2', standard: '6th Grade', semester: 'Semester 1', subjects: ['Mathematics', 'Science', 'English', 'Social Studies', 'Gujarati'] },
-];
-
 export function useSubjectStore() {
-  const [mappings, setMappings] = useState<SubjectMapping[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const firestore = useFirestore();
+  
+  const mappingsCollection = useMemoFirebase(() => 
+    firestore ? collection(firestore, 'subjectMappings') : null, 
+  [firestore]);
+  
+  const { data: mappings, loading, error: fetchError } = useCollection<SubjectMapping>(mappingsCollection);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('edupulse_subject_mappings');
-    if (saved) {
-      setMappings(JSON.parse(saved));
-    } else {
-      setMappings(DEFAULT_MAPPINGS);
-      localStorage.setItem('edupulse_subject_mappings', JSON.stringify(DEFAULT_MAPPINGS));
-    }
-    setIsLoaded(true);
-  }, []);
+  const saveMapping = (standard: string, semester: string, subjects: string[]) => {
+    if (!firestore) return;
+    
+    // Create a stable ID based on standard and semester to prevent duplicates
+    const mappingId = `${standard}-${semester}`.replace(/\s+/g, '-').toLowerCase();
+    const docRef = doc(firestore, 'subjectMappings', mappingId);
+    
+    const data = {
+      id: mappingId,
+      standard,
+      semester,
+      subjects
+    };
 
-  const saveMapping = useCallback((standard: string, semester: string, subjects: string[]) => {
-    setMappings(prev => {
-      const existingIndex = prev.findIndex(m => m.standard === standard && m.semester === semester);
-      let updated;
-      if (existingIndex > -1) {
-        updated = [...prev];
-        updated[existingIndex] = { ...updated[existingIndex], subjects };
-      } else {
-        updated = [...prev, { id: Math.random().toString(36).substr(2, 9), standard, semester, subjects }];
-      }
-      localStorage.setItem('edupulse_subject_mappings', JSON.stringify(updated));
-      return updated;
+    setDoc(docRef, data, { merge: true }).catch(async (err) => {
+      const permissionError = new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'write',
+        requestResourceData: data,
+      } satisfies SecurityRuleContext);
+      errorEmitter.emit('permission-error', permissionError);
     });
-  }, []);
+  };
 
-  const deleteMapping = useCallback((id: string) => {
-    setMappings(prev => {
-      const updated = prev.filter(m => m.id !== id);
-      localStorage.setItem('edupulse_subject_mappings', JSON.stringify(updated));
-      return updated;
+  const deleteMapping = (id: string) => {
+    if (!firestore) return;
+    const docRef = doc(firestore, 'subjectMappings', id);
+    
+    deleteDoc(docRef).catch(async (err) => {
+      const permissionError = new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'delete',
+      } satisfies SecurityRuleContext);
+      errorEmitter.emit('permission-error', permissionError);
     });
-  }, []);
+  };
 
-  return { mappings, saveMapping, deleteMapping, isLoaded };
+  return { 
+    mappings: mappings || [], 
+    saveMapping, 
+    deleteMapping, 
+    isLoaded: !loading,
+    error: fetchError
+  };
 }
