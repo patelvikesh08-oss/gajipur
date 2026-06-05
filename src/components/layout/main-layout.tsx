@@ -87,12 +87,6 @@ function AppSidebar() {
       className="border-none bg-gradient-to-b from-indigo-900 via-indigo-900 to-indigo-950 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
     >
       <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
-        <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center overflow-hidden">
-          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-lg">
-             <GraduationCap className="w-5 h-5 text-indigo-800" />
-          </div>
-          <span className="font-headline font-bold text-xl text-white tracking-tight truncate group-data-[state=collapsed]:hidden">EduPulse Admin</span>
-        </div>
         <div className="flex items-center gap-3 p-2 bg-white/10 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300 border border-white/10">
           <Avatar className="w-10 h-10 border-2 border-indigo-400 p-0.5 shrink-0">
             <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
@@ -245,7 +239,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
       onClick={handleContentClick} 
       className="bg-gradient-to-b from-indigo-900 via-indigo-900 to-indigo-950 transition-all duration-300 h-svh flex flex-col overflow-hidden"
     >
-      <main className="flex-1 overflow-auto p-4 md:p-8 bg-white rounded-tl-[3rem] shadow-[inset_0_4px_24px_rgba(0,0,0,0.1)]">
+      <main className="flex-1 overflow-auto p-4 md:p-8 bg-white transition-all duration-300">
         <div className="mx-auto max-w-7xl space-y-8">
           {children}
         </div>
