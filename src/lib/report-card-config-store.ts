@@ -1,7 +1,13 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+
+export interface FieldMapping {
+  field: string;
+  label: string;
+  x: number; // percentage from left
+  y: number; // percentage from top
+}
 
 export interface ReportCardConfig {
   templateUrl: string | null;
@@ -10,6 +16,7 @@ export interface ReportCardConfig {
   schoolIndex: string;
   districtBlock: string;
   conductItems: { id: string; label: string; checked: boolean }[];
+  fieldMappings: FieldMapping[];
 }
 
 const DEFAULT_CONFIG: ReportCardConfig = {
@@ -25,6 +32,7 @@ const DEFAULT_CONFIG: ReportCardConfig = {
     { id: "leadership", label: "Leadership / નેતૃત્વ", checked: true },
     { id: "discipline", label: "Discipline / શિસ્ત", checked: true },
   ],
+  fieldMappings: [],
 };
 
 export function useReportCardConfigStore() {
@@ -35,7 +43,9 @@ export function useReportCardConfigStore() {
     const saved = localStorage.getItem('edupulse_report_config');
     if (saved) {
       try {
-        setConfig(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        // Ensure fieldMappings exists for backward compatibility
+        setConfig({ ...DEFAULT_CONFIG, ...parsed, fieldMappings: parsed.fieldMappings || [] });
       } catch (e) {
         console.error("Failed to load config", e);
       }

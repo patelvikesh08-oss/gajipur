@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -8,7 +7,7 @@ import { useReportCardConfigStore } from "@/lib/report-card-config-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, GraduationCap, Users, Calendar, Printer, School, UserCircle, Layout, Info } from "lucide-react";
+import { GraduationCap, Users, Calendar, Printer, School, UserCircle, Layout, Info, CheckCircle2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -52,6 +51,25 @@ export default function ReportCardPage() {
     ? students.filter(s => selectedStudentIds.includes(s.id))
     : (selectedStudentIds[0] ? [students.find(s => s.id === selectedStudentIds[0])!] : []);
 
+  // Mock data resolver for template fields
+  const resolveField = (fieldName: string, student: any) => {
+    const data: Record<string, string | number> = {
+      "{{student_name}}": student.name,
+      "{{roll_number}}": student.rollNumber,
+      "{{gr_number}}": student.grNumber,
+      "{{standard}}": student.academicStandard,
+      "{{academic_year}}": academicYear,
+      "{{math_marks}}": 85,
+      "{{sci_marks}}": 78,
+      "{{eng_marks}}": 92,
+      "{{total_marks}}": 255,
+      "{{percentage}}": "85%",
+      "{{grade}}": "A",
+      "{{attendance}}": student.attendance + "%"
+    };
+    return data[fieldName] || "N/A";
+  };
+
   const mockSubjects = [
     { name: "Mathematics / ગણિત", marks: 85, grade: "A" },
     { name: "Science / વિજ્ઞાન", marks: 78, grade: "B+" },
@@ -69,8 +87,8 @@ export default function ReportCardPage() {
                 <GraduationCap className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">Advanced Report Generation / રિપોર્ટ કાર્ડ</h1>
-                <p className="text-indigo-100 text-sm font-medium mt-1">Generate professional progress reports for students</p>
+                <h1 className="text-3xl font-bold tracking-tight">Report Card Generation</h1>
+                <p className="text-indigo-100 text-sm font-medium mt-1">Generate official student performance reports</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -112,19 +130,19 @@ export default function ReportCardPage() {
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-bold flex items-center gap-2 text-indigo-900">
                 <Users className="w-5 h-5" />
-                Selection / પસંદગી
+                Selection
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {config.templateUrl && (
                 <Badge className="w-full bg-emerald-100 text-emerald-700 border-none py-2 justify-center gap-2 rounded-xl mb-2">
-                  <Layout className="w-3.5 h-3.5" />
-                  Custom Template Active
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Mapping Template Active
                 </Badge>
               )}
 
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Filter Standard / ધોરણ</Label>
+                <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Filter Standard</Label>
                 <Select value={selectedStandard} onValueChange={(val) => {
                   setSelectedStandard(val);
                   setSelectedStudentIds([]);
@@ -133,7 +151,7 @@ export default function ReportCardPage() {
                     <SelectValue placeholder="All Standards" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
+                    <SelectItem value="all">All Standards</SelectItem>
                     {standards.map(std => (
                       <SelectItem key={std} value={std}>{std}</SelectItem>
                     ))}
@@ -146,7 +164,7 @@ export default function ReportCardPage() {
                   setIsBulkMode(val);
                   if (!val && selectedStudentIds.length > 1) setSelectedStudentIds([selectedStudentIds[0]]);
                 }} />
-                <Label htmlFor="bulk-mode" className="text-sm font-bold cursor-pointer text-indigo-900">Bulk Mode / જથ્થાબંધ</Label>
+                <Label htmlFor="bulk-mode" className="text-sm font-bold cursor-pointer text-indigo-900">Bulk Mode</Label>
               </div>
 
               <div className="pt-4 border-t space-y-4">
@@ -173,7 +191,7 @@ export default function ReportCardPage() {
                   </>
                 ) : (
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Select Student / વિદ્યાર્થી</Label>
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Select Student</Label>
                     <Select value={selectedStudentIds[0] || ""} onValueChange={(val) => setSelectedStudentIds([val])}>
                       <SelectTrigger className="rounded-xl h-11">
                         <SelectValue placeholder="Select student..." />
@@ -194,33 +212,29 @@ export default function ReportCardPage() {
             <div className="space-y-8">
               {activeReports.length > 0 ? (
                 activeReports.map((student) => {
-                  if (config.templateUrl) {
+                  if (config.templateUrl && config.templateType === 'image') {
                     return (
                       <div key={student.id} className="relative bg-white shadow-2xl rounded-sm overflow-hidden print:shadow-none min-h-[1000px] flex flex-col items-center">
-                        <div className="absolute top-4 right-4 no-print">
-                          <Badge className="bg-indigo-600">Custom Template Overlay</Badge>
+                        <div className="relative w-full">
+                          <img src={config.templateUrl} alt="Report Template" className="w-full h-auto" />
+                          
+                          {/* Dynamically Overlay Mapped Fields */}
+                          {config.fieldMappings.map((m) => (
+                            <div 
+                              key={m.field}
+                              style={{ 
+                                left: `${m.x}%`, 
+                                top: `${m.y}%`,
+                                position: 'absolute'
+                              }}
+                              className="transform -translate-x-1/2 -translate-y-1/2"
+                            >
+                              <span className="font-bold text-slate-900 text-[10pt] whitespace-nowrap bg-white/40 px-1 rounded print:bg-transparent">
+                                {resolveField(m.field, student)}
+                              </span>
+                            </div>
+                          ))}
                         </div>
-                        {config.templateType === 'pdf' ? (
-                          <iframe src={config.templateUrl} className="w-full h-[1100px] border-none" />
-                        ) : (
-                          <div className="relative w-full">
-                            <img src={config.templateUrl} alt="Report Template" className="w-full h-auto" />
-                            {/* In a real app, these would use absolute positioning based on config mapping */}
-                            <div className="absolute top-1/4 left-1/4 bg-white/80 p-4 border border-indigo-200 rounded-xl shadow-lg no-print">
-                              <p className="text-[10px] font-bold text-indigo-500 uppercase">Data Mapping Overlay</p>
-                              <p className="text-sm font-black text-slate-800">{student.name} - Grade {student.academicStandard}</p>
-                              <div className="mt-2 space-y-1">
-                                {mockSubjects.map(s => (
-                                  <p key={s.name} className="text-xs font-bold">{s.name}: <span className="text-indigo-600">{s.marks}</span></p>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="p-8 bg-indigo-50/30 no-print flex items-center gap-3">
-                              <Info className="w-5 h-5 text-indigo-600" />
-                              <p className="text-xs font-bold text-indigo-900 uppercase">This view displays your uploaded template. Student data will be mapped to the placeholders you defined in Word/PDF.</p>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     );
                   }
@@ -359,8 +373,8 @@ export default function ReportCardPage() {
                 })
               ) : (
                 <div className="bg-white border-2 border-dashed rounded-3xl p-32 text-center shadow-sm">
-                  <FileText className="w-16 h-16 text-slate-200 mx-auto mb-6" />
-                  <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Select a student from the sidebar to preview report card</p>
+                  <Layout className="w-16 h-16 text-slate-200 mx-auto mb-6" />
+                  <p className="text-slate-400 font-black uppercase tracking-widest text-xs">Select a student to generate custom report card</p>
                 </div>
               )}
             </div>
