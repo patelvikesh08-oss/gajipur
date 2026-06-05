@@ -242,7 +242,10 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
   };
 
   return (
-    <SidebarInset onClick={handleContentClick} className="bg-white transition-all duration-300">
+    <SidebarInset 
+      onClick={handleContentClick} 
+      className="bg-white transition-all duration-300 h-svh flex flex-col overflow-hidden"
+    >
       <header className="flex h-16 shrink-0 items-center justify-between gap-2 bg-white px-6 shadow-sm border-b no-print">
         <div className="flex items-center gap-4 flex-1">
           <SidebarTrigger className="text-emerald-600 hover:bg-emerald-50" />
