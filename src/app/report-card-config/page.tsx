@@ -36,6 +36,7 @@ export default function ReportCardConfigPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
   const [activeField, setActiveField] = useState<{field: string, label: string} | null>(null);
+  const [draggingField, setDraggingField] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -76,7 +77,7 @@ export default function ReportCardConfigPage() {
   };
 
   const handleImageClick = (e: React.MouseEvent) => {
-    if (!activeField || !imageContainerRef.current) return;
+    if (!activeField || !imageContainerRef.current || draggingField) return;
 
     const rect = imageContainerRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -89,7 +90,6 @@ export default function ReportCardConfigPage() {
       y
     };
 
-    // Remove existing mapping for the same field if it exists
     const filtered = config.fieldMappings.filter(m => m.field !== activeField.field);
     updateConfig({ fieldMappings: [...filtered, newMapping] });
     setActiveField(null);
@@ -98,6 +98,25 @@ export default function ReportCardConfigPage() {
       title: "Field Placed",
       description: `${activeField.label} positioned on template.`,
     });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!draggingField || !imageContainerRef.current) return;
+
+    const rect = imageContainerRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+
+    const updatedMappings = config.fieldMappings.map(m => 
+      m.field === draggingField ? { ...m, x, y } : m
+    );
+    updateConfig({ fieldMappings: updatedMappings });
+  };
+
+  const handleMouseUp = () => {
+    if (draggingField) {
+      setDraggingField(null);
+    }
   };
 
   const removeMapping = (field: string) => {
@@ -124,7 +143,7 @@ export default function ReportCardConfigPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto space-y-8 pb-12">
+      <div className="max-w-7xl mx-auto space-y-8 pb-12" onMouseUp={handleMouseUp}>
         <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 p-8 rounded-3xl text-white shadow-2xl">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md border border-white/20">
@@ -132,7 +151,7 @@ export default function ReportCardConfigPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Template Design & Mapping</h1>
-              <p className="text-indigo-100 text-sm font-medium mt-1">Upload your letterhead and place dynamic fields interactively</p>
+              <p className="text-indigo-100 text-sm font-medium mt-1">Upload your letterhead and place or drag dynamic fields interactively</p>
             </div>
           </div>
         </div>
@@ -147,7 +166,7 @@ export default function ReportCardConfigPage() {
                 </CardTitle>
                 <CardDescription className="font-medium">
                   {localPreviewUrl 
-                    ? "Click on the template to place your selected field." 
+                    ? "Click to place a field, or click and drag an existing field to move it." 
                     : "Upload a JPG/PNG to start interactive mapping."}
                 </CardDescription>
               </CardHeader>
@@ -176,11 +195,12 @@ export default function ReportCardConfigPage() {
                 ) : (
                   <div className="space-y-6">
                     <div className={cn(
-                      "relative rounded-xl border-4 overflow-hidden shadow-2xl transition-all",
+                      "relative rounded-xl border-4 overflow-hidden shadow-2xl transition-all select-none",
                       activeField ? "cursor-crosshair border-indigo-500 scale-[1.01]" : "border-slate-100"
                     )}
                     ref={imageContainerRef}
                     onClick={handleImageClick}
+                    onMouseMove={handleMouseMove}
                     >
                       <img 
                         src={localPreviewUrl} 
@@ -192,24 +212,36 @@ export default function ReportCardConfigPage() {
                         <div 
                           key={m.field}
                           style={{ left: `${m.x}%`, top: `${m.y}%` }}
-                          className="absolute -translate-x-1/2 -translate-y-1/2 group"
+                          className={cn(
+                            "absolute -translate-x-1/2 -translate-y-1/2 group z-30 touch-none",
+                            draggingField === m.field ? "z-50" : "cursor-move"
+                          )}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            setDraggingField(m.field);
+                          }}
                         >
                           <div className="relative">
-                            <Badge className="bg-indigo-600 text-white font-bold whitespace-nowrap shadow-lg animate-in zoom-in-50">
+                            <Badge className={cn(
+                              "font-bold whitespace-nowrap shadow-lg transition-transform",
+                              draggingField === m.field ? "bg-purple-600 scale-110 ring-4 ring-purple-100" : "bg-indigo-600"
+                            )}>
                               {m.label}
                             </Badge>
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); removeMapping(m.field); }}
-                              className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
+                            {draggingField !== m.field && (
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); removeMapping(m.field); }}
+                                className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}
 
-                      {activeField && (
-                        <div className="absolute inset-0 bg-indigo-500/10 pointer-events-none flex items-center justify-center">
+                      {activeField && !draggingField && (
+                        <div className="absolute inset-0 bg-indigo-500/10 pointer-events-none flex items-center justify-center z-40">
                           <p className="bg-indigo-600 text-white px-4 py-2 rounded-full font-bold text-sm animate-pulse">
                             Click to place: {activeField.label}
                           </p>
@@ -219,7 +251,7 @@ export default function ReportCardConfigPage() {
 
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                        {config.fieldMappings.length} Fields Mapped
+                        {config.fieldMappings.length} Fields Mapped • Drag fields to move
                       </p>
                       <Button 
                         variant="outline" 
@@ -249,7 +281,7 @@ export default function ReportCardConfigPage() {
                       <p className="text-[10px] font-bold text-indigo-700 leading-relaxed uppercase tracking-wider">
                         1. Click a field below<br />
                         2. Click position on template<br />
-                        3. Field will be dynamic in results
+                        3. Drag placed fields to move them
                       </p>
                     </div>
                   </div>
