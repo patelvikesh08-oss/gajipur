@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -66,8 +65,8 @@ export default function TrimasikPage() {
               <ClipboardList className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">TRIMASIK (Quarterly Records)</h1>
-              <p className="text-xs text-muted-foreground font-medium">Direct marks entry grid</p>
+              <h1 className="text-2xl font-bold text-slate-800">TRIMASIK / ત્રિમાસિક પત્રક</h1>
+              <p className="text-xs text-muted-foreground font-medium">Direct marks entry grid / માર્કસ એન્ટ્રી ગ્રીડ</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -96,11 +95,11 @@ export default function TrimasikPage() {
             </Select>
             <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
               <Printer className="w-4 h-4 mr-2" />
-              Print
+              Print / પ્રિન્ટ
             </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-primary shadow-lg shadow-primary/20">
               <Save className="w-4 h-4 mr-2" />
-              Save All
+              Save All / સાચવો
             </Button>
           </div>
         </div>
@@ -108,7 +107,7 @@ export default function TrimasikPage() {
         {/* PRINT HEADER */}
         <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
           <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-lg font-bold uppercase">TRIMASIK (Quarterly Records)</h2>
+          <h2 className="text-lg font-bold uppercase">TRIMASIK (Quarterly Records) / ત્રિમાસિક પત્રક</h2>
           <div className="flex justify-center gap-8 font-bold text-xs">
             <span>Academic Year: {academicYear}</span>
             <span>Term: {semester}</span>
@@ -118,14 +117,14 @@ export default function TrimasikPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
-            placeholder="Search student names or roll number..."
+            placeholder="Search / શોધો..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
           <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Filter by Standard" />
+              <SelectValue placeholder="Filter by Standard / ધોરણ મુજબ ફિલ્ટર" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Standards</SelectItem>
@@ -215,7 +214,7 @@ export default function TrimasikPage() {
                 <TableRow>
                   <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 4} className="h-32 text-center text-muted-foreground">
                     {selectedStandard === "all" 
-                      ? "Please select a specific academic standard to view subject columns." 
+                      ? "Please select a specific academic standard / કૃપા કરીને ધોરણ પસંદ કરો." 
                       : "No subjects mapped for this standard in " + semester + ". Go to Subject Mapping to configure."}
                   </TableCell>
                 </TableRow>
@@ -227,11 +226,11 @@ export default function TrimasikPage() {
         <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
           <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
             <Printer className="w-4 h-4" />
-            Print Report
+            Print / પ્રિન્ટ
           </Button>
           <Button onClick={handleSaveAll} size="lg" className="font-bold bg-primary shadow-lg shadow-primary/20 px-8">
             <Save className="w-4 h-4 mr-2" />
-            Commit Changes
+            Save Changes / ફેરફારો સાચવો
           </Button>
         </div>
       </div>

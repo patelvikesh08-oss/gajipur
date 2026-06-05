@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -166,10 +165,10 @@ export default function StudentsPage() {
     <MainLayout>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-slate-800">Student Information System</h1>
+          <h1 className="text-2xl font-bold text-slate-800">Student Information System / વિદ્યાર્થી માહિતી પ્રણાલી</h1>
           <div className="flex flex-wrap items-center gap-3">
              <Badge variant="outline" className="px-4 py-2 bg-white font-bold text-primary border-primary/20">
-                Session: {academicYear}
+                Session / સત્ર: {academicYear}
              </Badge>
           </div>
         </div>
@@ -178,7 +177,7 @@ export default function StudentsPage() {
           <div className="relative w-full sm:w-96">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by Roll No, Name, G.R., or Standard..."
+              placeholder="Search / શોધો..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
@@ -201,12 +200,12 @@ export default function StudentsPage() {
             <Button variant="outline" className="font-bold hidden md:flex" asChild>
               <Link href="/bulk-entry">
                 <FileUp className="w-4 h-4 mr-2" />
-                Import
+                Import / આયાત
               </Link>
             </Button>
             <Button variant="outline" className="font-bold hidden md:flex" onClick={exportToCSV}>
               <FileDown className="w-4 h-4 mr-2" />
-              Export
+              Export / નિકાસ
             </Button>
 
             <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
@@ -219,7 +218,7 @@ export default function StudentsPage() {
               <DialogTrigger asChild>
                 <Button className="font-headline font-bold">
                   <Plus className="w-4 h-4 mr-2" />
-                  Enroll Student
+                  Enroll Student / વિદ્યાર્થી ઉમેરો
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[90vh] p-0">

@@ -46,28 +46,28 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import React from "react";
 
 const mainNavigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Students", href: "/students", icon: Users },
-  { name: "Bonofide", href: "/bonofide", icon: IdCard },
-  { name: "FLN", href: "/fln", icon: SpellCheck },
+  { name: "Dashboard / ડેશબોર્ડ", href: "/", icon: LayoutDashboard },
+  { name: "Students / વિદ્યાર્થીઓ", href: "/students", icon: Users },
+  { name: "Bonofide / બોનાફાઇડ", href: "/bonofide", icon: IdCard },
+  { name: "FLN / અંકજ્ઞાન", href: "/fln", icon: SpellCheck },
 ];
 
 const examinationSubItems = [
-  { name: "TRIMASIK", href: "/trimasik", icon: ClipboardList },
-  { name: "PATRAK-B", href: "/patrak-b", icon: ScrollText },
-  { name: "PATRAK-C", href: "/patrak-c", icon: FileSpreadsheet },
-  { name: "SVADHYAY", href: "/svadhyay", icon: BookOpen },
-  { name: "PAT/SAT", href: "/pat-sat", icon: CheckCircle2 },
-  { name: "Top Performers", href: "/top-performers", icon: Trophy },
-  { name: "Report Card", href: "/report-card", icon: FileText },
-  { name: "Results", href: "/results", icon: PieChart },
+  { name: "TRIMASIK / ત્રિમાસિક", href: "/trimasik", icon: ClipboardList },
+  { name: "PATRAK-B / પત્રક-બ", href: "/patrak-b", icon: ScrollText },
+  { name: "PATRAK-C / પત્રક-સી", href: "/patrak-c", icon: FileSpreadsheet },
+  { name: "SVADHYAY / સ્વાધ્યાય", href: "/svadhyay", icon: BookOpen },
+  { name: "PAT/SAT / મૂલ્યાંકન", href: "/pat-sat", icon: CheckCircle2 },
+  { name: "Top Performers / તેજસ્વી", href: "/top-performers", icon: Trophy },
+  { name: "Report Card / રિપોર્ટ કાર્ડ", href: "/report-card", icon: FileText },
+  { name: "Results / પરિણામો", href: "/results", icon: PieChart },
 ];
 
 const settingsSubItems = [
-  { name: "Subject Mapping", href: "/subject-mapping", icon: Layers },
-  { name: "Marks Mapping", href: "/marks-mapping", icon: Calculator },
-  { name: "Patrak-B Config", href: "/patrak-b-config", icon: Settings2 },
-  { name: "FLN Config", href: "/fln-config", icon: SpellCheck },
+  { name: "Subject Mapping / વિષય", href: "/subject-mapping", icon: Layers },
+  { name: "Marks Mapping / ગુણ", href: "/marks-mapping", icon: Calculator },
+  { name: "Patrak-B Config / પત્રક-બ", href: "/patrak-b-config", icon: Settings2 },
+  { name: "FLN Config / FLN ગોઠવણી", href: "/fln-config", icon: SpellCheck },
 ];
 
 function AppSidebar() {
@@ -128,7 +128,7 @@ function AppSidebar() {
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg">
-                  <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Examination</span>
+                  <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
                   <div className="flex items-center gap-2">
                     <GraduationCap className="w-4 h-4 text-muted-foreground group-data-[state=open]:text-primary" />
                     <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />
@@ -166,7 +166,7 @@ function AppSidebar() {
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center hover:bg-sidebar-accent rounded-lg">
-                  <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Settings</span>
+                  <span className="font-medium text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
                   <div className="flex items-center gap-2">
                     <Settings className="w-4 h-4 text-muted-foreground group-data-[state=open]:text-primary" />
                     <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-90 group-data-[state=collapsed]:hidden" />

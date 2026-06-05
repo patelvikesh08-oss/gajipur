@@ -1,4 +1,3 @@
-
 "use client";
 
 import { MainLayout } from "@/components/layout/main-layout";
@@ -71,7 +70,7 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <LayoutDashboard className="w-8 h-8 text-primary" />
-            <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard</h1>
+            <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard / ડેશબોર્ડ</h1>
           </div>
           
           <div className="flex flex-wrap items-center gap-3">
@@ -103,21 +102,21 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard
-            title="Total Enrollment"
+            title="Total Enrollment / કુલ નોંધણી"
             value={stats.total}
             description={`${academicYear} Academic Session`}
             icon={Users}
             variant="purple"
           />
           <StatCard
-            title="Avg. Student Age"
+            title="Avg. Student Age / સરેરાશ ઉંમર"
             value={`${stats.avgAge} Yrs`}
             description="Calculated from birth dates"
             icon={GraduationCap}
             variant="blue"
           />
           <StatCard
-            title="Active Term"
+            title="Active Term / સત્ર"
             value={semester}
             description="Academic Period"
             icon={ClipboardCheck}
@@ -129,7 +128,7 @@ export default function Dashboard() {
           <div className="xl:col-span-4 grid grid-cols-1 gap-6">
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="bg-slate-50/50 border-b">
-                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Gender Distribution</CardTitle>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Gender Distribution / જાતિ મુજબ વિતરણ</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
@@ -153,7 +152,7 @@ export default function Dashboard() {
 
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="bg-slate-50/50 border-b">
-                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Bracket Count</CardTitle>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Bracket Count / વય જૂથ મુજબ સંખ્યા</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
@@ -178,7 +177,7 @@ export default function Dashboard() {
 
           <Card className="xl:col-span-8 border-none shadow-sm overflow-hidden">
             <CardHeader className="bg-slate-50/50 border-b">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Enrollment by Grade & Gender</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Enrollment by Grade & Gender / ધોરણ અને જાતિ મુજબ નોંધણી</CardTitle>
               <CardDescription>Consolidated view of standard-wise demographics</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
