@@ -66,6 +66,20 @@
         "fields": { "type": "array" },
         "maxTotalSubColumns": { "type": "number" }
       }
+    },
+    "PatrakAEntry": {
+      "title": "Patrak-A Entry",
+      "description": "Formative assessment marks for a student.",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "academicYear": { "type": "string" },
+        "semester": { "type": "string" },
+        "subjectMarks": { 
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        }
+      }
     }
   },
   "auth": {
@@ -91,6 +105,10 @@
     "/configs/patrakb": {
       "schema": "PatrakBConfig",
       "description": "Patrak-B grid configuration settings."
+    },
+    "/patrakA/{entryId}": {
+      "schema": "PatrakAEntry",
+      "description": "Formative assessment mark entries."
     }
   }
 }

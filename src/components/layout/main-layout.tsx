@@ -37,7 +37,8 @@ import {
   Calculator,
   SpellCheck,
   Settings2,
-  Settings
+  Settings,
+  FileDigit
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -54,6 +55,7 @@ const mainNavigation = [
 ];
 
 const examinationSubItems = [
+  { name: "PATRAK-A / પત્રક-અ", href: "/patrak-a", icon: FileDigit },
   { name: "TRIMASIK / ત્રિમાસિક", href: "/trimasik", icon: ClipboardList },
   { name: "PATRAK-B / પત્રક-બ", href: "/patrak-b", icon: ScrollText },
   { name: "PATRAK-C / પત્રક-સી", href: "/patrak-c", icon: FileSpreadsheet },
