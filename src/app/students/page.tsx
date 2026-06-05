@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Filter, Trash2, Edit, User, CreditCard, Building2, Phone, Home, FileUp, FileDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
 
 const ACADEMIC_STANDARDS = [
@@ -85,11 +86,22 @@ export default function StudentsPage() {
   }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
   const handleSave = () => {
+    if (!formData.name.trim() || !formData.academicStandard) {
+      toast({
+        title: "Validation Error / ભૂલ",
+        description: "Please provide both name and standard. / કૃપા કરીને નામ અને ધોરણ આપો.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (editingStudent) {
       updateStudent({ ...editingStudent, ...formData });
+      toast({ title: "Student Updated / અપડેટ સફળ", description: `${formData.name} updated successfully.` });
       setEditingStudent(null);
     } else {
       addStudent(formData);
+      toast({ title: "Student Enrolled / નોંધણી સફળ", description: `${formData.name} has been enrolled.` });
     }
     resetForm();
     setIsAddDialogOpen(false);
@@ -387,7 +399,7 @@ export default function StudentsPage() {
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Roll No / રોલ</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap w-16 text-center">Roll / રોલ</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">G.R. No / જી.આર.</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Full Name / નામ</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Gender / જાતિ</TableHead>
@@ -403,7 +415,7 @@ export default function StudentsPage() {
                 {filteredStudents.length > 0 ? (
                   filteredStudents.map((s) => (
                     <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
-                      <TableCell className="font-black text-primary whitespace-nowrap">{s.rollNumber}</TableCell>
+                      <TableCell className="font-black text-primary whitespace-nowrap text-center">{s.rollNumber}</TableCell>
                       <TableCell className="font-bold text-slate-500 whitespace-nowrap">{s.grNumber}</TableCell>
                       <TableCell className="font-bold text-slate-900 whitespace-nowrap">{s.name}</TableCell>
                       <TableCell className="whitespace-nowrap">

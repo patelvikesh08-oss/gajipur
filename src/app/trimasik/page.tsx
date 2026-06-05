@@ -129,7 +129,7 @@ export default function TrimasikPage() {
           <Table>
             <TableHeader className="bg-slate-50 print:bg-white">
               <TableRow>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No / રોલ</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-12 text-center print:border-black">Roll No / રોલ</TableHead>
                 <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name / નામ</TableHead>
                 {activeSubjects.map((subject) => (
                   <TableHead 
@@ -157,7 +157,7 @@ export default function TrimasikPage() {
             <TableBody>
               {filteredStudents.map((s) => (
                 <TableRow key={s.id} className="hover:bg-slate-50/50 print:bg-white h-10">
-                  <TableCell className="font-black text-primary print:text-black print:border-black">{s.rollNumber}</TableCell>
+                  <TableCell className="font-black text-primary text-center print:text-black print:border-black">{s.rollNumber}</TableCell>
                   <TableCell className="font-bold text-slate-700 whitespace-nowrap print:text-black print:border-black">{s.name}</TableCell>
                   {activeSubjects.map((subject) => (
                     <React.Fragment key={`${s.id}-${subject}`}>

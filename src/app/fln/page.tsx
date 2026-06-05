@@ -171,8 +171,8 @@ export default function FlnPage() {
             <Table className="border-collapse w-full">
               <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
-                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] w-[50px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
-                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-[50px] bg-slate-50 z-20 print:static print:bg-white">Student Name / નામ</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] w-12 border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-12 bg-slate-50 z-20 print:static print:bg-white">Student Name / નામ</TableHead>
                   {flnCategories.map((cat) => (
                     <TableHead 
                       key={cat.name} 
@@ -219,7 +219,7 @@ export default function FlnPage() {
                     <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-[10px] text-center print:static print:text-black print:border-black">
                       {s.rollNumber}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-[50px] bg-white z-10 text-[10px] print:static print:border-black">
+                    <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-12 bg-white z-10 text-[10px] print:static print:border-black">
                       {s.name}
                     </TableCell>
                     {flnCategories.map((cat) => (
