@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit, User, CreditCard, Building2, Phone, Home, FileUp, FileDown, AlertCircle, Loader2 } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, User, CreditCard, Building2, Phone, Home, FileUp, FileDown, AlertCircle, Loader2, Database } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
@@ -76,7 +76,7 @@ export default function StudentsPage() {
     mobileNumber: "",
   });
 
-  if (!studentsLoaded || !sessionLoaded) return null;
+  if (!sessionLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
     const sName = s.name || "";
@@ -104,24 +104,21 @@ export default function StudentsPage() {
     }
 
     setIsSaving(true);
-    let success = false;
-    if (editingStudent) {
-      success = await updateStudent({ ...editingStudent, ...formData });
-      if (success) {
-        toast({ title: "Student Updated / અપડેટ સફળ", description: `${formData.name} updated successfully.` });
+    try {
+      if (editingStudent) {
+        updateStudent({ ...editingStudent, ...formData });
+        toast({ title: "Update Initiated / અપડેટ શરૂ", description: `${formData.name} is being updated...` });
         setEditingStudent(null);
+      } else {
+        addStudent(formData);
+        toast({ title: "Enrollment Initiated / નોંધણી શરૂ", description: `${formData.name} is being added to the database...` });
       }
-    } else {
-      success = await addStudent(formData);
-      if (success) {
-        toast({ title: "Student Enrolled / નોંધણી સફળ", description: `${formData.name} has been enrolled.` });
-      }
-    }
-    setIsSaving(false);
-
-    if (success) {
       resetForm();
       setIsAddDialogOpen(false);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -210,7 +207,18 @@ export default function StudentsPage() {
     <MainLayout>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-slate-800">Student Information System / વિદ્યાર્થી માહિતી પ્રણાલી</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-slate-800">Student Information System / વિદ્યાર્થી માહિતી પ્રણાલી</h1>
+            {!firestore ? (
+              <Badge variant="destructive" className="animate-pulse">
+                <Database className="w-3 h-3 mr-1" /> Disconnected
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
+                <Database className="w-3 h-3 mr-1" /> Connected
+              </Badge>
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-3">
              <Badge variant="outline" className="px-4 py-2 bg-white font-bold text-primary border-primary/20">
                 Session / સત્ર: {academicYear}
@@ -218,22 +226,12 @@ export default function StudentsPage() {
           </div>
         </div>
 
-        {!firestore && (
-          <Alert variant="destructive" className="bg-red-50 border-red-200">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertTitle className="text-red-800 font-bold">Database Disconnected / કનેક્શન નથી</AlertTitle>
-            <AlertDescription className="text-red-700 font-medium">
-              Firebase is not properly initialized. Please check your environment variables (API Key, Project ID). Data cannot be saved or loaded.
-            </AlertDescription>
-          </Alert>
-        )}
-
         {fetchError && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Sync Error / ભૂલ</AlertTitle>
             <AlertDescription>
-              Failed to load student data: {fetchError.message}
+              Failed to load student data. This may be due to incomplete Firebase configuration.
             </AlertDescription>
           </Alert>
         )}
@@ -295,7 +293,7 @@ export default function StudentsPage() {
               }
             }}>
               <DialogTrigger asChild>
-                <Button className="font-headline font-bold" disabled={!firestore}>
+                <Button className="font-headline font-bold">
                   <Plus className="w-4 h-4 mr-2" />
                   Enroll Student / વિદ્યાર્થી ઉમેરો
                 </Button>
@@ -459,46 +457,55 @@ export default function StudentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStudents.length > 0 ? (
-                  filteredStudents.map((s) => (
-                    <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
-                      <TableCell className="font-black text-primary whitespace-nowrap text-center">{s.rollNumber}</TableCell>
-                      <TableCell className="font-bold text-slate-500 whitespace-nowrap">{s.grNumber}</TableCell>
-                      <TableCell className="font-bold text-slate-900 whitespace-nowrap">{s.name}</TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <Badge variant="outline" className="text-[10px] uppercase">
-                          {s.gender === 'Male' ? 'Male / પુરૂષ' : s.gender === 'Female' ? 'Female / સ્ત્રી' : 'Other / અન્ય'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <Badge variant="secondary" className="font-bold">{s.academicStandard}</Badge>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap font-medium">{s.birthday}</TableCell>
-                      <TableCell className="whitespace-nowrap text-center">
-                        <span className={`font-bold ${(s.attendance || 0) < 75 ? 'text-destructive' : 'text-primary'}`}>
-                          {s.attendance || 0}%
-                        </span>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">{s.caste}</TableCell>
-                      <TableCell className="whitespace-nowrap text-xs">{s.mobileNumber}</TableCell>
-                      <TableCell className="text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => handleEdit(s)}>
-                            <Edit className="h-4 w-4 text-primary" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => deleteStudent(s.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
+                {studentsLoaded ? (
+                  filteredStudents.length > 0 ? (
+                    filteredStudents.map((s) => (
+                      <TableRow key={s.id} className="hover:bg-muted/20 transition-colors">
+                        <TableCell className="font-black text-primary whitespace-nowrap text-center">{s.rollNumber}</TableCell>
+                        <TableCell className="font-bold text-slate-500 whitespace-nowrap">{s.grNumber}</TableCell>
+                        <TableCell className="font-bold text-slate-900 whitespace-nowrap">{s.name}</TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <Badge variant="outline" className="text-[10px] uppercase">
+                            {s.gender === 'Male' ? 'Male / પુરૂષ' : s.gender === 'Female' ? 'Female / સ્ત્રી' : 'Other / અન્ય'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <Badge variant="secondary" className="font-bold">{s.academicStandard}</Badge>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap font-medium">{s.birthday}</TableCell>
+                        <TableCell className="whitespace-nowrap text-center">
+                          <span className={`font-bold ${(s.attendance || 0) < 75 ? 'text-destructive' : 'text-primary'}`}>
+                            {s.attendance || 0}%
+                          </span>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">{s.caste}</TableCell>
+                        <TableCell className="whitespace-nowrap text-xs">{s.mobileNumber}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => handleEdit(s)}>
+                              <Edit className="h-4 w-4 text-primary" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => deleteStudent(s.id)}>
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={10} className="h-32 text-center text-muted-foreground font-medium italic">
+                        No student records matching your criteria. / કોઈ માહિતી મળી નથી.
                       </TableCell>
                     </TableRow>
-                  ))
+                  )
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={10} className="h-32 text-center text-muted-foreground font-medium italic">
-                      {studentsLoaded && students.length === 0 
-                        ? "No records found in database. / ડેટાબેઝમાં કોઈ રેકોર્ડ મળ્યા નથી."
-                        : "No student records matching your criteria. / કોઈ માહિતી મળી નથી."}
+                    <TableCell colSpan={10} className="h-32 text-center">
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                        <p>Syncing student database... / ડેટા સિંક્રનાઇઝ થઈ રહ્યો છે...</p>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

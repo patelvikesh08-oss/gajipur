@@ -1,4 +1,3 @@
-
 'use client';
 
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
@@ -12,8 +11,10 @@ export function initializeFirebase(): {
   auth: Auth | null;
 } {
   try {
-    if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-      console.warn("Firebase configuration is missing or incomplete. Please check your environment variables.");
+    // If we have at least a projectId, we can attempt initialization.
+    // The Firebase SDK will handle specific missing field errors when services are called.
+    if (!firebaseConfig.projectId) {
+      console.warn("Firebase Project ID is missing. Please check your environment variables.");
       return { firebaseApp: null, firestore: null, auth: null };
     }
 
