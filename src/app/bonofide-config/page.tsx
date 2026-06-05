@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Save, FileText, Image as ImageIcon, FileUp, X, Settings2 } from "lucide-react";
+import { Upload, Save, FileText, Image as ImageIcon, FileUp, X, Settings2, CheckCircle2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 export default function BonofideConfigPage() {
