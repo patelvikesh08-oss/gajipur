@@ -41,14 +41,12 @@ export default function SubjectMappingPage() {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [currentSubjects, setCurrentSubjects] = useState<string[]>([]);
 
-  // Automatically switch away from Annual if it was selected elsewhere
   useEffect(() => {
     if (semester === 'Annual') {
       updateSemester('Semester 1');
     }
   }, [semester, updateSemester]);
 
-  // Update current subjects when standard or semester changes
   useEffect(() => {
     if (selectedStandard && subjectsLoaded && semester !== 'Annual') {
       const existing = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
@@ -86,53 +84,60 @@ export default function SubjectMappingPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Layers className="w-6 h-6 text-primary" />
+      <div className="max-w-4xl mx-auto space-y-8 pb-12">
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 p-8 rounded-3xl text-white shadow-2xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+                <Layers className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Subject Mapping / વિષય મેપિંગ</h1>
+                <p className="text-indigo-100 text-sm font-medium mt-1">Configure curriculum for standard and semester</p>
+              </div>
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">Subject Mapping / વિષય મેપિંગ</h1>
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
-                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
-                  <SelectValue placeholder="Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2023-24">2023-24</SelectItem>
-                  <SelectItem value="2024-25">2024-25</SelectItem>
-                  <SelectItem value="2025-26">2025-26</SelectItem>
-                </SelectContent>
-              </Select>
+            
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
+                <Calendar className="w-4 h-4 text-blue-200" />
+                <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
+                  <SelectTrigger className="w-[120px] border-none bg-transparent shadow-none focus:ring-0 h-7 text-xs font-bold text-white">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2023-24">2023-24</SelectItem>
+                    <SelectItem value="2024-25">2024-25</SelectItem>
+                    <SelectItem value="2025-26">2025-26</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md px-2 py-1 rounded-xl border border-white/20">
+                <Select value={semester === 'Annual' ? 'Semester 1' : semester} onValueChange={(val: any) => updateSemester(val)}>
+                  <SelectTrigger className="w-[140px] border-none bg-transparent shadow-none focus:ring-0 h-10 text-xs font-bold text-white">
+                    <SelectValue placeholder="Semester" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                    <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <Select value={semester === 'Annual' ? 'Semester 1' : semester} onValueChange={(val: any) => updateSemester(val)}>
-              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
-                <SelectValue placeholder="Semester" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
-                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Curriculum Configuration / અભ્યાસક્રમ ગોઠવણી</CardTitle>
-            <CardDescription>Map subjects for a specific standard and semester.</CardDescription>
+        <Card className="border-none shadow-xl rounded-2xl overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b">
+            <CardTitle className="text-lg font-bold text-slate-800">Curriculum Configuration</CardTitle>
+            <CardDescription className="font-medium">Map subjects for a specific standard and semester.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Academic Standard / શૈક્ષણિક ધોરણ</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Academic Standard / ધોરણ</Label>
                 <Select value={selectedStandard} onValueChange={setSelectedStandard}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a standard... / ધોરણ પસંદ કરો..." />
+                  <SelectTrigger className="h-12 rounded-xl">
+                    <SelectValue placeholder="Select a standard..." />
                   </SelectTrigger>
                   <SelectContent>
                     {ACADEMIC_STANDARDS.map(std => (
@@ -142,21 +147,21 @@ export default function SubjectMappingPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Mapping for Semester / સત્ર માટે મેપિંગ</Label>
-                <Badge className="w-full h-10 justify-center bg-muted text-foreground hover:bg-muted border-none font-bold">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Active Mapping Target</Label>
+                <div className="w-full h-12 flex items-center justify-center bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-xl font-black text-sm uppercase">
                   {semester === 'Annual' ? 'Semester 1' : semester}
-                </Badge>
+                </div>
               </div>
             </div>
 
             {selectedStandard && (
-              <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300 pt-4 border-t">
-                <div className="flex items-end gap-2">
+              <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300 pt-6 border-t">
+                <div className="flex items-end gap-3">
                   <div className="flex-1 space-y-2">
-                    <Label>Add Subject / વિષય ઉમેરો</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Add Subject / વિષય ઉમેરો</Label>
                     <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose a subject... / વિષય પસંદ કરો..." />
+                      <SelectTrigger className="h-12 rounded-xl">
+                        <SelectValue placeholder="Choose a subject..." />
                       </SelectTrigger>
                       <SelectContent>
                         {AVAILABLE_SUBJECTS.map(sub => (
@@ -165,26 +170,27 @@ export default function SubjectMappingPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button onClick={addSubject} disabled={!selectedSubject} size="icon">
-                    <Plus className="w-4 h-4" />
+                  <Button onClick={addSubject} disabled={!selectedSubject} size="icon" className="h-12 w-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 shadow-lg">
+                    <Plus className="w-5 h-5" />
                   </Button>
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-1">
                     Mapped Subjects / મેપ કરેલ વિષયો
                   </Label>
-                  <div className="flex flex-wrap gap-2 min-h-[120px] p-4 border-2 border-dashed rounded-xl bg-muted/20">
+                  <div className="flex flex-wrap gap-3 min-h-[160px] p-6 border-2 border-dashed rounded-2xl bg-slate-50/50 border-slate-200">
                     {currentSubjects.map(sub => (
-                      <Badge key={sub} variant="secondary" className="px-3 py-1 text-sm flex items-center gap-2 group">
+                      <Badge key={sub} className="px-4 py-2 text-sm bg-white text-indigo-900 border border-indigo-100 flex items-center gap-3 group shadow-sm rounded-xl">
                         {sub}
-                        <button onClick={() => removeSubject(sub)} className="text-muted-foreground hover:text-destructive">
-                          <Trash2 className="w-3.5 h-3.5" />
+                        <button onClick={() => removeSubject(sub)} className="text-slate-300 hover:text-rose-500 transition-colors">
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </Badge>
                     ))}
                     {currentSubjects.length === 0 && (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm font-medium italic">
+                      <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 text-sm font-medium italic gap-2">
+                        <Layers className="w-8 h-8 opacity-20" />
                         No subjects mapped yet for this selection.
                       </div>
                     )}
@@ -192,9 +198,9 @@ export default function SubjectMappingPage() {
                 </div>
 
                 <div className="flex justify-end pt-4">
-                  <Button onClick={handleSave} className="font-bold px-8 shadow-lg shadow-primary/20">
-                    <Check className="w-4 h-4 mr-2" />
-                    Save Configuration / ગોઠવણી સાચવો
+                  <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-12 h-12 rounded-xl shadow-xl shadow-indigo-100">
+                    <Check className="w-5 h-5 mr-2" />
+                    Save Configuration
                   </Button>
                 </div>
               </div>

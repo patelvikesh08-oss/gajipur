@@ -71,36 +71,45 @@ export default function Dashboard() {
   return (
     <MainLayout>
       <div className="space-y-8 pb-12">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <LayoutDashboard className="w-8 h-8 text-primary" />
-            <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard / ડેશબોર્ડ</h1>
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
-                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
-                  <SelectValue placeholder="Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2023-24">2023-24</SelectItem>
-                  <SelectItem value="2024-25">2024-25</SelectItem>
-                  <SelectItem value="2025-26">2025-26</SelectItem>
-                </SelectContent>
-              </Select>
+        <div className="bg-gradient-to-r from-indigo-900 via-blue-800 to-indigo-900 p-8 rounded-3xl text-white shadow-2xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+                <LayoutDashboard className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard / ડેશબોર્ડ</h1>
+                <p className="text-blue-100 text-sm font-medium mt-1">Real-time school administrative oversight</p>
+              </div>
             </div>
-            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
-              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
-                <SelectValue placeholder="Semester" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
-                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
-                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
-              </SelectContent>
-            </Select>
+            
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20">
+                <Calendar className="w-4 h-4 text-blue-200" />
+                <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
+                  <SelectTrigger className="w-[120px] border-none bg-transparent shadow-none focus:ring-0 h-7 text-xs font-bold text-white">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2023-24">2023-24</SelectItem>
+                    <SelectItem value="2024-25">2024-25</SelectItem>
+                    <SelectItem value="2025-26">2025-26</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md px-2 py-1 rounded-xl border border-white/20">
+                <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
+                  <SelectTrigger className="w-[140px] border-none bg-transparent shadow-none focus:ring-0 h-10 text-xs font-bold text-white">
+                    <SelectValue placeholder="Semester" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                    <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                    <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         </div>
 

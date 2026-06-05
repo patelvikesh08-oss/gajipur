@@ -95,70 +95,72 @@ export default function FlnPage() {
 
   return (
     <MainLayout>
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 rounded-lg">
-              <SpellCheck className="w-6 h-6 text-emerald-600" />
+      <div className="flex flex-col gap-8">
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 p-8 rounded-3xl text-white shadow-2xl no-print">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+                <SpellCheck className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">FLN Milestone Entry / અંકજ્ઞાન</h1>
+                <p className="text-indigo-100 text-sm font-medium mt-1">Track foundational reading, writing, and math proficiency</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800">FLN Milestone Entry / અંકજ્ઞાન માઇલસ્ટોન</h1>
-              <p className="text-xs text-muted-foreground font-medium">Foundational Reading, Writing and Math Tracking</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
-                <SelectTrigger className="w-[100px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
-                  <SelectValue placeholder="Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2023-24">2023-24</SelectItem>
-                  <SelectItem value="2024-25">2024-25</SelectItem>
-                  <SelectItem value="2025-26">2025-26</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
+                <Calendar className="w-4 h-4 text-blue-200" />
+                <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
+                  <SelectTrigger className="w-[100px] border-none bg-transparent shadow-none focus:ring-0 h-7 text-xs font-bold text-white">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2023-24">2023-24</SelectItem>
+                    <SelectItem value="2024-25">2024-25</SelectItem>
+                    <SelectItem value="2025-26">2025-26</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                <SelectTrigger className="w-[140px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
-                  <SelectValue placeholder="Month" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ACADEMIC_MONTHS.map(month => (
-                    <SelectItem key={month} value={month}>{month}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
+                <Clock className="w-4 h-4 text-blue-200" />
+                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                  <SelectTrigger className="w-[140px] border-none bg-transparent shadow-none focus:ring-0 h-7 text-xs font-bold text-white">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ACADEMIC_MONTHS.map(month => (
+                      <SelectItem key={month} value={month}>{month}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
-              <Printer className="w-4 h-4 mr-2" />
-              Print / પ્રિન્ટ
-            </Button>
-            <Button onClick={handleSaveAll} className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20">
-              <Save className="w-4 h-4 mr-2" />
-              Save / સાચવો
-            </Button>
+              <Button variant="outline" onClick={() => window.print()} className="bg-white/10 border-white/20 text-white hover:bg-white/20 font-bold h-10 px-6 rounded-xl">
+                <Printer className="w-4 h-4 mr-2" />
+                Print
+              </Button>
+              <Button onClick={handleSaveAll} className="bg-white text-emerald-900 hover:bg-emerald-50 font-black shadow-lg h-10 px-8 rounded-xl">
+                <Save className="w-4 h-4 mr-2" />
+                Save Data
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print px-1">
           <Input
-            placeholder="Search / શોધો..."
+            placeholder="Search student / નામ થી શોધો..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-white"
+            className="bg-white h-12 rounded-xl shadow-sm"
           />
           <Select value={selectedStandard} onValueChange={setSelectedStandard}>
-            <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Standard / ધોરણ" />
+            <SelectTrigger className="bg-white h-12 rounded-xl shadow-sm">
+              <SelectValue placeholder="Filter by Standard / ધોરણ" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
+              <SelectItem value="all">All Standards</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
               ))}
@@ -166,13 +168,13 @@ export default function FlnPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
+        <div className="rounded-3xl border border-slate-100 bg-white shadow-2xl overflow-hidden print:border-none print:shadow-none">
           <ScrollArea className="w-full">
             <Table className="border-collapse w-full">
-              <TableHeader className="bg-slate-50 print:bg-white">
+              <TableHeader className="bg-slate-50/50 print:bg-white">
                 <TableRow>
-                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] w-12 border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
-                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-12 bg-slate-50 z-20 print:static print:bg-white">Student Name / નામ</TableHead>
+                  <TableHead rowSpan={3} className="font-black uppercase tracking-wider text-[10px] w-12 border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll</TableHead>
+                  <TableHead rowSpan={3} className="font-black uppercase tracking-wider text-[10px] min-w-[140px] border-r sticky left-12 bg-slate-50 z-20 print:static print:bg-white">Student Name / નામ</TableHead>
                   {flnCategories.map((cat) => (
                     <TableHead 
                       key={cat.name} 
@@ -189,13 +191,13 @@ export default function FlnPage() {
                       {subColumns.map(idx => (
                         <TableHead key={`${cat.name}-label-${idx}`} className="text-[8px] font-bold border-r min-w-[32px] h-[140px] p-0 bg-white print:border-black print:h-auto print:py-1">
                           <div className="flex flex-col items-center justify-end h-full w-full pb-3 print:pb-1">
-                            <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden print:writing-mode-horizontal-tb print:rotate-0 print:text-[7px]">
+                            <span className="vertical-text text-slate-500 px-1 max-h-[120px] overflow-hidden print:writing-mode-horizontal-tb print:rotate-0 print:text-[7px]">
                               {config.categories[cat.name][idx] || `M${idx + 1}`}
                             </span>
                           </div>
                         </TableHead>
                       ))}
-                      <TableHead rowSpan={2} className="text-[8px] font-black text-center px-0.5 border-r min-w-[30px] bg-slate-100 text-primary print:bg-white print:text-black print:border-black">
+                      <TableHead rowSpan={2} className="text-[8px] font-black text-center px-0.5 border-r min-w-[30px] bg-indigo-50 text-indigo-700 print:bg-white print:text-black print:border-black">
                         TOT
                       </TableHead>
                     </React.Fragment>
@@ -206,7 +208,7 @@ export default function FlnPage() {
                     <React.Fragment key={`${cat.name}-numbers`}>
                       {subColumns.map(idx => (
                         <TableHead key={`${cat.name}-num-${idx}`} className="text-[9px] font-black text-center border-r bg-white print:border-black py-1 h-8">
-                          <span className="text-primary font-black print:text-black">{idx + 1}</span>
+                          <span className="text-indigo-600 font-black print:text-black">{idx + 1}</span>
                         </TableHead>
                       ))}
                     </React.Fragment>
@@ -215,8 +217,8 @@ export default function FlnPage() {
               </TableHeader>
               <TableBody>
                 {filteredStudents.map((s) => (
-                  <TableRow key={s.id} className="hover:bg-slate-50/50 h-10 print:h-8 print:bg-white">
-                    <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-[10px] text-center print:static print:text-black print:border-black">
+                  <TableRow key={s.id} className="hover:bg-indigo-50/20 h-10 print:h-8 print:bg-white">
+                    <TableCell className="font-black text-indigo-700 border-r sticky left-0 bg-white z-10 text-[10px] text-center print:static print:text-black print:border-black">
                       {s.rollNumber}
                     </TableCell>
                     <TableCell className="font-bold text-slate-700 whitespace-nowrap border-r sticky left-12 bg-white z-10 text-[10px] print:static print:border-black">
@@ -235,7 +237,7 @@ export default function FlnPage() {
                             </div>
                           </TableCell>
                         ))}
-                        <TableCell className="bg-slate-100/30 border-r text-center font-black text-primary text-[10px] print:bg-white print:text-black print:border-black">
+                        <TableCell className="bg-indigo-50/30 border-r text-center font-black text-indigo-700 text-[10px] print:bg-white print:text-black print:border-black">
                           {getCategoryTotal(s.id, cat.name)}
                         </TableCell>
                       </React.Fragment>

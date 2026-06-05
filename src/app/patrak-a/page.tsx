@@ -27,16 +27,10 @@ export default function PatrakAPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
   const { mappings, isLoaded: subjectsLoaded } = useSubjectStore();
-  
-  // For Annual, we need to load both semesters. For simplicity in this prototype, 
-  // we'll use the store for the current selection, but if Annual is selected, 
-  // users would typically switch to S1 or S2 to enter data, or we'd load both.
-  // Here we'll treat Annual as a view of S1+S2.
   const { saveEntry, getMarksForStudent, isLoaded: patrakALoaded } = usePatrakAStore(academicYear, semester === 'Annual' ? 'Semester 1' : semester);
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
-
   const isAnnual = semester === "Annual";
 
   const standards = useMemo(() => {
@@ -45,7 +39,6 @@ export default function PatrakAPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    // For Annual mapping, we use S1 as the baseline
     const targetSem = isAnnual ? 'Semester 1' : semester;
     const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === targetSem);
     return mapping ? mapping.subjects : [];
@@ -61,7 +54,7 @@ export default function PatrakAPage() {
   }, [students, search, selectedStandard]);
 
   const handleMarkChange = (studentId: string, subject: string, value: string) => {
-    if (isAnnual) return; // Entry disabled in Annual mode
+    if (isAnnual) return;
     const numValue = value === "" ? 0 : parseInt(value);
     if (isNaN(numValue)) return;
     
@@ -83,68 +76,72 @@ export default function PatrakAPage() {
 
   return (
     <MainLayout>
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FileDigit className="w-6 h-6 text-blue-600" />
+      <div className="flex flex-col gap-8">
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 p-8 rounded-3xl text-white shadow-2xl no-print">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
+                <FileDigit className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">PATRAK-A (Formative) / પત્રક-અ</h1>
+                <p className="text-indigo-100 text-sm font-medium mt-1">Log subject-wise formative assessment records</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800">PATRAK-A (Formative) / પત્રક-અ</h1>
-              <p className="text-xs text-muted-foreground font-medium">Log subject-wise formative assessment records</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
+                <Calendar className="w-4 h-4 text-blue-200" />
+                <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
+                  <SelectTrigger className="w-[120px] border-none bg-transparent shadow-none focus:ring-0 h-7 text-xs font-bold text-white">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2023-24">2023-24</SelectItem>
+                    <SelectItem value="2024-25">2024-25</SelectItem>
+                    <SelectItem value="2025-26">2025-26</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md px-2 py-1 rounded-xl border border-white/20">
+                <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
+                  <SelectTrigger className="w-[140px] border-none bg-transparent shadow-none focus:ring-0 h-10 text-xs font-bold text-white">
+                    <SelectValue placeholder="Semester" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                    <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                    <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button variant="outline" onClick={() => window.print()} className="bg-white/10 border-white/20 text-white hover:bg-white/20 font-bold h-10 px-6 rounded-xl">
+                <Printer className="w-4 h-4 mr-2" />
+                Print
+              </Button>
+              <Button onClick={handleSaveAll} className="bg-white text-indigo-900 hover:bg-indigo-50 font-black shadow-lg h-10 px-8 rounded-xl" disabled={isAnnual}>
+                <Save className="w-4 h-4 mr-2" />
+                Save Records
+              </Button>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <Select value={academicYear} onValueChange={(val: any) => updateYear(val)}>
-                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
-                  <SelectValue placeholder="Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2023-24">2023-24</SelectItem>
-                  <SelectItem value="2024-25">2024-25</SelectItem>
-                  <SelectItem value="2025-26">2025-26</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
-              <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
-                <SelectValue placeholder="Semester" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
-                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
-                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
-              <Printer className="w-4 h-4 mr-2" />
-              Print / પ્રિન્ટ
-            </Button>
-            <Button onClick={handleSaveAll} className="font-bold bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20" disabled={isAnnual}>
-              <Save className="w-4 h-4 mr-2" />
-              Save / સાચવો
-            </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print px-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search student / શોધો..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-white pl-10"
+              className="bg-white h-12 rounded-xl shadow-sm pl-10"
             />
           </div>
           <Select value={selectedStandard} onValueChange={setSelectedStandard}>
-            <SelectTrigger className="bg-white">
+            <SelectTrigger className="bg-white h-12 rounded-xl shadow-sm">
               <SelectValue placeholder="Standard / ધોરણ" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
+              <SelectItem value="all">All Standards</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
               ))}
@@ -152,17 +149,17 @@ export default function PatrakAPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border bg-white shadow-sm overflow-hidden print:border-none print:shadow-none">
+        <div className="rounded-3xl border border-slate-100 bg-white shadow-2xl overflow-hidden print:border-none print:shadow-none">
           <ScrollArea className="w-full">
             <Table className="border-collapse">
-              <TableHeader className="bg-slate-50 print:bg-white">
+              <TableHeader className="bg-slate-50/50 print:bg-white">
                 <TableRow>
-                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center print:border-black">Roll No</TableHead>
-                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name / નામ</TableHead>
+                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-black uppercase tracking-wider text-[10px] w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center print:border-black">Roll</TableHead>
+                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-black uppercase tracking-wider text-[10px] min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name / નામ</TableHead>
                   
                   {activeSubjects.length > 0 ? (
                     activeSubjects.map(subject => (
-                      <TableHead key={subject} colSpan={isAnnual ? 2 : 1} className="font-black uppercase tracking-wider text-[10px] text-center border-r bg-muted/30 py-4 min-w-[100px] print:border-black">
+                      <TableHead key={subject} colSpan={isAnnual ? 2 : 1} className="font-black uppercase tracking-wider text-[10px] text-center border-r bg-muted/20 py-4 min-w-[100px] print:border-black">
                         {subject}
                       </TableHead>
                     ))
@@ -172,14 +169,14 @@ export default function PatrakAPage() {
                     </TableHead>
                   )}
                   
-                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-blue-50/50 print:border-black">Total</TableHead>
+                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-black uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-indigo-50/50 print:border-black">Total</TableHead>
                 </TableRow>
                 {isAnnual && (
                   <TableRow>
                     {activeSubjects.map(subject => (
                       <React.Fragment key={`${subject}-sub`}>
                         <TableHead className="text-[8px] font-black text-center border-r bg-blue-50/30">SEM 1</TableHead>
-                        <TableHead className="text-[8px] font-black text-center border-r bg-green-50/30">SEM 2</TableHead>
+                        <TableHead className="text-[8px] font-black text-center border-r bg-emerald-50/30">SEM 2</TableHead>
                       </React.Fragment>
                     ))}
                   </TableRow>
@@ -192,11 +189,11 @@ export default function PatrakAPage() {
                     const total = Object.values(studentMarks).reduce((a, b) => a + b, 0);
 
                     return (
-                      <TableRow key={s.id} className="hover:bg-slate-50/50 h-10 print:h-auto print:bg-white">
-                        <TableCell className="font-black text-primary border-r sticky left-0 bg-white z-10 text-center text-xs print:text-black print:border-black">
+                      <TableRow key={s.id} className="hover:bg-indigo-50/20 h-10 print:h-auto print:bg-white">
+                        <TableCell className="font-black text-indigo-700 border-r sticky left-0 bg-white z-10 text-center text-[10px] print:text-black print:border-black">
                           {s.rollNumber}
                         </TableCell>
-                        <TableCell className="font-bold text-slate-700 border-r sticky left-[60px] bg-white z-10 text-xs print:text-black print:border-black">
+                        <TableCell className="font-bold text-slate-700 border-r sticky left-[60px] bg-white z-10 text-[10px] print:text-black print:border-black">
                           {s.name}
                         </TableCell>
                         
@@ -204,10 +201,10 @@ export default function PatrakAPage() {
                           <React.Fragment key={`${s.id}-${subject}`}>
                             {isAnnual ? (
                               <>
-                                <TableCell className="p-0 border-r text-center text-xs font-bold text-slate-500 bg-blue-50/5">
+                                <TableCell className="p-0 border-r text-center text-[10px] font-bold text-slate-500 bg-blue-50/5">
                                   {studentMarks[subject] ?? "-"}
                                 </TableCell>
-                                <TableCell className="p-0 border-r text-center text-xs font-bold text-slate-500 bg-green-50/5">
+                                <TableCell className="p-0 border-r text-center text-[10px] font-bold text-slate-500 bg-emerald-50/5">
                                   -
                                 </TableCell>
                               </>
@@ -215,7 +212,7 @@ export default function PatrakAPage() {
                               <TableCell key={`${s.id}-${subject}`} className="p-0 border-r print:border-black">
                                 <input 
                                   type="number"
-                                  className="w-full h-10 text-center text-xs font-bold bg-transparent border-none outline-none focus:bg-blue-50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                                  className="w-full h-10 text-center text-xs font-black text-indigo-900 bg-transparent border-none outline-none focus:bg-indigo-50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                                   value={studentMarks[subject] ?? ""} 
                                   onChange={(e) => handleMarkChange(s.id, subject, e.target.value)}
                                   placeholder="-"
@@ -225,7 +222,7 @@ export default function PatrakAPage() {
                           </React.Fragment>
                         ))}
 
-                        <TableCell className="text-center font-black text-blue-600 bg-blue-50/10 border-r print:text-black print:border-black text-xs">
+                        <TableCell className="text-center font-black text-indigo-700 bg-indigo-50/20 border-r print:text-black print:border-black text-[10px]">
                           {total}
                         </TableCell>
                       </TableRow>
@@ -234,7 +231,7 @@ export default function PatrakAPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={(activeSubjects.length * (isAnnual ? 2 : 1)) + 3} className="h-32 text-center text-muted-foreground italic">
-                      No student records found. / કોઈ માહિતી મળી નથી.
+                      No student records found.
                     </TableCell>
                   </TableRow>
                 )}
