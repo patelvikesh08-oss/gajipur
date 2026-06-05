@@ -113,7 +113,7 @@ function AppSidebar() {
               <SidebarMenuButton
                 asChild
                 isActive={pathname === item.href}
-                className="px-4 py-6 group flex justify-between items-center transition-all duration-200 hover:bg-sidebar-accent rounded-lg data-[active=true]:bg-primary data-[active=true]:shadow-lg data-[active=true]:shadow-primary/20"
+                className="px-4 py-6 group flex justify-between items-center transition-all duration-300 hover:bg-sidebar-accent rounded-lg data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary data-[active=true]:to-[#4facfe] data-[active=true]:shadow-lg data-[active=true]:shadow-primary/30"
               >
                 <Link href={item.href}>
                   <span className="font-bold text-muted-foreground group-data-[active=true]:text-white group-data-[state=collapsed]:hidden">
@@ -132,7 +132,7 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-200 hover:bg-sidebar-accent rounded-lg data-[state=open]:bg-blue-50 data-[state=open]:text-primary">
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 hover:bg-sidebar-accent rounded-lg data-[state=open]:bg-gradient-to-r data-[state=open]:from-blue-50/80 data-[state=open]:to-white data-[state=open]:text-primary">
                   <span className="font-bold text-muted-foreground group-data-[state=open]:text-primary group-data-[state=collapsed]:hidden">Examination / પરીક્ષા</span>
                   <div className="flex items-center gap-2">
                     <GraduationCap className="w-5 h-5 text-muted-foreground group-data-[state=open]:text-primary" />
@@ -147,7 +147,7 @@ function AppSidebar() {
                       <SidebarMenuSubButton 
                         asChild 
                         isActive={pathname === item.href}
-                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto data-[active=true]:bg-white data-[active=true]:border-l-4 data-[active=true]:border-primary data-[active=true]:shadow-sm"
+                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto data-[active=true]:bg-gradient-to-r data-[active=true]:from-white data-[active=true]:to-blue-50/50 data-[active=true]:border-l-4 data-[active=true]:border-primary data-[active=true]:shadow-sm"
                       >
                         <Link href={item.href}>
                           <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-primary group-data-[active=true]:font-black group-data-[state=collapsed]:hidden">
@@ -170,7 +170,7 @@ function AppSidebar() {
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-200 hover:bg-sidebar-accent rounded-lg data-[state=open]:bg-slate-50 data-[state=open]:text-slate-900">
+                <SidebarMenuButton className="px-4 py-6 group flex justify-between items-center transition-all duration-300 hover:bg-sidebar-accent rounded-lg data-[state=open]:bg-gradient-to-r data-[state=open]:from-slate-50/80 data-[state=open]:to-white data-[state=open]:text-slate-900">
                   <span className="font-bold text-muted-foreground group-data-[state=open]:text-slate-900 group-data-[state=collapsed]:hidden">Settings / સેટિંગ્સ</span>
                   <div className="flex items-center gap-2">
                     <Settings className="w-5 h-5 text-muted-foreground group-data-[state=open]:text-slate-900" />
@@ -185,7 +185,7 @@ function AppSidebar() {
                       <SidebarMenuSubButton 
                         asChild 
                         isActive={pathname === item.href}
-                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto data-[active=true]:bg-white data-[active=true]:border-l-4 data-[active=true]:border-slate-900 data-[active=true]:shadow-sm"
+                        className="px-4 py-4 group flex justify-between items-center hover:bg-sidebar-accent/50 rounded-lg h-auto data-[active=true]:bg-gradient-to-r data-[active=true]:from-white data-[active=true]:to-slate-50/50 data-[active=true]:border-l-4 data-[active=true]:border-slate-900 data-[active=true]:shadow-sm"
                       >
                         <Link href={item.href}>
                           <span className="text-sm font-medium text-muted-foreground group-data-[active=true]:text-slate-900 group-data-[active=true]:font-black group-data-[state=collapsed]:hidden">
