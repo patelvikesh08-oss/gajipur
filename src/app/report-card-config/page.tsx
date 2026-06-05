@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -31,7 +30,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function ReportCardConfigPage() {
   const { config, updateConfig, isLoaded } = useReportCardConfigStore();
   const [isSaving, setIsSaving] = useState(false);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (config.templateUrl) {
+      setLocalPreviewUrl(config.templateUrl);
+    }
+  }, [config.templateUrl]);
 
   if (!isLoaded) return null;
 
@@ -49,8 +55,13 @@ export default function ReportCardConfigPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const reader = new FileReader();
       
+      // Immediate Session Preview
+      const objectUrl = URL.createObjectURL(file);
+      setLocalPreviewUrl(objectUrl);
+
+      // Persistence via Store (FileReader)
+      const reader = new FileReader();
       reader.onload = (event) => {
         const url = event.target?.result as string;
         updateConfig({
@@ -60,7 +71,7 @@ export default function ReportCardConfigPage() {
 
         toast({
           title: "Template Loaded / ફાઇલ લોડ કરી",
-          description: `Active template: ${file.name}`,
+          description: `Active template: ${file.name}. Click 'Commit' to finalize.`,
         });
       };
 
@@ -112,14 +123,14 @@ export default function ReportCardConfigPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8 space-y-8">
             <Tabs defaultValue="template" className="w-full">
-              <TabsList className="bg-slate-100 p-1 rounded-2xl h-14 mb-6">
-                <TabsTrigger value="template" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
+              <TabsList className="bg-slate-100 p-1 rounded-2xl h-14 mb-6 w-full">
+                <TabsTrigger value="template" className="flex-1 rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
                   Template Upload & Preview
                 </TabsTrigger>
-                <TabsTrigger value="general" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
+                <TabsTrigger value="general" className="flex-1 rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
                   General Info
                 </TabsTrigger>
-                <TabsTrigger value="conduct" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
+                <TabsTrigger value="conduct" className="flex-1 rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
                   Conduct Items
                 </TabsTrigger>
               </TabsList>
@@ -139,10 +150,10 @@ export default function ReportCardConfigPage() {
                       ref={fileInputRef} 
                       onChange={handleFileChange} 
                       className="hidden" 
-                      accept=".doc,.docx,.pdf,image/*"
+                      accept=".pdf,image/*"
                     />
                     
-                    {!config.templateUrl ? (
+                    {!localPreviewUrl ? (
                       <div 
                         onClick={() => fileInputRef.current?.click()}
                         className="border-2 border-dashed border-indigo-200 rounded-3xl p-16 flex flex-col items-center justify-center bg-white gap-4 transition-all hover:border-indigo-400 hover:bg-indigo-50/50 cursor-pointer group"
@@ -162,8 +173,8 @@ export default function ReportCardConfigPage() {
                             <FileUp className="w-6 h-6" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-black text-slate-800 truncate">Custom_Template_Loaded</p>
-                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Active System Template</p>
+                            <p className="text-sm font-black text-slate-800 truncate">Template_Active_Preview</p>
+                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Ready for Mapping</p>
                           </div>
                           <div className="flex items-center gap-2">
                              <Button 
@@ -177,7 +188,7 @@ export default function ReportCardConfigPage() {
                             <Button 
                               variant="ghost" 
                               size="icon" 
-                              onClick={(e) => { e.stopPropagation(); updateConfig({ templateUrl: null, templateType: 'default' }); }}
+                              onClick={(e) => { e.stopPropagation(); setLocalPreviewUrl(null); updateConfig({ templateUrl: null, templateType: 'default' }); }}
                               className="rounded-xl h-10 w-10 text-slate-300 hover:text-rose-500 hover:bg-rose-50"
                             >
                               <X className="w-5 h-5" />
@@ -185,7 +196,7 @@ export default function ReportCardConfigPage() {
                           </div>
                         </div>
 
-                        {config.templateUrl && (
+                        {localPreviewUrl && (
                           <div className="rounded-3xl border-2 border-indigo-100 overflow-hidden bg-white shadow-2xl animate-in zoom-in-95 duration-500">
                             <div className="bg-indigo-900 p-4 border-b border-white/10 flex items-center justify-between text-white">
                               <div className="flex items-center gap-2">
@@ -196,16 +207,16 @@ export default function ReportCardConfigPage() {
                                 variant="ghost" 
                                 size="sm" 
                                 className="text-white hover:bg-white/10 h-8 font-bold text-xs gap-2"
-                                onClick={() => window.open(config.templateUrl!)}
+                                onClick={() => window.open(localPreviewUrl)}
                               >
                                 <ExternalLink className="w-3.5 h-3.5" /> Full Screen
                               </Button>
                             </div>
-                            <div className="bg-slate-100 flex items-center justify-center min-h-[600px]">
+                            <div className="bg-slate-100 flex items-center justify-center min-h-[600px] p-4">
                               {config.templateType === 'pdf' ? (
-                                <iframe src={config.templateUrl} className="w-full h-[800px] border-none" />
+                                <iframe src={localPreviewUrl} className="w-full h-[800px] border-none rounded-xl shadow-inner" />
                               ) : (
-                                <img src={config.templateUrl} alt="Template Preview" className="max-w-full h-auto shadow-lg" />
+                                <img src={localPreviewUrl} alt="Template Preview" className="max-w-full h-auto shadow-2xl rounded-sm" />
                               )}
                             </div>
                           </div>

@@ -1,11 +1,9 @@
-
 "use client";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -82,21 +80,21 @@ function AppSidebar() {
       onMouseLeave={() => !isMobile && setOpen(false)}
       className="border-none bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
     >
-      <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
+      <SidebarHeader className="p-4 transition-all duration-300 group-data-[state=collapsed]:p-2">
         <div className="flex items-center gap-3 p-2 transition-all duration-300 group-data-[state=collapsed]:justify-center">
           <Avatar className="w-10 h-10 border-2 border-indigo-400 p-0.5 shrink-0 shadow-lg">
             <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             <AvatarFallback className="bg-indigo-900 text-white">AD</AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden group-data-[state=collapsed]:hidden">
-            <span className="text-sm font-black truncate text-white uppercase tracking-tight">Admin User</span>
+            <span className="text-sm font-black truncate text-white uppercase tracking-tight">Admin Portal</span>
             <span className="text-[10px] text-indigo-200 font-bold flex items-center gap-1 uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" /> Live System
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
             </span>
           </div>
         </div>
       </SidebarHeader>
-      <SidebarContent className="px-2 py-4 pl-4 bg-transparent overflow-x-hidden no-scrollbar">
+      <SidebarContent className="px-2 py-4 pl-4 bg-transparent no-scrollbar">
         <SidebarMenu className="space-y-1">
           {mainNavigation.map((item) => {
             const isActive = pathname === item.href;
@@ -231,16 +229,16 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <SidebarInset 
+    <div 
       onClick={handleContentClick} 
-      className="bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 transition-all duration-300 h-svh flex flex-col overflow-hidden"
+      className="flex-1 flex flex-col min-h-svh bg-indigo-900 relative overflow-hidden"
     >
       <main className="flex-1 overflow-auto bg-white transition-all duration-300 rounded-none shadow-none">
         <div className="mx-auto max-w-[1600px] p-4 md:p-8 space-y-8">
           {children}
         </div>
       </main>
-    </SidebarInset>
+    </div>
   );
 }
 
@@ -252,4 +250,3 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
-

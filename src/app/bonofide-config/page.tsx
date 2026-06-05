@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -22,7 +21,7 @@ export default function BonofideConfigPage() {
 
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (previewUrl && !previewUrl.startsWith('data:')) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
 
@@ -43,13 +42,13 @@ export default function BonofideConfigPage() {
       const file = e.target.files[0];
       setSelectedFile(file);
 
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      // Immediate UI Preview
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
 
       toast({
-        title: "File Selected / ફાઇલ પસંદ કરી",
-        description: `Selected: ${file.name}`,
+        title: "File Loaded / ફાઇલ પસંદ કરી",
+        description: `Selected: ${file.name}. View preview below.`,
       });
     }
   };
@@ -118,7 +117,7 @@ export default function BonofideConfigPage() {
                   <div className="flex items-start gap-3 p-4 bg-indigo-50/50 rounded-2xl">
                     <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
                     <p className="text-[10px] font-bold text-indigo-700 leading-relaxed uppercase tracking-wider">
-                      Use the placeholders from the right-hand panel to dynamically insert student data into this text block or your uploaded Word document.
+                      Use placeholders from the side panel. These will be replaced with student data in your Word document.
                     </p>
                   </div>
                 </div>
@@ -193,9 +192,9 @@ export default function BonofideConfigPage() {
                             <ExternalLink className="w-3.5 h-3.5" /> Full Screen
                           </Button>
                         </div>
-                        <div className="bg-slate-100 flex items-center justify-center min-h-[500px]">
+                        <div className="bg-slate-100 flex items-center justify-center min-h-[500px] p-4">
                           {selectedFile.type === 'application/pdf' ? (
-                            <iframe src={previewUrl} className="w-full h-[700px] border-none" />
+                            <iframe src={previewUrl} className="w-full h-[700px] border-none rounded-xl shadow-inner" />
                           ) : selectedFile.type.startsWith('image/') ? (
                             <img src={previewUrl} alt="Template Preview" className="max-w-full h-auto shadow-lg" />
                           ) : (
@@ -203,7 +202,7 @@ export default function BonofideConfigPage() {
                               <FileText className="w-16 h-16 text-indigo-300 mx-auto mb-6" />
                               <h4 className="text-lg font-black text-slate-800">Word Document Preview</h4>
                               <p className="text-xs font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-wider">
-                                Direct preview for .docx files is limited. Please verify layout by downloading a sample bonafide.
+                                Direct preview for .docx is session-only. Verify mapping below.
                               </p>
                             </div>
                           )}
@@ -232,7 +231,7 @@ export default function BonofideConfigPage() {
                       variant="ghost" 
                       size="icon" 
                       onClick={() => copyField(item.field)}
-                      className="opacity-0 group-hover:opacity-100 h-8 w-8 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-white shadow-sm transition-all"
+                      className="h-8 w-8 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-white shadow-sm transition-all"
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </Button>
@@ -250,7 +249,7 @@ export default function BonofideConfigPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-slate-800 truncate">{selectedFile ? selectedFile.name : templateName}</p>
                     <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> {selectedFile ? "Just selected" : "Active"}
+                      <CheckCircle2 className="w-3 h-3" /> {selectedFile ? "Selected" : "Active"}
                     </p>
                   </div>
                 </div>
@@ -267,4 +266,3 @@ export default function BonofideConfigPage() {
     </MainLayout>
   );
 }
-
