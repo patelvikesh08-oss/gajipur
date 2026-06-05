@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -244,38 +243,8 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
   return (
     <SidebarInset 
       onClick={handleContentClick} 
-      className="bg-indigo-900 transition-all duration-300 h-svh flex flex-col overflow-hidden"
+      className="bg-gradient-to-b from-indigo-900 via-indigo-900 to-indigo-950 transition-all duration-300 h-svh flex flex-col overflow-hidden"
     >
-      <header className="flex h-20 shrink-0 items-center justify-between gap-2 bg-transparent px-8 no-print text-white">
-        <div className="flex items-center gap-6 flex-1">
-          <SidebarTrigger className="text-white hover:bg-white/10 h-10 w-10" />
-          <div className="relative w-80 max-sm:hidden">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
-            <Input
-              placeholder="Search Dashboard..."
-              className="pl-10 border-none bg-white/10 text-white placeholder:text-white/40 shadow-none focus-visible:ring-1 focus-visible:ring-white/20 h-11 rounded-xl"
-            />
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-6">
-          <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-white/10 transition-colors cursor-pointer border border-white/5">
-            <Avatar className="w-8 h-8 border border-white/20 p-0.5">
-              <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
-            </Avatar>
-            <span className="text-sm font-bold text-white hidden lg:block">Admin Account</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="p-2.5 hover:bg-white/10 rounded-xl relative transition-colors border border-white/5 bg-white/5 text-white">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-pink-500 rounded-full border-2 border-indigo-900" />
-            </button>
-            <button className="p-2.5 hover:bg-white/10 rounded-xl transition-colors border border-white/5 bg-white/5 text-white">
-              <Menu className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </header>
       <main className="flex-1 overflow-auto p-4 md:p-8 bg-white rounded-tl-[3rem] shadow-[inset_0_4px_24px_rgba(0,0,0,0.1)]">
         <div className="mx-auto max-w-7xl space-y-8">
           {children}
