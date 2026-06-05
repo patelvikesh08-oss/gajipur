@@ -94,7 +94,7 @@ function AppSidebar() {
           </div>
           <span className="font-headline font-bold text-xl text-white tracking-tight truncate group-data-[state=collapsed]:hidden">EduPulse Admin</span>
         </div>
-        <div className="flex items-center gap-3 p-2 bg-white/10 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300">
+        <div className="flex items-center gap-3 p-2 bg-white/10 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300 border border-white/10">
           <Avatar className="w-10 h-10 border-2 border-indigo-400 p-0.5 shrink-0">
             <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             <AvatarFallback>AD</AvatarFallback>
@@ -244,39 +244,39 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
   return (
     <SidebarInset 
       onClick={handleContentClick} 
-      className="bg-white transition-all duration-300 h-svh flex flex-col overflow-hidden"
+      className="bg-indigo-950 transition-all duration-300 h-svh flex flex-col overflow-hidden"
     >
-      <header className="flex h-16 shrink-0 items-center justify-between gap-2 bg-white px-6 shadow-sm border-b no-print">
-        <div className="flex items-center gap-4 flex-1">
-          <SidebarTrigger className="text-indigo-600 hover:bg-indigo-50" />
-          <div className="relative w-64 max-sm:hidden">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <header className="flex h-20 shrink-0 items-center justify-between gap-2 bg-gradient-to-r from-indigo-900 to-indigo-950 px-8 no-print text-white">
+        <div className="flex items-center gap-6 flex-1">
+          <SidebarTrigger className="text-white hover:bg-white/10 h-10 w-10" />
+          <div className="relative w-80 max-sm:hidden">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
             <Input
               placeholder="Search Dashboard..."
-              className="pl-9 border-none bg-slate-50/50 shadow-none focus-visible:ring-0"
+              className="pl-10 border-none bg-white/10 text-white placeholder:text-white/40 shadow-none focus-visible:ring-1 focus-visible:ring-white/20 h-11 rounded-xl"
             />
           </div>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-muted/50 transition-colors cursor-pointer">
-            <Avatar className="w-8 h-8 border border-indigo-500 p-0.5">
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-white/10 transition-colors cursor-pointer border border-white/5">
+            <Avatar className="w-8 h-8 border border-white/20 p-0.5">
               <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             </Avatar>
-            <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account</span>
+            <span className="text-sm font-bold text-white hidden lg:block">Admin Account</span>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-muted rounded-full relative">
-              <Bell className="w-5 h-5 text-muted-foreground" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-pink-500 rounded-full border-2 border-white" />
+          <div className="flex items-center gap-3">
+            <button className="p-2.5 hover:bg-white/10 rounded-xl relative transition-colors border border-white/5 bg-white/5 text-white">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-pink-500 rounded-full border-2 border-indigo-900" />
             </button>
-            <button className="p-2 hover:bg-muted rounded-full">
-              <Menu className="w-5 h-5 text-muted-foreground" />
+            <button className="p-2.5 hover:bg-white/10 rounded-xl transition-colors border border-white/5 bg-white/5 text-white">
+              <Menu className="w-5 h-5" />
             </button>
           </div>
         </div>
       </header>
-      <main className="flex-1 overflow-auto p-4 md:p-8 bg-white">
+      <main className="flex-1 overflow-auto p-4 md:p-8 bg-white rounded-tl-[3rem] shadow-[inset_0_4px_24px_rgba(0,0,0,0.1)]">
         <div className="mx-auto max-w-7xl space-y-8">
           {children}
         </div>
