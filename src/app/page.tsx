@@ -1,3 +1,4 @@
+
 "use client";
 
 import { MainLayout } from "@/components/layout/main-layout";
@@ -34,14 +35,17 @@ export default function Dashboard() {
       ageMap[age] = (ageMap[age] || 0) + 1;
     });
     const ageData = Object.entries(ageMap)
-      .map(([age, count]) => ({ age: `${age} Yrs`, count }))
+      .map(([age, count]) => ({ age: `${age} Yrs / વર્ષ`, count }))
       .sort((a, b) => parseInt(a.age) - parseInt(b.age));
 
     const genderMap: Record<string, number> = { Male: 0, Female: 0, Other: 0 };
     students.forEach(s => {
       genderMap[s.gender] = (genderMap[s.gender] || 0) + 1;
     });
-    const genderData = Object.entries(genderMap).map(([name, value]) => ({ name, value }));
+    const genderData = Object.entries(genderMap).map(([name, value]) => ({ 
+      name: name === 'Male' ? 'Male / પુરૂષ' : name === 'Female' ? 'Female / સ્ત્રી' : 'Other / અન્ય', 
+      value 
+    }));
 
     const stdMap: Record<string, { total: number, male: number, female: number, other: number }> = {};
     students.forEach(s => {
@@ -92,9 +96,9 @@ export default function Dashboard() {
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
+                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -110,14 +114,14 @@ export default function Dashboard() {
           />
           <StatCard
             title="Avg. Student Age / સરેરાશ ઉંમર"
-            value={`${stats.avgAge} Yrs`}
+            value={`${stats.avgAge} Yrs / વર્ષ`}
             description="Calculated from birth dates"
             icon={GraduationCap}
             variant="blue"
           />
           <StatCard
             title="Active Term / સત્ર"
-            value={semester}
+            value={semester === 'Semester 1' ? 'Semester 1 / સત્ર ૧' : semester === 'Semester 2' ? 'Semester 2 / સત્ર ૨' : 'Annual / વાર્ષિક'}
             description="Academic Period"
             icon={ClipboardCheck}
             variant="orange"
@@ -134,8 +138,8 @@ export default function Dashboard() {
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-[10px] font-bold uppercase">Gender</TableHead>
-                      <TableHead className="text-[10px] font-bold uppercase text-right">Count</TableHead>
+                      <TableHead className="text-[10px] font-bold uppercase">Gender / જાતિ</TableHead>
+                      <TableHead className="text-[10px] font-bold uppercase text-right">Count / સંખ્યા</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -152,14 +156,14 @@ export default function Dashboard() {
 
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="bg-slate-50/50 border-b">
-                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Bracket Count / વય જૂથ મુજબ સંખ્યા</CardTitle>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-600">Age Bracket Count / વય મુજબ સંખ્યા</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-[10px] font-bold uppercase">Age</TableHead>
-                      <TableHead className="text-[10px] font-bold uppercase text-right">Students</TableHead>
+                      <TableHead className="text-[10px] font-bold uppercase">Age / ઉંમર</TableHead>
+                      <TableHead className="text-[10px] font-bold uppercase text-right">Students / સંખ્યા</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -184,11 +188,11 @@ export default function Dashboard() {
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead className="text-[10px] font-bold uppercase">Standard</TableHead>
-                    <TableHead className="text-[10px] font-bold uppercase text-center">Male</TableHead>
-                    <TableHead className="text-[10px] font-bold uppercase text-center">Female</TableHead>
-                    <TableHead className="text-[10px] font-bold uppercase text-center">Other</TableHead>
-                    <TableHead className="text-[10px] font-bold uppercase text-right">Total</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase">Standard / ધોરણ</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-center">Male / પુરૂષ</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-center">Female / સ્ત્રી</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-center">Other / અન્ય</TableHead>
+                    <TableHead className="text-[10px] font-bold uppercase text-right">Total / કુલ</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -63,8 +64,8 @@ export default function StudentsPage() {
   const filteredStudents = students.filter((s) => {
     const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
                           s.academicStandard.toLowerCase().includes(search.toLowerCase()) ||
-                          s.grNumber.toLowerCase().includes(search.toLowerCase()) ||
-                          s.rollNumber.toLowerCase().includes(search.toLowerCase());
+                          (s.grNumber || "").toLowerCase().includes(search.toLowerCase()) ||
+                          (s.rollNumber || "").toLowerCase().includes(search.toLowerCase());
     const matchesGender = filterGender === "all" || s.gender === filterGender;
     return matchesSearch && matchesGender;
   }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
@@ -105,23 +106,23 @@ export default function StudentsPage() {
   const handleEdit = (s: Student) => {
     setEditingStudent(s);
     setFormData({
-      rollNumber: s.rollNumber,
+      rollNumber: s.rollNumber || "",
       name: s.name,
       birthday: s.birthday,
       gender: s.gender,
       academicStandard: s.academicStandard,
       attendance: s.attendance,
-      grNumber: s.grNumber,
-      caste: s.caste,
-      childUniqueId: s.childUniqueId,
-      aadharCard: s.aadharCard,
-      fatherName: s.fatherName,
-      motherName: s.motherName,
-      bankName: s.bankName,
-      bankAccountNumber: s.bankAccountNumber,
-      ifscCode: s.ifscCode,
-      address: s.address,
-      mobileNumber: s.mobileNumber,
+      grNumber: s.grNumber || "",
+      caste: s.caste || "",
+      childUniqueId: s.childUniqueId || "",
+      aadharCard: s.aadharCard || "",
+      fatherName: s.fatherName || "",
+      motherName: s.motherName || "",
+      bankName: s.bankName || "",
+      bankAccountNumber: s.bankAccountNumber || "",
+      ifscCode: s.ifscCode || "",
+      address: s.address || "",
+      mobileNumber: s.mobileNumber || "",
     });
     setIsAddDialogOpen(true);
   };
@@ -185,15 +186,15 @@ export default function StudentsPage() {
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Select value={filterGender} onValueChange={setFilterGender}>
-              <SelectTrigger className="w-[130px]">
+              <SelectTrigger className="w-[150px]">
                 <Filter className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Gender" />
+                <SelectValue placeholder="Gender / જાતિ" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="Male">Male</SelectItem>
-                <SelectItem value="Female">Female</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                <SelectItem value="all">All / બધા</SelectItem>
+                <SelectItem value="Male">Male / પુરૂષ</SelectItem>
+                <SelectItem value="Female">Female / સ્ત્રી</SelectItem>
+                <SelectItem value="Other">Other / અન્ય</SelectItem>
               </SelectContent>
             </Select>
 
@@ -223,48 +224,48 @@ export default function StudentsPage() {
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[90vh] p-0">
                 <DialogHeader className="p-6 pb-0">
-                  <DialogTitle className="font-headline text-xl">{editingStudent ? "Update Student Profile" : "New Student Enrollment"}</DialogTitle>
+                  <DialogTitle className="font-headline text-xl">{editingStudent ? "Update Student Profile / પ્રોફાઇલ અપડેટ કરો" : "New Student Enrollment / નવી નોંધણી"}</DialogTitle>
                 </DialogHeader>
                 <ScrollArea className="h-full max-h-[70vh] px-6">
                   <div className="grid gap-6 py-4">
                     <div className="space-y-4">
                       <h3 className="text-sm font-bold text-primary flex items-center gap-2 border-b pb-2">
-                        <User className="w-4 h-4" /> Personal Details
+                        <User className="w-4 h-4" /> Personal Details / વ્યક્તિગત વિગતો
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="rollNo">Roll Number</Label>
+                          <Label htmlFor="rollNo">Roll Number / રોલ નંબર</Label>
                           <Input id="rollNo" value={formData.rollNumber} onChange={(e) => setFormData({...formData, rollNumber: e.target.value})} placeholder="e.g. 01" />
                         </div>
                         <div className="grid gap-2 md:col-span-2">
-                          <Label htmlFor="name">Full Name</Label>
+                          <Label htmlFor="name">Full Name / પૂરું નામ</Label>
                           <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="gender">Gender</Label>
+                          <Label htmlFor="gender">Gender / જાતિ</Label>
                           <Select value={formData.gender} onValueChange={(val: Gender) => setFormData({...formData, gender: val})}>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Male">Male</SelectItem>
-                              <SelectItem value="Female">Female</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
+                              <SelectItem value="Male">Male / પુરૂષ</SelectItem>
+                              <SelectItem value="Female">Female / સ્ત્રી</SelectItem>
+                              <SelectItem value="Other">Other / અન્ય</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="birthday">Birthday</Label>
+                          <Label htmlFor="birthday">Birthday / જન્મ તારીખ</Label>
                           <Input id="birthday" type="date" value={formData.birthday} onChange={(e) => setFormData({...formData, birthday: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="fatherName">Father's Name</Label>
+                          <Label htmlFor="fatherName">Father's Name / પિતાનું નામ</Label>
                           <Input id="fatherName" value={formData.fatherName} onChange={(e) => setFormData({...formData, fatherName: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="motherName">Mother's Name</Label>
+                          <Label htmlFor="motherName">Mother's Name / માતાનું નામ</Label>
                           <Input id="motherName" value={formData.motherName} onChange={(e) => setFormData({...formData, motherName: e.target.value})} />
                         </div>
                       </div>
@@ -272,33 +273,33 @@ export default function StudentsPage() {
 
                     <div className="space-y-4">
                       <h3 className="text-sm font-bold text-primary flex items-center gap-2 border-b pb-2">
-                        <CreditCard className="w-4 h-4" /> Identification & Schooling
+                        <CreditCard className="w-4 h-4" /> Identification & Schooling / શાળાકીય વિગતો
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="grNumber">G.R. Number</Label>
+                          <Label htmlFor="grNumber">G.R. Number / જી.આર. નંબર</Label>
                           <Input id="grNumber" value={formData.grNumber} onChange={(e) => setFormData({...formData, grNumber: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="std">Academic Standard</Label>
+                          <Label htmlFor="std">Academic Standard / ધોરણ</Label>
                           <Input id="std" value={formData.academicStandard} onChange={(e) => setFormData({...formData, academicStandard: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="childUid">Child Unique ID</Label>
+                          <Label htmlFor="childUid">Child Unique ID / ચાઇલ્ડ આઈડી</Label>
                           <Input id="childUid" value={formData.childUniqueId} onChange={(e) => setFormData({...formData, childUniqueId: e.target.value})} />
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="aadhar">Aadhar Card Number</Label>
+                          <Label htmlFor="aadhar">Aadhar Number / આધાર કાર્ડ</Label>
                           <Input id="aadhar" value={formData.aadharCard} onChange={(e) => setFormData({...formData, aadharCard: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="caste">Caste</Label>
+                          <Label htmlFor="caste">Caste / જાતિ (પેટા)</Label>
                           <Input id="caste" value={formData.caste} onChange={(e) => setFormData({...formData, caste: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="attendance">Attendance (%)</Label>
+                          <Label htmlFor="attendance">Attendance / હાજરી (%)</Label>
                           <Input id="attendance" type="number" value={formData.attendance} onChange={(e) => setFormData({...formData, attendance: parseInt(e.target.value) || 0})} />
                         </div>
                       </div>
@@ -306,29 +307,29 @@ export default function StudentsPage() {
 
                     <div className="space-y-4">
                       <h3 className="text-sm font-bold text-primary flex items-center gap-2 border-b pb-2">
-                        <Building2 className="w-4 h-4" /> Bank & Contact Info
+                        <Building2 className="w-4 h-4" /> Bank & Contact / સંપર્ક અને બેંક વિગતો
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="bankName">Bank Name</Label>
+                          <Label htmlFor="bankName">Bank Name / બેંકનું નામ</Label>
                           <Input id="bankName" value={formData.bankName} onChange={(e) => setFormData({...formData, bankName: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="accNo">Account Number</Label>
+                          <Label htmlFor="accNo">Account Number / ખાતા નંબર</Label>
                           <Input id="accNo" value={formData.bankAccountNumber} onChange={(e) => setFormData({...formData, bankAccountNumber: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="ifsc">IFSC Code</Label>
+                          <Label htmlFor="ifsc">IFSC Code / આઈએફએસસી</Label>
                           <Input id="ifsc" value={formData.ifscCode} onChange={(e) => setFormData({...formData, ifscCode: e.target.value})} />
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="mobile"><Phone className="w-3 h-3 inline mr-1" /> Mobile Number</Label>
+                          <Label htmlFor="mobile"><Phone className="w-3 h-3 inline mr-1" /> Mobile Number / મોબાઈલ</Label>
                           <Input id="mobile" value={formData.mobileNumber} onChange={(e) => setFormData({...formData, mobileNumber: e.target.value})} />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="address"><Home className="w-3 h-3 inline mr-1" /> Residential Address</Label>
+                          <Label htmlFor="address"><Home className="w-3 h-3 inline mr-1" /> Residential Address / સરનામું</Label>
                           <Input id="address" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
                         </div>
                       </div>
@@ -336,8 +337,8 @@ export default function StudentsPage() {
                   </div>
                 </ScrollArea>
                 <DialogFooter className="p-6 pt-0 border-t mt-4">
-                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                  <Button onClick={handleSave} className="font-bold">Save Student Profile</Button>
+                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel / રદ કરો</Button>
+                  <Button onClick={handleSave} className="font-bold">Save Student / વિદ્યાર્થી સાચવો</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -349,24 +350,16 @@ export default function StudentsPage() {
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Roll No</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">G.R. No</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Full Name</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Gender</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Standard</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Birthday</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Attendance (%)</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Caste</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Child UID</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Aadhar Card</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Father Name</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Mother Name</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Bank Name</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Account Number</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">IFSC Code</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Mobile</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Address</TableHead>
-                  <TableHead className="text-right font-bold uppercase tracking-wider text-xs whitespace-nowrap">Actions</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Roll No / રોલ</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">G.R. No / જી.આર.</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Full Name / નામ</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Gender / જાતિ</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Standard / ધોરણ</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Birthday / જ.તા.</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Attendance / હાજરી (%)</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Caste / જ્ઞાતિ</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Mobile / મોબાઈલ</TableHead>
+                  <TableHead className="text-right font-bold uppercase tracking-wider text-xs whitespace-nowrap">Actions / ક્રિયા</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -377,7 +370,9 @@ export default function StudentsPage() {
                       <TableCell className="font-bold text-slate-500 whitespace-nowrap">{s.grNumber}</TableCell>
                       <TableCell className="font-bold text-slate-900 whitespace-nowrap">{s.name}</TableCell>
                       <TableCell className="whitespace-nowrap">
-                        <Badge variant="outline" className="text-[10px] uppercase">{s.gender}</Badge>
+                        <Badge variant="outline" className="text-[10px] uppercase">
+                          {s.gender === 'Male' ? 'Male / પુરૂષ' : s.gender === 'Female' ? 'Female / સ્ત્રી' : 'Other / અન્ય'}
+                        </Badge>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <Badge variant="secondary" className="font-bold">{s.academicStandard}</Badge>
@@ -389,15 +384,7 @@ export default function StudentsPage() {
                         </span>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">{s.caste}</TableCell>
-                      <TableCell className="whitespace-nowrap font-mono text-xs">{s.childUniqueId}</TableCell>
-                      <TableCell className="whitespace-nowrap font-mono text-xs">{s.aadharCard}</TableCell>
-                      <TableCell className="whitespace-nowrap font-medium">{s.fatherName}</TableCell>
-                      <TableCell className="whitespace-nowrap font-medium">{s.motherName}</TableCell>
-                      <TableCell className="whitespace-nowrap">{s.bankName}</TableCell>
-                      <TableCell className="whitespace-nowrap font-mono text-xs">{s.bankAccountNumber}</TableCell>
-                      <TableCell className="whitespace-nowrap font-mono text-xs">{s.ifscCode}</TableCell>
                       <TableCell className="whitespace-nowrap text-xs">{s.mobileNumber}</TableCell>
-                      <TableCell className="whitespace-nowrap max-w-[200px] truncate text-xs">{s.address}</TableCell>
                       <TableCell className="text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-2">
                           <Button variant="ghost" size="icon" onClick={() => handleEdit(s)}>
@@ -412,8 +399,8 @@ export default function StudentsPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={18} className="h-32 text-center text-muted-foreground font-medium italic">
-                      No student records matching your criteria.
+                    <TableCell colSpan={10} className="h-32 text-center text-muted-foreground font-medium italic">
+                      No student records matching your criteria. / કોઈ માહિતી મળી નથી.
                     </TableCell>
                   </TableRow>
                 )}

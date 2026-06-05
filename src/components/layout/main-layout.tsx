@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -66,8 +67,8 @@ const examinationSubItems = [
 const settingsSubItems = [
   { name: "Subject Mapping / વિષય", href: "/subject-mapping", icon: Layers },
   { name: "Marks Mapping / ગુણ", href: "/marks-mapping", icon: Calculator },
-  { name: "Patrak-B Config / પત્રક-બ", href: "/patrak-b-config", icon: Settings2 },
-  { name: "FLN Config / FLN ગોઠવણી", href: "/fln-config", icon: SpellCheck },
+  { name: "Patrak-B Config / પત્રક-બ સેટિંગ", href: "/patrak-b-config", icon: Settings2 },
+  { name: "FLN Config / FLN સેટિંગ", href: "/fln-config", icon: SpellCheck },
 ];
 
 function AppSidebar() {
@@ -96,7 +97,7 @@ function AppSidebar() {
           <div className="flex flex-col overflow-hidden group-data-[state=collapsed]:hidden">
             <span className="text-sm font-bold truncate">Admin User</span>
             <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Online
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Online / ઓનલાઇન
             </span>
           </div>
         </div>
@@ -222,7 +223,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
           <div className="relative w-64 max-sm:hidden">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search Dashboard..."
+              placeholder="Search Dashboard... / શોધો..."
               className="pl-9 border-none bg-transparent shadow-none focus-visible:ring-0"
             />
           </div>
@@ -233,7 +234,7 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
             <Avatar className="w-8 h-8 border border-green-500 p-0.5">
               <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
             </Avatar>
-            <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account</span>
+            <span className="text-sm font-medium text-muted-foreground hidden lg:block">Admin Account / એડમિન</span>
           </div>
           <div className="flex items-center gap-2">
             <button className="p-2 hover:bg-muted rounded-full relative">

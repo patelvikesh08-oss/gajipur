@@ -32,7 +32,6 @@ export default function PatSatPage() {
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
   
-  // Local state to track raw scores for automatic calculation
   const [scores, setScores] = useState<Record<string, Record<string, number>>>({});
 
   const standards = useMemo(() => {
@@ -88,7 +87,7 @@ export default function PatSatPage() {
               <CheckCircle2 className="w-6 h-6 text-indigo-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">PAT/SAT (Assessments)</h1>
+              <h1 className="text-2xl font-bold text-slate-800">PAT/SAT (Assessments) / મૂલ્યાંકન</h1>
               <p className="text-xs text-muted-foreground font-medium">Weekly/Periodic Test Grid Entry</p>
             </div>
           </div>
@@ -111,46 +110,35 @@ export default function PatSatPage() {
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
+                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
               <Printer className="w-4 h-4 mr-2" />
-              Print
+              Print / પ્રિન્ટ
             </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20">
               <Save className="w-4 h-4 mr-2" />
-              Save Scores
+              Save / સાચવો
             </Button>
-          </div>
-        </div>
-
-        {/* PRINT HEADER */}
-        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
-          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-lg font-bold uppercase">PAT/SAT Assessment Records</h2>
-          <div className="flex justify-center gap-8 font-bold text-xs">
-            <span>Academic Year: {academicYear}</span>
-            <span>Semester: {semester}</span>
-            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
-            placeholder="Quick search student name or roll number..."
+            placeholder="Search / શોધો..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
           <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Academic Standard" />
+              <SelectValue placeholder="Standard / ધોરણ" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Standards</SelectItem>
+              <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
               ))}
@@ -166,7 +154,7 @@ export default function PatSatPage() {
                   Roll No
                 </TableHead>
                 <TableHead rowSpan={commonHeaderRowSpan} className="font-bold uppercase tracking-wider text-xs border-r min-w-[150px] print:border-black">
-                  Student Name
+                  Name / નામ
                 </TableHead>
                 {activeSubjects.length > 0 && (
                   <>
@@ -174,13 +162,13 @@ export default function PatSatPage() {
                       colSpan={activeSubjects.length} 
                       className="font-black uppercase tracking-widest text-[10px] text-center border-r border-b bg-orange-100/30 print:border-black h-12"
                     >
-                      Marks Obtained (Out of {maxMarks})
+                      Marks Obtained / મેળવેલ ગુણ (Out of {maxMarks})
                     </TableHead>
                     <TableHead 
                       colSpan={activeSubjects.length} 
                       className="font-black uppercase tracking-widest text-[10px] text-center border-r border-b bg-indigo-50/50 print:border-black h-12"
                     >
-                      Marks as per 50% (Out of {maxMarks / 2})
+                      50% Marks / ૫૦% ગુણ (Out of {maxMarks / 2})
                     </TableHead>
                   </>
                 )}
@@ -252,29 +240,10 @@ export default function PatSatPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {activeSubjects.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-40 text-center text-muted-foreground italic font-medium">
-                    Please select a specific academic standard to load assessment columns.
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
-        </div>
-
-        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
-          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
-            <Printer className="w-4 h-4" />
-            Print Scores
-          </Button>
-          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 px-8">
-            <Save className="w-4 h-4 mr-2" />
-            Commit Changes
-          </Button>
         </div>
       </div>
     </MainLayout>
   );
 }
-

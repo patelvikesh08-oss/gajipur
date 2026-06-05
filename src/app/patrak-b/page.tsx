@@ -63,7 +63,7 @@ export default function PatrakBPage() {
               <ScrollText className="w-6 h-6 text-accent" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">PATRAK-B (Internal Progress)</h1>
+              <h1 className="text-2xl font-bold text-slate-800">PATRAK-B (Internal Progress) / પત્રક-બ</h1>
               <p className="text-xs text-muted-foreground font-medium">Log behavioral and qualitative progress milestones</p>
             </div>
           </div>
@@ -86,46 +86,35 @@ export default function PatrakBPage() {
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
+                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
               <Printer className="w-4 h-4 mr-2" />
-              Print
+              Print / પ્રિન્ટ
             </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-accent hover:bg-accent/90 shadow-lg shadow-accent/20">
               <Save className="w-4 h-4 mr-2" />
-              Save Progress
+              Save / સાચવો
             </Button>
-          </div>
-        </div>
-
-        {/* PRINT HEADER */}
-        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
-          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-lg font-bold uppercase">PATRAK-B (Internal Progress)</h2>
-          <div className="flex justify-center gap-8 font-bold text-xs">
-            <span>Academic Year: {academicYear}</span>
-            <span>Semester: {semester}</span>
-            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
-            placeholder="Filter students by name or roll number..."
+            placeholder="Search / શોધો..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
           <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Pick a Standard" />
+              <SelectValue placeholder="Standard / ધોરણ" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Standards</SelectItem>
+              <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
               ))}
@@ -139,7 +128,7 @@ export default function PatrakBPage() {
               <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
                   <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center print:border-black">Roll No</TableHead>
-                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name / નામ</TableHead>
                   
                   {isAnnual && (
                     <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[60px] bg-muted/20 print:border-black">Sem</TableHead>
@@ -161,7 +150,7 @@ export default function PatrakBPage() {
                       <TableHead key={`${field.id}-label-${i}`} className="text-[9px] font-bold border-r min-w-[45px] h-[140px] p-0 bg-white print:border-black print:h-auto print:py-1">
                         <div className="flex flex-col items-center justify-end h-full w-full pb-3 print:pb-1">
                           <span className="vertical-text text-slate-600 px-1 max-h-[120px] overflow-hidden print:writing-mode-horizontal-tb print:rotate-0 print:text-[8px]">
-                            {field.subColumnLabels[i] || `Milestone ${i+1}`}
+                            {field.subColumnLabels[i] || `M${i+1}`}
                           </span>
                         </div>
                       </TableHead>
@@ -236,17 +225,6 @@ export default function PatrakBPage() {
             </Table>
             <ScrollBar orientation="horizontal" className="no-print" />
           </ScrollArea>
-        </div>
-
-        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
-          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
-            <Printer className="w-4 h-4" />
-            Print Layout
-          </Button>
-          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-accent hover:bg-accent/90 shadow-lg shadow-accent/20 px-8">
-            <Save className="w-4 h-4 mr-2" />
-            Commit Changes
-          </Button>
         </div>
       </div>
     </MainLayout>

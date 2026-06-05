@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function BonofidePage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
-  const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
+  const { academicYear, updateYear, isLoaded: sessionLoaded } = useSessionStore();
   const [selectedStudentId, setSelectedStudentId] = useState<string>("");
 
   if (!studentsLoaded || !sessionLoaded) return null;
@@ -28,7 +28,7 @@ export default function BonofidePage() {
             <div className="p-2 bg-primary/10 rounded-lg">
               <IdCard className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">Bonofide Certificate</h1>
+            <h1 className="text-2xl font-bold text-slate-800">Bonofide Certificate / બોનાફાઇડ સર્ટીફિકેટ</h1>
           </div>
           
           <div className="flex flex-wrap items-center gap-3">
@@ -50,12 +50,12 @@ export default function BonofidePage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Select Student</CardTitle>
+            <CardTitle className="text-lg">Select Student / વિદ્યાર્થી પસંદ કરો</CardTitle>
             <CardDescription>Choose a student to generate a formal bonofide certificate for {academicYear}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row gap-4 items-end">
             <div className="flex-1 space-y-2">
-              <label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Student Name</label>
+              <label className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Student Name / વિદ્યાર્થીનું નામ</label>
               <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a student..." />
@@ -77,12 +77,12 @@ export default function BonofidePage() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-headline font-bold flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
-                Certificate Preview
+                Certificate Preview / પ્રિવ્યુ
               </h2>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" className="font-bold gap-2">
                   <Download className="w-3.5 h-3.5" />
-                  Download PDF
+                  Download PDF / ડાઉનલોડ
                 </Button>
                 <Badge className="bg-green-500 font-bold flex gap-1">
                   <CheckCircle2 className="w-3 h-3" /> Ready
@@ -102,7 +102,7 @@ export default function BonofidePage() {
                 </div>
                 <div className="text-xl leading-[3rem] text-slate-700 text-left px-4">
                   This is to certify that <span className="font-bold border-b border-slate-400 px-4 text-slate-900">{selectedStudent.name}</span>, 
-                  age <span className="font-bold border-b border-slate-400 px-4 text-slate-900">{selectedStudent.age}</span>, 
+                  age <span className="font-bold border-b border-slate-400 px-4 text-slate-900">{selectedStudent.rollNumber ? '...' : ''}</span>, 
                   is a bonofide student of this school studying in the 
                   <span className="font-bold border-b border-slate-400 px-4 text-slate-900">{selectedStudent.academicStandard}</span> 
                   during the academic session <span className="font-bold">{academicYear}</span>. 
@@ -113,11 +113,11 @@ export default function BonofidePage() {
               <div className="flex justify-between items-end px-4 mt-20">
                 <div className="text-center space-y-1">
                   <div className="w-40 h-px bg-slate-400" />
-                  <p className="text-sm font-bold text-slate-500 uppercase">Date</p>
+                  <p className="text-sm font-bold text-slate-500 uppercase">Date / તારીખ</p>
                 </div>
                 <div className="text-center space-y-1">
                   <div className="w-40 h-px bg-slate-400" />
-                  <p className="text-sm font-bold text-slate-500 uppercase">Principal Signature</p>
+                  <p className="text-sm font-bold text-slate-500 uppercase">Principal Signature / આચાર્યની સહી</p>
                 </div>
               </div>
             </div>
@@ -125,7 +125,7 @@ export default function BonofidePage() {
         ) : (
           <div className="text-center py-24 border-2 border-dashed rounded-2xl">
             <IdCard className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-            <p className="text-muted-foreground font-medium">Please select a student to preview the certificate.</p>
+            <p className="text-muted-foreground font-medium">Please select a student to preview the certificate. / સર્ટીફિકેટ માટે વિદ્યાર્થી પસંદ કરો.</p>
           </div>
         )}
       </div>

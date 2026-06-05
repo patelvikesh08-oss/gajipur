@@ -24,8 +24,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 
 const ACADEMIC_MONTHS = [
-  "June", "July", "August", "September", "October", "November",
-  "December", "January", "February", "March", "April", "May"
+  "June / જૂન", "July / જુલાઈ", "August / ઓગસ્ટ", "September / સપ્ટેમ્બર", "October / ઓક્ટોબર", "November / નવેમ્બર",
+  "December / ડિસેમ્બર", "January / જાન્યુઆરી", "February / ફેબ્રુઆરી", "March / માર્ચ", "April / એપ્રિલ", "May / મે"
 ];
 
 export default function FlnPage() {
@@ -39,10 +39,10 @@ export default function FlnPage() {
 
   const [flnData, setFlnData] = useState<Record<string, Record<string, boolean[]>>>({});
 
-  const flnCategories: { name: FLNCategory; color: string }[] = [
-    { name: "FOUNDATION", color: "bg-blue-50/50" },
-    { name: "LITERACY", color: "bg-emerald-50/50" },
-    { name: "NUMERICY", color: "bg-amber-50/50" }
+  const flnCategories: { name: FLNCategory; label: string; color: string }[] = [
+    { name: "FOUNDATION", label: "FOUNDATION / પાયો", color: "bg-blue-50/50" },
+    { name: "LITERACY", label: "LITERACY / ભાષા", color: "bg-emerald-50/50" },
+    { name: "NUMERICY", label: "NUMERICY / ગણિત", color: "bg-amber-50/50" }
   ];
 
   const standards = useMemo(() => {
@@ -102,7 +102,7 @@ export default function FlnPage() {
               <SpellCheck className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">FLN Milestone Entry</h1>
+              <h1 className="text-2xl font-bold text-slate-800">FLN Milestone Entry / અંકજ્ઞાન માઇલસ્ટોન</h1>
               <p className="text-xs text-muted-foreground font-medium">Foundational Reading, Writing and Math Tracking</p>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function FlnPage() {
             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
               <Clock className="w-4 h-4 text-muted-foreground" />
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                <SelectTrigger className="w-[120px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
+                <SelectTrigger className="w-[140px] border-none shadow-none focus:ring-0 h-7 text-xs font-bold">
                   <SelectValue placeholder="Month" />
                 </SelectTrigger>
                 <SelectContent>
@@ -137,39 +137,28 @@ export default function FlnPage() {
 
             <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
               <Printer className="w-4 h-4 mr-2" />
-              Print
+              Print / પ્રિન્ટ
             </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20">
               <Save className="w-4 h-4 mr-2" />
-              Save Milestones
+              Save / સાચવો
             </Button>
-          </div>
-        </div>
-
-        {/* PRINT HEADER */}
-        <div className="hidden print:block text-center mb-6 space-y-2 border-b-2 border-slate-900 pb-4">
-          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-lg font-bold uppercase">FLN Milestone Progress Report</h2>
-          <div className="flex justify-center gap-8 font-bold text-xs">
-            <span>Academic Year: {academicYear}</span>
-            <span>Month: {selectedMonth}</span>
-            <span>Standard: {selectedStandard === 'all' ? 'All Classes' : selectedStandard}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
-            placeholder="Search student by name or roll number..."
+            placeholder="Search / શોધો..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
           <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Academic Standard" />
+              <SelectValue placeholder="Standard / ધોરણ" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Standards</SelectItem>
+              <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
               ))}
@@ -183,14 +172,14 @@ export default function FlnPage() {
               <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
                   <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] w-[50px] border-r sticky left-0 bg-slate-50 z-20 print:static print:bg-white text-center">Roll No</TableHead>
-                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-[50px] bg-slate-50 z-20 print:static print:bg-white">Student Name</TableHead>
+                  <TableHead rowSpan={3} className="font-bold uppercase tracking-wider text-[10px] min-w-[120px] border-r sticky left-[50px] bg-slate-50 z-20 print:static print:bg-white">Student Name / નામ</TableHead>
                   {flnCategories.map((cat) => (
                     <TableHead 
                       key={cat.name} 
                       colSpan={11} 
                       className={`font-black uppercase tracking-widest text-[9px] text-center border-r border-b ${cat.color} print:bg-white print:border-black py-2`}
                     >
-                      {cat.name}
+                      {cat.label}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -257,17 +246,6 @@ export default function FlnPage() {
             </Table>
             <ScrollBar orientation="horizontal" className="no-print" />
           </ScrollArea>
-        </div>
-
-        <div className="flex justify-end pt-4 no-print mb-12 gap-3">
-          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
-            <Printer className="w-4 h-4" />
-            Print Milestone Records
-          </Button>
-          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 px-8">
-            <Save className="w-4 h-4 mr-2" />
-            Commit Changes
-          </Button>
         </div>
       </div>
     </MainLayout>

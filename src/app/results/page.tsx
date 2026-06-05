@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -15,7 +16,7 @@ import { Button } from "@/components/ui/button";
 
 const chartConfig = {
   students: {
-    label: "Students",
+    label: "Students / સંખ્યા",
     color: "hsl(var(--primary))",
   },
 } satisfies ChartConfig;
@@ -54,7 +55,7 @@ export default function ResultsPage() {
             <div className="p-2 bg-primary/10 rounded-lg">
               <PieChartIcon className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">Examination Results & Analytics</h1>
+            <h1 className="text-2xl font-bold text-slate-800">Results & Analytics / પરીક્ષા પરિણામો</h1>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
@@ -75,40 +76,29 @@ export default function ResultsPage() {
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
+                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
               <Printer className="w-4 h-4 mr-2" />
-              Print
+              Print / પ્રિન્ટ
             </Button>
-          </div>
-        </div>
-
-        {/* PRINT HEADER */}
-        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
-          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-lg font-bold uppercase">Consolidated Results Summary</h2>
-          <div className="flex justify-center gap-8 font-bold text-xs">
-            <span>Academic Year: {academicYear}</span>
-            <span>Period: {semester}</span>
-            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-4 bg-white p-4 rounded-xl border shadow-sm no-print">
           <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground">
             <Filter className="w-4 h-4" />
-            Filter View:
+            Filter View / ફિલ્ટર:
           </div>
           <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="All Standards" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Standards</SelectItem>
+              <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
               ))}
@@ -118,21 +108,21 @@ export default function ResultsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard
-            title="Total Appeared"
+            title="Total Appeared / કુલ પરીક્ષાર્થી"
             value={totalStudents}
             description="Filtered by standard"
             icon={Users}
             variant="blue"
           />
           <StatCard
-            title="Passed Percentage"
+            title="Passed % / પરિણામ ટકાવારી"
             value={`${passRate}%`}
             description={`${passedCount} students passed`}
             icon={CheckCircle}
             variant="purple"
           />
           <StatCard
-            title="Top Performers"
+            title="Top Performers / તેજસ્વી તારલા"
             value={Math.floor(totalStudents * 0.2)}
             description="Achieved Grade A+"
             icon={TrendingUp}
@@ -143,7 +133,7 @@ export default function ResultsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="print:border-black">
             <CardHeader>
-              <CardTitle className="font-headline text-lg">Grade Distribution</CardTitle>
+              <CardTitle className="font-headline text-lg">Grade Distribution / ગ્રેડ વિતરણ</CardTitle>
               <CardDescription className="font-medium">Final outcome breakdown for {semester}</CardDescription>
             </CardHeader>
             <CardContent>
@@ -165,40 +155,21 @@ export default function ResultsPage() {
                   />
                 </BarChart>
               </ChartContainer>
-              {/* PRINT ONLY TABLE REPLACING CHART */}
-              <div className="hidden print:block">
-                <Table className="border-black">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="border-black">Grade</TableHead>
-                      <TableHead className="border-black text-right">Students</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {gradeDistribution.map(item => (
-                      <TableRow key={item.name} className="border-black">
-                        <TableCell className="border-black">{item.name}</TableCell>
-                        <TableCell className="border-black text-right">{item.students}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
             </CardContent>
           </Card>
 
           <Card className="overflow-hidden bg-white print:border-black">
             <CardHeader className="border-b px-8 py-6 print:border-black">
-              <CardTitle className="text-lg font-bold text-slate-700">Detailed Student Results</CardTitle>
+              <CardTitle className="text-lg font-bold text-slate-700">Student Results / વિદ્યાર્થી પરિણામ</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <Table className="print:border-black">
                 <TableHeader className="bg-slate-50/50 print:bg-white">
                   <TableRow className="print:border-black">
-                    <TableHead className="px-8 font-bold text-slate-500 print:text-black print:border-black">Name</TableHead>
-                    <TableHead className="font-bold text-slate-500 print:text-black print:border-black">Standard</TableHead>
-                    <TableHead className="font-bold text-slate-500 print:text-black print:border-black">Grade</TableHead>
-                    <TableHead className="px-8 font-bold text-slate-500 text-right print:text-black print:border-black">Status</TableHead>
+                    <TableHead className="px-8 font-bold text-slate-500 print:text-black print:border-black">Name / નામ</TableHead>
+                    <TableHead className="font-bold text-slate-500 print:text-black print:border-black">Standard / ધોરણ</TableHead>
+                    <TableHead className="font-bold text-slate-500 print:text-black print:border-black">Grade / ગ્રેડ</TableHead>
+                    <TableHead className="px-8 font-bold text-slate-500 text-right print:text-black print:border-black">Status / સ્થિતિ</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -218,13 +189,6 @@ export default function ResultsPage() {
               </Table>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
-          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
-            <Printer className="w-4 h-4" />
-            Print Analytics
-          </Button>
         </div>
       </div>
     </MainLayout>

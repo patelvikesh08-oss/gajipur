@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -65,7 +66,7 @@ export default function SvadhyayPage() {
               <BookOpen className="w-6 h-6 text-pink-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">SVADHYAY (Self-Study Records)</h1>
+              <h1 className="text-2xl font-bold text-slate-800">SVADHYAY (Self-Study Records) / સ્વાધ્યાય</h1>
               <p className="text-xs text-muted-foreground font-medium">Bulk log student completion status</p>
             </div>
           </div>
@@ -88,46 +89,35 @@ export default function SvadhyayPage() {
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
+                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
               <Printer className="w-4 h-4 mr-2" />
-              Print
+              Print / પ્રિન્ટ
             </Button>
             <Button onClick={handleSaveAll} className="font-bold bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-600/20">
               <Save className="w-4 h-4 mr-2" />
-              Save Study Logs
+              Save / સાચવો
             </Button>
-          </div>
-        </div>
-
-        {/* PRINT HEADER */}
-        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
-          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-lg font-bold uppercase">SVADHYAY (Self-Study Records)</h2>
-          <div className="flex justify-center gap-8 font-bold text-xs">
-            <span>Academic Year: {academicYear}</span>
-            <span>Semester: {semester}</span>
-            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
           <Input
-            placeholder="Find students by name or roll number..."
+            placeholder="Search / શોધો..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-white"
           />
           <Select value={selectedStandard} onValueChange={setSelectedStandard}>
             <SelectTrigger className="bg-white">
-              <SelectValue placeholder="Grade Level" />
+              <SelectValue placeholder="Standard / ધોરણ" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Standards</SelectItem>
+              <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
               ))}
@@ -139,8 +129,8 @@ export default function SvadhyayPage() {
           <Table>
             <TableHeader className="bg-slate-50 print:bg-white">
               <TableRow>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No / રોલ</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name / નામ</TableHead>
                 {activeSubjects.map((subject) => (
                   <TableHead 
                     key={subject} 
@@ -173,12 +163,12 @@ export default function SvadhyayPage() {
                         <>
                           <TableCell className="border-l p-1 print:border-black">
                             <div className="flex items-center justify-center">
-                              <Input type="number" className="h-8 w-14 text-center print:border-none" defaultValue={8} />
+                              <Input type="number" className="h-8 w-14 text-center print:border-none" defaultValue={0} />
                             </div>
                           </TableCell>
                           <TableCell className="border-l p-1 print:border-black">
                             <div className="flex items-center justify-center">
-                              <Input type="number" className="h-8 w-14 text-center print:border-none" defaultValue={9} />
+                              <Input type="number" className="h-8 w-14 text-center print:border-none" defaultValue={0} />
                             </div>
                           </TableCell>
                         </>
@@ -190,7 +180,7 @@ export default function SvadhyayPage() {
                               max={10} 
                               min={0} 
                               className="h-8 w-20 font-bold text-center print:border-none" 
-                              defaultValue={7} 
+                              defaultValue={0} 
                             />
                           </div>
                         </TableCell>
@@ -201,17 +191,6 @@ export default function SvadhyayPage() {
               ))}
             </TableBody>
           </Table>
-        </div>
-
-        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
-          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
-            <Printer className="w-4 h-4" />
-            Print Status
-          </Button>
-          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-600/20 px-8">
-            <Save className="w-4 h-4 mr-2" />
-            Commit Changes
-          </Button>
         </div>
       </div>
     </MainLayout>

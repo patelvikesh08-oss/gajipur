@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -88,9 +89,9 @@ export default function TrimasikPage() {
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
+                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline" onClick={() => window.print()} className="font-bold border-slate-200">
@@ -101,17 +102,6 @@ export default function TrimasikPage() {
               <Save className="w-4 h-4 mr-2" />
               Save All / સાચવો
             </Button>
-          </div>
-        </div>
-
-        {/* PRINT HEADER */}
-        <div className="hidden print:block text-center space-y-2 border-b-2 border-slate-900 pb-4 mb-6">
-          <h1 className="text-2xl font-black uppercase">EduPulse Global Academy</h1>
-          <h2 className="text-lg font-bold uppercase">TRIMASIK (Quarterly Records) / ત્રિમાસિક પત્રક</h2>
-          <div className="flex justify-center gap-8 font-bold text-xs">
-            <span>Academic Year: {academicYear}</span>
-            <span>Term: {semester}</span>
-            <span>Standard: {selectedStandard === 'all' ? 'All' : selectedStandard}</span>
           </div>
         </div>
 
@@ -127,7 +117,7 @@ export default function TrimasikPage() {
               <SelectValue placeholder="Filter by Standard / ધોરણ મુજબ ફિલ્ટર" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Standards</SelectItem>
+              <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
               {standards.map(std => (
                 <SelectItem key={std} value={std}>{std}</SelectItem>
               ))}
@@ -139,8 +129,8 @@ export default function TrimasikPage() {
           <Table>
             <TableHeader className="bg-slate-50 print:bg-white">
               <TableRow>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[80px] print:border-black">Roll No / રોલ</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs print:border-black">Student Name / નામ</TableHead>
                 {activeSubjects.map((subject) => (
                   <TableHead 
                     key={subject} 
@@ -150,8 +140,8 @@ export default function TrimasikPage() {
                     {subject}
                   </TableHead>
                 ))}
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs text-center w-[80px] border-l print:border-black">Total</TableHead>
-                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l print:border-black no-print">Status</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs text-center w-[80px] border-l print:border-black">Total / કુલ</TableHead>
+                <TableHead rowSpan={isAnnual ? 2 : 1} className="text-right font-bold uppercase tracking-wider text-xs border-l print:border-black no-print">Status / સ્થિતિ</TableHead>
               </TableRow>
               {isAnnual && (
                 <TableRow>
@@ -177,14 +167,14 @@ export default function TrimasikPage() {
                             <input 
                               type="number" 
                               className="w-full h-8 text-center font-bold bg-transparent border-none outline-none focus:bg-primary/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                              defaultValue={75} 
+                              defaultValue={0} 
                             />
                           </TableCell>
                           <TableCell className="border-l p-0 print:border-black">
                             <input 
                               type="number" 
                               className="w-full h-8 text-center font-bold bg-transparent border-none outline-none focus:bg-primary/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                              defaultValue={82} 
+                              defaultValue={0} 
                             />
                           </TableCell>
                         </>
@@ -193,14 +183,14 @@ export default function TrimasikPage() {
                           <input 
                             type="number" 
                             className="w-full h-8 text-center font-bold bg-transparent border-none outline-none focus:bg-primary/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                            defaultValue={80} 
+                            defaultValue={0} 
                           />
                         </TableCell>
                       )}
                     </React.Fragment>
                   ))}
                   <TableCell className="text-center border-l print:border-black">
-                    <span className="font-black text-primary print:text-black">88</span>
+                    <span className="font-black text-primary print:text-black">0</span>
                   </TableCell>
                   <TableCell className="text-right border-l print:border-black no-print">
                     <div className="flex items-center justify-end gap-2 text-green-600 font-bold text-[10px] uppercase">
@@ -221,17 +211,6 @@ export default function TrimasikPage() {
               )}
             </TableBody>
           </Table>
-        </div>
-
-        <div className="flex justify-end gap-3 pt-6 mb-12 no-print">
-          <Button variant="outline" size="lg" onClick={() => window.print()} className="font-bold gap-2">
-            <Printer className="w-4 h-4" />
-            Print / પ્રિન્ટ
-          </Button>
-          <Button onClick={handleSaveAll} size="lg" className="font-bold bg-primary shadow-lg shadow-primary/20 px-8">
-            <Save className="w-4 h-4 mr-2" />
-            Save Changes / ફેરફારો સાચવો
-          </Button>
         </div>
       </div>
     </MainLayout>
