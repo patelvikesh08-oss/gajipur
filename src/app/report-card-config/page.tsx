@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,9 @@ import {
   Copy, 
   Info, 
   GraduationCap,
-  Database
+  Database,
+  ExternalLink,
+  Eye
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -30,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function ReportCardConfigPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [conductItems, setConductItems] = useState([
@@ -39,6 +42,12 @@ export default function ReportCardConfigPage() {
     { id: "leadership", label: "Leadership / નેતૃત્વ", checked: true },
     { id: "discipline", label: "Discipline / શિસ્ત", checked: true },
   ]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   const handleSave = () => {
     setIsSaving(true);
@@ -55,6 +64,11 @@ export default function ReportCardConfigPage() {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setSelectedFile(file);
+      
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+
       toast({
         title: "File Selected / ફાઇલ પસંદ કરી",
         description: `Template: ${file.name}`,
@@ -90,7 +104,7 @@ export default function ReportCardConfigPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto space-y-8 pb-12">
+      <div className="max-w-7xl mx-auto space-y-8 pb-12">
         <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 p-8 rounded-3xl text-white shadow-2xl no-print">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md border border-white/20">
@@ -105,18 +119,118 @@ export default function ReportCardConfigPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8 space-y-8">
-            <Tabs defaultValue="general" className="w-full">
+            <Tabs defaultValue="template" className="w-full">
               <TabsList className="bg-slate-100 p-1 rounded-2xl h-14 mb-6">
+                <TabsTrigger value="template" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
+                  Template Upload & Preview
+                </TabsTrigger>
                 <TabsTrigger value="general" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
                   General Info
-                </TabsTrigger>
-                <TabsTrigger value="template" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
-                  Template Upload
                 </TabsTrigger>
                 <TabsTrigger value="conduct" className="rounded-xl px-8 font-bold data-[state=active]:bg-white data-[state=active]:shadow-md">
                   Conduct Items
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="template" className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
+                <Card className="border-none bg-indigo-50/30 shadow-xl rounded-3xl overflow-hidden">
+                  <CardHeader className="px-8 py-6">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-indigo-900">
+                      <Upload className="w-5 h-5" />
+                      Official Template Upload
+                    </CardTitle>
+                    <CardDescription className="font-medium">Upload your official layout to preview and map merge fields.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="px-8 pb-8">
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileChange} 
+                      className="hidden" 
+                      accept=".doc,.docx,.pdf,image/*"
+                    />
+                    
+                    {!selectedFile ? (
+                      <div 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="border-2 border-dashed border-indigo-200 rounded-3xl p-16 flex flex-col items-center justify-center bg-white gap-4 transition-all hover:border-indigo-400 hover:bg-indigo-50/50 cursor-pointer group"
+                      >
+                        <div className="p-6 rounded-2xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
+                          <FileUp className="w-12 h-12" />
+                        </div>
+                        <div className="text-center">
+                          <p className="font-black text-slate-700 text-lg">Upload Report Card Template</p>
+                          <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Supports .DOCX, PDF or High-Res Images</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 flex items-center gap-6 relative group shadow-sm">
+                          <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <FileUp className="w-6 h-6" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-black text-slate-800 truncate">{selectedFile.name}</p>
+                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{(selectedFile.size / 1024).toFixed(1)} KB • Template Loaded</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                             <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => fileInputRef.current?.click()}
+                              className="rounded-xl font-bold h-9 border-indigo-100"
+                            >
+                              Replace
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={(e) => { e.stopPropagation(); setSelectedFile(null); setPreviewUrl(null); }}
+                              className="rounded-xl h-10 w-10 text-slate-300 hover:text-rose-500 hover:bg-rose-50"
+                            >
+                              <X className="w-5 h-5" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        {previewUrl && (
+                          <div className="rounded-3xl border-2 border-indigo-100 overflow-hidden bg-white shadow-2xl animate-in zoom-in-95 duration-500">
+                            <div className="bg-indigo-900 p-4 border-b border-white/10 flex items-center justify-between text-white">
+                              <div className="flex items-center gap-2">
+                                <Eye className="w-4 h-4 text-indigo-300" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Live Template Preview / પ્રિવ્યુ</span>
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-white hover:bg-white/10 h-8 font-bold text-xs gap-2"
+                                onClick={() => window.open(previewUrl)}
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" /> Full Screen
+                              </Button>
+                            </div>
+                            <div className="bg-slate-100 flex items-center justify-center min-h-[600px]">
+                              {selectedFile?.type === 'application/pdf' ? (
+                                <iframe src={previewUrl} className="w-full h-[800px] border-none" />
+                              ) : selectedFile?.type.startsWith('image/') ? (
+                                <img src={previewUrl} alt="Template Preview" className="max-w-full h-auto shadow-lg" />
+                              ) : (
+                                <div className="text-center p-12 max-w-sm">
+                                  <FileText className="w-16 h-16 text-indigo-300 mx-auto mb-6" />
+                                  <h4 className="text-lg font-black text-slate-800">Word Document Structure</h4>
+                                  <p className="text-xs font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-wider">
+                                    Browser-based direct preview for .docx files is limited. Please use the merge fields on the right to edit your template in Word and re-upload to verify.
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
               <TabsContent value="general" className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
                 <Card className="rounded-3xl border-none shadow-xl overflow-hidden">
@@ -142,60 +256,6 @@ export default function ReportCardConfigPage() {
                         <Input defaultValue="Springfield / Central" className="font-bold h-12 rounded-xl bg-slate-50 border-none focus:bg-white transition-all" />
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="template" className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
-                <Card className="border-none bg-indigo-50/30 shadow-xl rounded-3xl overflow-hidden">
-                  <CardHeader className="px-8 py-6">
-                    <CardTitle className="text-lg font-bold flex items-center gap-2 text-indigo-900">
-                      <Upload className="w-5 h-5" />
-                      Official Template Upload
-                    </CardTitle>
-                    <CardDescription className="font-medium">Upload your official .docx or PDF report card layout with merge fields.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="px-8 pb-8">
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      onChange={handleFileChange} 
-                      className="hidden" 
-                      accept=".doc,.docx,.pdf"
-                    />
-                    
-                    {!selectedFile ? (
-                      <div 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="border-2 border-dashed border-indigo-200 rounded-3xl p-16 flex flex-col items-center justify-center bg-white gap-4 transition-all hover:border-indigo-400 hover:bg-indigo-50/50 cursor-pointer group"
-                      >
-                        <div className="p-6 rounded-2xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
-                          <FileUp className="w-12 h-12" />
-                        </div>
-                        <div className="text-center">
-                          <p className="font-black text-slate-700 text-lg">Upload Report Card Template</p>
-                          <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Supports .DOCX or High-Res PDF</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="bg-white border-2 border-indigo-100 rounded-3xl p-8 flex items-center gap-6 relative group shadow-sm">
-                        <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                          <FileUp className="w-8 h-8" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-base font-black text-slate-800 truncate">{selectedFile.name}</p>
-                          <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{(selectedFile.size / 1024).toFixed(1)} KB • Template Loaded</p>
-                        </div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={(e) => { e.stopPropagation(); setSelectedFile(null); }}
-                          className="rounded-xl h-12 w-12 text-slate-300 hover:text-rose-500 hover:bg-rose-50"
-                        >
-                          <X className="w-6 h-6" />
-                        </Button>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -234,12 +294,12 @@ export default function ReportCardConfigPage() {
           </div>
 
           <div className="lg:col-span-4 space-y-8">
-            <Card className="rounded-3xl border-none shadow-xl overflow-hidden bg-white">
+            <Card className="rounded-3xl border-none shadow-xl overflow-hidden bg-white sticky top-8">
               <CardHeader className="bg-slate-50/50 border-b px-6 py-5">
                 <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Template Fields Mapping</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="p-6 space-y-8">
+                <div className="p-6 space-y-8 max-h-[calc(100vh-350px)] overflow-auto custom-scrollbar">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 text-indigo-700">
                       <GraduationCap className="w-4 h-4" />
@@ -329,3 +389,4 @@ export default function ReportCardConfigPage() {
     </MainLayout>
   );
 }
+

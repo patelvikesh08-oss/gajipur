@@ -83,15 +83,15 @@ function AppSidebar() {
       className="border-none bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
     >
       <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
-        <div className="flex items-center gap-3 p-2 bg-white/10 rounded-xl group-data-[state=collapsed]:bg-transparent group-data-[state=collapsed]:p-0 group-data-[state=collapsed]:justify-center transition-all duration-300 border border-white/10">
-          <Avatar className="w-10 h-10 border-2 border-indigo-400 p-0.5 shrink-0">
+        <div className="flex items-center gap-3 p-2 transition-all duration-300 group-data-[state=collapsed]:justify-center">
+          <Avatar className="w-10 h-10 border-2 border-indigo-400 p-0.5 shrink-0 shadow-lg">
             <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
-            <AvatarFallback>AD</AvatarFallback>
+            <AvatarFallback className="bg-indigo-900 text-white">AD</AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden group-data-[state=collapsed]:hidden">
-            <span className="text-sm font-bold truncate text-white">Admin User</span>
-            <span className="text-[10px] text-white/60 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" /> Live
+            <span className="text-sm font-black truncate text-white uppercase tracking-tight">Admin User</span>
+            <span className="text-[10px] text-indigo-200 font-bold flex items-center gap-1 uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" /> Live System
             </span>
           </div>
         </div>
@@ -235,8 +235,8 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       onClick={handleContentClick} 
       className="bg-gradient-to-b from-indigo-700 via-purple-700 to-indigo-900 transition-all duration-300 h-svh flex flex-col overflow-hidden"
     >
-      <main className="flex-1 overflow-auto bg-white transition-all duration-300">
-        <div className="mx-auto max-w-7xl p-4 md:p-8 space-y-8">
+      <main className="flex-1 overflow-auto bg-white transition-all duration-300 rounded-none shadow-none">
+        <div className="mx-auto max-w-[1600px] p-4 md:p-8 space-y-8">
           {children}
         </div>
       </main>
@@ -252,3 +252,4 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
+
