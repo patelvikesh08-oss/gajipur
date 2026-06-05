@@ -85,7 +85,7 @@ function AppSidebar() {
       collapsible="icon" 
       onMouseEnter={() => !isMobile && setOpen(true)}
       onMouseLeave={() => !isMobile && setOpen(false)}
-      className="border-none bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-950 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
+      className="border-none bg-gradient-to-b from-indigo-900 via-indigo-900 to-indigo-950 text-white no-print [&_[data-sidebar=sidebar]]:bg-transparent"
     >
       <SidebarHeader className="p-4 border-b border-white/10 transition-all duration-300 group-data-[state=collapsed]:p-2">
         <div className="flex items-center gap-3 mb-6 group-data-[state=collapsed]:mb-0 group-data-[state=collapsed]:justify-center overflow-hidden">
@@ -244,9 +244,9 @@ function MainLayoutContent({ children, pathname }: { children: React.ReactNode, 
   return (
     <SidebarInset 
       onClick={handleContentClick} 
-      className="bg-indigo-950 transition-all duration-300 h-svh flex flex-col overflow-hidden"
+      className="bg-indigo-900 transition-all duration-300 h-svh flex flex-col overflow-hidden"
     >
-      <header className="flex h-20 shrink-0 items-center justify-between gap-2 bg-gradient-to-r from-indigo-900 to-indigo-950 px-8 no-print text-white">
+      <header className="flex h-20 shrink-0 items-center justify-between gap-2 bg-transparent px-8 no-print text-white">
         <div className="flex items-center gap-6 flex-1">
           <SidebarTrigger className="text-white hover:bg-white/10 h-10 w-10" />
           <div className="relative w-80 max-sm:hidden">
