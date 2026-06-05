@@ -15,9 +15,21 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 
 const AVAILABLE_SUBJECTS = [
-  "Mathematics", "Science", "English", "Social Studies", "Environmental Studies",
-  "Gujarati", "Hindi", "Sanskrit", "Computer Science", "Physical Education",
-  "Art & Craft", "Music", "General Knowledge", "Moral Science"
+  "Mathematics / ગણિત", "Science / વિજ્ઞાન", "English / અંગ્રેજી", "Social Studies / સા. વિજ્ઞાન", "Environmental Studies / પર્યાવરણ",
+  "Gujarati / ગુજરાતી", "Hindi / હિન્દી", "Sanskrit / સંસ્કૃત", "Computer Science / કમ્પ્યુટર", "Physical Education / પી.ટી.",
+  "Art & Craft / ચિત્ર-કલા", "Music / સંગીત", "General Knowledge / સામાન્ય જ્ઞાન", "Moral Science / નીતિશિક્ષણ"
+];
+
+const ACADEMIC_STANDARDS = [
+  { id: "Balvatika", label: "Balvatika / બાલવાટિકા" },
+  { id: "1st Standard", label: "1st Standard / ધોરણ ૧" },
+  { id: "2nd Standard", label: "2nd Standard / ધોરણ ૨" },
+  { id: "3rd Standard", label: "3rd Standard / ધોરણ ૩" },
+  { id: "4th Standard", label: "4th Standard / ધોરણ ૪" },
+  { id: "5th Standard", label: "5th Standard / ધોરણ ૫" },
+  { id: "6th Standard", label: "6th Standard / ધોરણ ૬" },
+  { id: "7th Standard", label: "7th Standard / ધોરણ ૭" },
+  { id: "8th Standard", label: "8th Standard / ધોરણ ૮" },
 ];
 
 export default function SubjectMappingPage() {
@@ -39,12 +51,10 @@ export default function SubjectMappingPage() {
 
   if (!subjectsLoaded || !studentsLoaded || !sessionLoaded) return null;
 
-  const standards = Array.from(new Set(students.map(s => s.academicStandard))).sort();
-
   const addSubject = () => {
     if (!selectedSubject) return;
     if (currentSubjects.includes(selectedSubject)) {
-      toast({ title: "Subject already added", variant: "destructive" });
+      toast({ title: "Subject already added / વિષય પહેલાથી જ ઉમેરાયેલ છે", variant: "destructive" });
       return;
     }
     setCurrentSubjects([...currentSubjects, selectedSubject]);
@@ -57,12 +67,12 @@ export default function SubjectMappingPage() {
 
   const handleSave = () => {
     if (!selectedStandard) {
-      toast({ title: "Please select a standard", variant: "destructive" });
+      toast({ title: "Please select a standard / કૃપા કરીને ધોરણ પસંદ કરો", variant: "destructive" });
       return;
     }
     saveMapping(selectedStandard, semester, currentSubjects);
     toast({
-      title: "Mapping Saved",
+      title: "Mapping Saved / મેપિંગ સાચવવામાં આવ્યું",
       description: `Subjects updated for ${selectedStandard} in ${semester} (${academicYear})`,
     });
   };
@@ -75,7 +85,7 @@ export default function SubjectMappingPage() {
             <div className="p-2 bg-primary/10 rounded-lg">
               <Layers className="w-6 h-6 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">Subject Mapping</h1>
+            <h1 className="text-2xl font-bold text-slate-800">Subject Mapping / વિષય મેપિંગ</h1>
           </div>
           
           <div className="flex flex-wrap items-center gap-3">
@@ -97,9 +107,9 @@ export default function SubjectMappingPage() {
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Semester 1">Semester 1</SelectItem>
-                <SelectItem value="Semester 2">Semester 2</SelectItem>
-                <SelectItem value="Annual">Annual</SelectItem>
+                <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
+                <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
+                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -107,26 +117,26 @@ export default function SubjectMappingPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Curriculum Configuration</CardTitle>
-            <CardDescription>Map subjects for a specific standard and semester.</CardDescription>
+            <CardTitle className="text-lg">Curriculum Configuration / અભ્યાસક્રમ ગોઠવણી</CardTitle>
+            <CardDescription>Map subjects for a specific standard and semester. / ચોક્કસ ધોરણ અને સત્ર માટે વિષયો સેટ કરો.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Academic Standard</Label>
+                <Label>Academic Standard / શૈક્ષણિક ધોરણ</Label>
                 <Select value={selectedStandard} onValueChange={setSelectedStandard}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a standard..." />
+                    <SelectValue placeholder="Select a standard... / ધોરણ પસંદ કરો..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {standards.map(std => (
-                      <SelectItem key={std} value={std}>{std}</SelectItem>
+                    {ACADEMIC_STANDARDS.map(std => (
+                      <SelectItem key={std.id} value={std.id}>{std.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Mapping for Semester</Label>
+                <Label>Mapping for Semester / સત્ર માટે મેપિંગ</Label>
                 <Badge className="w-full h-10 justify-center bg-muted text-foreground hover:bg-muted border-none font-bold">
                   {semester}
                 </Badge>
@@ -137,10 +147,10 @@ export default function SubjectMappingPage() {
               <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300 pt-4 border-t">
                 <div className="flex items-end gap-2">
                   <div className="flex-1 space-y-2">
-                    <Label>Add Subject</Label>
+                    <Label>Add Subject / વિષય ઉમેરો</Label>
                     <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose a subject to add..." />
+                        <SelectValue placeholder="Choose a subject to add... / વિષય પસંદ કરો..." />
                       </SelectTrigger>
                       <SelectContent>
                         {AVAILABLE_SUBJECTS.map(sub => (
@@ -156,7 +166,7 @@ export default function SubjectMappingPage() {
 
                 <div className="space-y-3">
                   <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
-                    Mapped Subjects ({semester})
+                    Mapped Subjects / મેપ કરેલ વિષયો ({semester})
                   </Label>
                   <div className="flex flex-wrap gap-2 min-h-[120px] p-4 border-2 border-dashed rounded-xl bg-muted/20">
                     {currentSubjects.map(sub => (
@@ -169,7 +179,7 @@ export default function SubjectMappingPage() {
                     ))}
                     {currentSubjects.length === 0 && (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm font-medium italic">
-                        No subjects mapped yet for this selection.
+                        No subjects mapped yet for this selection. / આ પસંદગી માટે હજી સુધી કોઈ વિષયો મેપ થયા નથી.
                       </div>
                     )}
                   </div>
@@ -178,7 +188,7 @@ export default function SubjectMappingPage() {
                 <div className="flex justify-end pt-4">
                   <Button onClick={handleSave} className="font-bold px-8 shadow-lg shadow-primary/20">
                     <Check className="w-4 h-4 mr-2" />
-                    Save Configuration
+                    Save Configuration / ગોઠવણી સાચવો
                   </Button>
                 </div>
               </div>

@@ -30,12 +30,25 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Link from "next/link";
 
+const ACADEMIC_STANDARDS = [
+  { id: "Balvatika", label: "Balvatika / બાલવાટિકા" },
+  { id: "1st Standard", label: "1st Standard / ધોરણ ૧" },
+  { id: "2nd Standard", label: "2nd Standard / ધોરણ ૨" },
+  { id: "3rd Standard", label: "3rd Standard / ધોરણ ૩" },
+  { id: "4th Standard", label: "4th Standard / ધોરણ ૪" },
+  { id: "5th Standard", label: "5th Standard / ધોરણ ૫" },
+  { id: "6th Standard", label: "6th Standard / ધોરણ ૬" },
+  { id: "7th Standard", label: "7th Standard / ધોરણ ૭" },
+  { id: "8th Standard", label: "8th Standard / ધોરણ ૮" },
+];
+
 export default function StudentsPage() {
   const { students, addStudent, updateStudent, deleteStudent, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, isLoaded: sessionLoaded } = useSessionStore();
   
   const [search, setSearch] = useState("");
   const [filterGender, setFilterGender] = useState<string>("all");
+  const [filterStandard, setFilterStandard] = useState<string>("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
@@ -67,7 +80,8 @@ export default function StudentsPage() {
                           (s.grNumber || "").toLowerCase().includes(search.toLowerCase()) ||
                           (s.rollNumber || "").toLowerCase().includes(search.toLowerCase());
     const matchesGender = filterGender === "all" || s.gender === filterGender;
-    return matchesSearch && matchesGender;
+    const matchesStandard = filterStandard === "all" || s.academicStandard === filterStandard;
+    return matchesSearch && matchesGender && matchesStandard;
   }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
   const handleSave = () => {
@@ -175,29 +189,43 @@ export default function StudentsPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="relative w-full sm:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search / શોધો..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-1">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search / શોધો..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={filterStandard} onValueChange={setFilterStandard}>
+              <SelectTrigger className="w-[180px]">
+                <Filter className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Standard / ધોરણ" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Standards / બધા ધોરણ</SelectItem>
+                {ACADEMIC_STANDARDS.map(std => (
+                  <SelectItem key={std.id} value={std.id}>{std.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select value={filterGender} onValueChange={setFilterGender}>
               <SelectTrigger className="w-[150px]">
-                <Filter className="w-4 h-4 mr-2" />
+                <User className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Gender / જાતિ" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All / બધા</SelectItem>
+                <SelectItem value="all">All Gender / બધી જાતિ</SelectItem>
                 <SelectItem value="Male">Male / પુરૂષ</SelectItem>
                 <SelectItem value="Female">Female / સ્ત્રી</SelectItem>
                 <SelectItem value="Other">Other / અન્ય</SelectItem>
               </SelectContent>
             </Select>
-
+          </div>
+          
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button variant="outline" className="font-bold hidden md:flex" asChild>
               <Link href="/bulk-entry">
                 <FileUp className="w-4 h-4 mr-2" />
@@ -282,7 +310,16 @@ export default function StudentsPage() {
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="std">Academic Standard / ધોરણ</Label>
-                          <Input id="std" value={formData.academicStandard} onChange={(e) => setFormData({...formData, academicStandard: e.target.value})} />
+                          <Select value={formData.academicStandard} onValueChange={(val) => setFormData({...formData, academicStandard: val})}>
+                            <SelectTrigger id="std">
+                              <SelectValue placeholder="Select standard" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ACADEMIC_STANDARDS.map(std => (
+                                <SelectItem key={std.id} value={std.id}>{std.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="childUid">Child Unique ID / ચાઇલ્ડ આઈડી</Label>
