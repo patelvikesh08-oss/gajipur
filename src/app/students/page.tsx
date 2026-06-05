@@ -25,9 +25,10 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit, User, CreditCard, Building2, Phone, Home, Hash } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, User, CreditCard, Building2, Phone, Home, FileUp, FileDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import Link from "next/link";
 
 export default function StudentsPage() {
   const { students, addStudent, updateStudent, deleteStudent, isLoaded: studentsLoaded } = useStudentStore();
@@ -126,6 +127,41 @@ export default function StudentsPage() {
     setIsAddDialogOpen(true);
   };
 
+  const exportToCSV = () => {
+    if (filteredStudents.length === 0) return;
+    
+    const headers = ["Roll No", "G.R. No", "Name", "Gender", "Standard", "Birthday", "Attendance (%)", "Caste", "Child UID", "Aadhar", "Father", "Mother", "Bank", "Account", "IFSC", "Mobile", "Address"];
+    const rows = filteredStudents.map(s => [
+      `"${s.rollNumber}"`,
+      `"${s.grNumber}"`,
+      `"${s.name}"`,
+      `"${s.gender}"`,
+      `"${s.academicStandard}"`,
+      `"${s.birthday}"`,
+      s.attendance,
+      `"${s.caste}"`,
+      `"${s.childUniqueId}"`,
+      `"${s.aadharCard}"`,
+      `"${s.fatherName}"`,
+      `"${s.motherName}"`,
+      `"${s.bankName}"`,
+      `"${s.bankAccountNumber}"`,
+      `"${s.ifscCode}"`,
+      `"${s.mobileNumber}"`,
+      `"${s.address.replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `student_list_${academicYear.replace('/', '-')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
@@ -148,19 +184,31 @@ export default function StudentsPage() {
               className="pl-10"
             />
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Select value={filterGender} onValueChange={setFilterGender}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[130px]">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Genders</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="Male">Male</SelectItem>
                 <SelectItem value="Female">Female</SelectItem>
                 <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
+
+            <Button variant="outline" className="font-bold hidden md:flex" asChild>
+              <Link href="/bulk-entry">
+                <FileUp className="w-4 h-4 mr-2" />
+                Import
+              </Link>
+            </Button>
+            <Button variant="outline" className="font-bold hidden md:flex" onClick={exportToCSV}>
+              <FileDown className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+
             <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
               setIsAddDialogOpen(open);
               if (!open) {
