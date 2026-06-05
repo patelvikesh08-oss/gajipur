@@ -37,9 +37,10 @@ export default function SvadhyayPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
+    const targetSem = isAnnual ? 'Semester 1' : semester;
+    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === targetSem);
     return mapping ? mapping.subjects : [];
-  }, [selectedStandard, semester, mappings]);
+  }, [selectedStandard, semester, mappings, isAnnual]);
 
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
@@ -98,7 +99,7 @@ export default function SvadhyayPage() {
               <Printer className="w-4 h-4 mr-2" />
               Print / પ્રિન્ટ
             </Button>
-            <Button onClick={handleSaveAll} className="font-bold bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-600/20">
+            <Button onClick={handleSaveAll} className="font-bold bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-600/20" disabled={isAnnual}>
               <Save className="w-4 h-4 mr-2" />
               Save / સાચવો
             </Button>
@@ -161,16 +162,8 @@ export default function SvadhyayPage() {
                     <React.Fragment key={`${s.id}-${subject}`}>
                       {isAnnual ? (
                         <>
-                          <TableCell className="border-l p-1 print:border-black">
-                            <div className="flex items-center justify-center">
-                              <Input type="number" className="h-8 w-14 text-center print:border-none" defaultValue={0} />
-                            </div>
-                          </TableCell>
-                          <TableCell className="border-l p-1 print:border-black">
-                            <div className="flex items-center justify-center">
-                              <Input type="number" className="h-8 w-14 text-center print:border-none" defaultValue={0} />
-                            </div>
-                          </TableCell>
+                          <TableCell className="border-l p-1 text-center font-bold text-slate-400 bg-blue-50/5">0</TableCell>
+                          <TableCell className="border-l p-1 text-center font-bold text-slate-400 bg-green-50/5">0</TableCell>
                         </>
                       ) : (
                         <TableCell className="border-l print:border-black">

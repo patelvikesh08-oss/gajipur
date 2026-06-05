@@ -37,9 +37,11 @@ export default function TrimasikPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
+    // For Annual view, we baseline on S1 subjects
+    const targetSem = isAnnual ? 'Semester 1' : semester;
+    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === targetSem);
     return mapping ? mapping.subjects : [];
-  }, [selectedStandard, semester, mappings]);
+  }, [selectedStandard, semester, mappings, isAnnual]);
 
   if (!studentsLoaded || !sessionLoaded || !subjectsLoaded) return null;
 
@@ -98,7 +100,7 @@ export default function TrimasikPage() {
               <Printer className="w-4 h-4 mr-2" />
               Print / પ્રિન્ટ
             </Button>
-            <Button onClick={handleSaveAll} className="font-bold bg-primary shadow-lg shadow-primary/20">
+            <Button onClick={handleSaveAll} className="font-bold bg-primary shadow-lg shadow-primary/20" disabled={isAnnual}>
               <Save className="w-4 h-4 mr-2" />
               Save All / સાચવો
             </Button>
@@ -163,20 +165,8 @@ export default function TrimasikPage() {
                     <React.Fragment key={`${s.id}-${subject}`}>
                       {isAnnual ? (
                         <>
-                          <TableCell className="border-l p-0 print:border-black">
-                            <input 
-                              type="number" 
-                              className="w-full h-8 text-center font-bold bg-transparent border-none outline-none focus:bg-primary/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                              defaultValue={0} 
-                            />
-                          </TableCell>
-                          <TableCell className="border-l p-0 print:border-black">
-                            <input 
-                              type="number" 
-                              className="w-full h-8 text-center font-bold bg-transparent border-none outline-none focus:bg-primary/5 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                              defaultValue={0} 
-                            />
-                          </TableCell>
+                          <TableCell className="border-l p-0 text-center text-xs font-bold text-slate-400 bg-blue-50/10">0</TableCell>
+                          <TableCell className="border-l p-0 text-center text-xs font-bold text-slate-400 bg-green-50/10">0</TableCell>
                         </>
                       ) : (
                         <TableCell className="border-l p-0 print:border-black">
@@ -202,10 +192,10 @@ export default function TrimasikPage() {
               ))}
               {(selectedStandard === "all" || activeSubjects.length === 0) && (
                 <TableRow>
-                  <TableCell colSpan={activeSubjects.length * (isAnnual ? 2 : 1) + 4} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={(activeSubjects.length * (isAnnual ? 2 : 1)) + 4} className="h-32 text-center text-muted-foreground">
                     {selectedStandard === "all" 
                       ? "Please select a specific academic standard / કૃપા કરીને ધોરણ પસંદ કરો." 
-                      : "No subjects mapped for this standard in " + semester + ". Go to Subject Mapping to configure."}
+                      : "No subjects mapped for this standard. Go to Subject Mapping to configure."}
                   </TableCell>
                 </TableRow>
               )}

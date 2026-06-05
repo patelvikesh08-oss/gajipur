@@ -41,9 +41,16 @@ export default function SubjectMappingPage() {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [currentSubjects, setCurrentSubjects] = useState<string[]>([]);
 
+  // Automatically switch away from Annual if it was selected elsewhere
+  useEffect(() => {
+    if (semester === 'Annual') {
+      updateSemester('Semester 1');
+    }
+  }, [semester, updateSemester]);
+
   // Update current subjects when standard or semester changes
   useEffect(() => {
-    if (selectedStandard && subjectsLoaded) {
+    if (selectedStandard && subjectsLoaded && semester !== 'Annual') {
       const existing = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
       setCurrentSubjects(existing ? existing.subjects : []);
     }
@@ -54,7 +61,7 @@ export default function SubjectMappingPage() {
   const addSubject = () => {
     if (!selectedSubject) return;
     if (currentSubjects.includes(selectedSubject)) {
-      toast({ title: "Subject already added / વિષય પહેલાથી જ ઉમેરાયેલ છે", variant: "destructive" });
+      toast({ title: "Subject already added", variant: "destructive" });
       return;
     }
     setCurrentSubjects([...currentSubjects, selectedSubject]);
@@ -67,13 +74,13 @@ export default function SubjectMappingPage() {
 
   const handleSave = () => {
     if (!selectedStandard) {
-      toast({ title: "Please select a standard / કૃપા કરીને ધોરણ પસંદ કરો", variant: "destructive" });
+      toast({ title: "Please select a standard", variant: "destructive" });
       return;
     }
     saveMapping(selectedStandard, semester, currentSubjects);
     toast({
       title: "Mapping Saved / મેપિંગ સાચવવામાં આવ્યું",
-      description: `Subjects updated for ${selectedStandard} in ${semester} (${academicYear})`,
+      description: `Subjects updated for ${selectedStandard} in ${semester}`,
     });
   };
 
@@ -102,14 +109,13 @@ export default function SubjectMappingPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
+            <Select value={semester === 'Annual' ? 'Semester 1' : semester} onValueChange={(val: any) => updateSemester(val)}>
               <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
                 <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
-                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -118,7 +124,7 @@ export default function SubjectMappingPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Curriculum Configuration / અભ્યાસક્રમ ગોઠવણી</CardTitle>
-            <CardDescription>Map subjects for a specific standard and semester. / ચોક્કસ ધોરણ અને સત્ર માટે વિષયો સેટ કરો.</CardDescription>
+            <CardDescription>Map subjects for a specific standard and semester.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -138,7 +144,7 @@ export default function SubjectMappingPage() {
               <div className="space-y-2">
                 <Label>Mapping for Semester / સત્ર માટે મેપિંગ</Label>
                 <Badge className="w-full h-10 justify-center bg-muted text-foreground hover:bg-muted border-none font-bold">
-                  {semester}
+                  {semester === 'Annual' ? 'Semester 1' : semester}
                 </Badge>
               </div>
             </div>
@@ -150,7 +156,7 @@ export default function SubjectMappingPage() {
                     <Label>Add Subject / વિષય ઉમેરો</Label>
                     <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Choose a subject to add... / વિષય પસંદ કરો..." />
+                        <SelectValue placeholder="Choose a subject... / વિષય પસંદ કરો..." />
                       </SelectTrigger>
                       <SelectContent>
                         {AVAILABLE_SUBJECTS.map(sub => (
@@ -166,7 +172,7 @@ export default function SubjectMappingPage() {
 
                 <div className="space-y-3">
                   <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
-                    Mapped Subjects / મેપ કરેલ વિષયો ({semester})
+                    Mapped Subjects / મેપ કરેલ વિષયો
                   </Label>
                   <div className="flex flex-wrap gap-2 min-h-[120px] p-4 border-2 border-dashed rounded-xl bg-muted/20">
                     {currentSubjects.map(sub => (
@@ -179,7 +185,7 @@ export default function SubjectMappingPage() {
                     ))}
                     {currentSubjects.length === 0 && (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm font-medium italic">
-                        No subjects mapped yet for this selection. / આ પસંદગી માટે હજી સુધી કોઈ વિષયો મેપ થયા નથી.
+                        No subjects mapped yet for this selection.
                       </div>
                     )}
                   </div>

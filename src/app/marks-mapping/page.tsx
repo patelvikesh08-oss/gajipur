@@ -39,9 +39,16 @@ export default function MarksMappingPage() {
     'PATRAK-B': ''
   });
 
+  // Automatically switch away from Annual if it was selected elsewhere
+  useEffect(() => {
+    if (semester === 'Annual') {
+      updateSemester('Semester 1');
+    }
+  }, [semester, updateSemester]);
+
   // Sync local marks when standard or semester changes
   useEffect(() => {
-    if (selectedStandard && marksLoaded) {
+    if (selectedStandard && marksLoaded && semester !== 'Annual') {
       setLocalMarks({
         'TRIMASIK': getMarksFor(selectedStandard, semester, 'TRIMASIK').toString(),
         'SVADHYAY': getMarksFor(selectedStandard, semester, 'SVADHYAY').toString(),
@@ -79,7 +86,7 @@ export default function MarksMappingPage() {
     } else {
       toast({
         title: "Partial Save / અધૂરું સેવ",
-        description: "Some values were invalid and were not saved. Please check your inputs. / કેટલીક કિંમતો અમાન્ય હતી અને સાચવવામાં આવી નથી. કૃપા કરીને તમારા ઇનપુટ્સ તપાસો.",
+        description: "Some values were invalid and were not saved. Please check your inputs.",
         variant: "destructive"
       });
     }
@@ -95,7 +102,7 @@ export default function MarksMappingPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">Marks Mapping / ગુણ મેપિંગ</h1>
-              <p className="text-xs text-muted-foreground font-medium">Define maximum marks for each assessment type / દરેક મૂલ્યાંકન પ્રકાર માટે મહત્તમ ગુણ નક્કી કરો</p>
+              <p className="text-xs text-muted-foreground font-medium">Define maximum marks for each assessment type</p>
             </div>
           </div>
           
@@ -113,14 +120,13 @@ export default function MarksMappingPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Select value={semester} onValueChange={(val: any) => updateSemester(val)}>
+            <Select value={semester === 'Annual' ? 'Semester 1' : semester} onValueChange={(val: any) => updateSemester(val)}>
               <SelectTrigger className="w-[140px] bg-white font-bold text-xs h-10 shadow-sm">
                 <SelectValue placeholder="Semester" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Semester 1">Semester 1 / સત્ર ૧</SelectItem>
                 <SelectItem value="Semester 2">Semester 2 / સત્ર ૨</SelectItem>
-                <SelectItem value="Annual">Annual / વાર્ષિક</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -129,7 +135,7 @@ export default function MarksMappingPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Standard Configuration / ધોરણ ગોઠવણી</CardTitle>
-            <CardDescription>Select a standard to configure its assessment thresholds for the active session. / સક્રિય સત્ર માટે તેના મૂલ્યાંકન થ્રેશોલ્ડને ગોઠવવા માટે ધોરણ પસંદ કરો.</CardDescription>
+            <CardDescription>Select a standard to configure its assessment thresholds.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -155,7 +161,7 @@ export default function MarksMappingPage() {
                 <Card key={type} className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-shadow">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-black uppercase tracking-widest text-primary">{type}</CardTitle>
-                    <CardDescription>Maximum possible {type === 'SVADHYAY' ? 'Units' : 'Marks'} / મહત્તમ શક્ય {type === 'SVADHYAY' ? 'એકમો' : 'ગુણ'}</CardDescription>
+                    <CardDescription>Max {type === 'SVADHYAY' ? 'Units' : 'Marks'}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex gap-2">
@@ -181,7 +187,7 @@ export default function MarksMappingPage() {
               <Button 
                 onClick={handleSaveAll} 
                 size="lg" 
-                className="font-headline font-bold px-12 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform"
+                className="font-headline font-bold px-12 shadow-lg shadow-primary/20"
               >
                 <Check className="w-5 h-5 mr-2" />
                 Save Configuration / ગોઠવણી સાચવો
@@ -191,7 +197,7 @@ export default function MarksMappingPage() {
         ) : (
           <div className="text-center py-20 border-2 border-dashed rounded-2xl bg-white/50">
             <Calculator className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-10" />
-            <p className="text-muted-foreground font-medium">Please select an academic standard to view and edit marks mapping. / ગુણ મેપિંગ જોવા અને સંપાદિત કરવા માટે કૃપા કરીને શૈક્ષણિક ધોરણ પસંદ કરો.</p>
+            <p className="text-muted-foreground font-medium">Please select an academic standard to edit marks mapping.</p>
           </div>
         )}
       </div>

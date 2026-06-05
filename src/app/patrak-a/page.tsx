@@ -27,10 +27,17 @@ export default function PatrakAPage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, semester, updateYear, updateSemester, isLoaded: sessionLoaded } = useSessionStore();
   const { mappings, isLoaded: subjectsLoaded } = useSubjectStore();
-  const { saveEntry, getMarksForStudent, isLoaded: patrakALoaded } = usePatrakAStore(academicYear, semester);
+  
+  // For Annual, we need to load both semesters. For simplicity in this prototype, 
+  // we'll use the store for the current selection, but if Annual is selected, 
+  // users would typically switch to S1 or S2 to enter data, or we'd load both.
+  // Here we'll treat Annual as a view of S1+S2.
+  const { saveEntry, getMarksForStudent, isLoaded: patrakALoaded } = usePatrakAStore(academicYear, semester === 'Annual' ? 'Semester 1' : semester);
   
   const [search, setSearch] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("all");
+
+  const isAnnual = semester === "Annual";
 
   const standards = useMemo(() => {
     return Array.from(new Set(students.map(s => s.academicStandard))).sort();
@@ -38,9 +45,11 @@ export default function PatrakAPage() {
 
   const activeSubjects = useMemo(() => {
     if (selectedStandard === "all") return [];
-    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === semester);
+    // For Annual mapping, we use S1 as the baseline
+    const targetSem = isAnnual ? 'Semester 1' : semester;
+    const mapping = mappings.find(m => m.standard === selectedStandard && m.semester === targetSem);
     return mapping ? mapping.subjects : [];
-  }, [selectedStandard, semester, mappings]);
+  }, [selectedStandard, semester, mappings, isAnnual]);
 
   const filteredStudents = useMemo(() => {
     return students.filter((s) => {
@@ -52,6 +61,7 @@ export default function PatrakAPage() {
   }, [students, search, selectedStandard]);
 
   const handleMarkChange = (studentId: string, subject: string, value: string) => {
+    if (isAnnual) return; // Entry disabled in Annual mode
     const numValue = value === "" ? 0 : parseInt(value);
     if (isNaN(numValue)) return;
     
@@ -112,7 +122,7 @@ export default function PatrakAPage() {
               <Printer className="w-4 h-4 mr-2" />
               Print / પ્રિન્ટ
             </Button>
-            <Button onClick={handleSaveAll} className="font-bold bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20">
+            <Button onClick={handleSaveAll} className="font-bold bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-600/20" disabled={isAnnual}>
               <Save className="w-4 h-4 mr-2" />
               Save / સાચવો
             </Button>
@@ -147,12 +157,12 @@ export default function PatrakAPage() {
             <Table className="border-collapse">
               <TableHeader className="bg-slate-50 print:bg-white">
                 <TableRow>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center print:border-black">Roll No</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name / નામ</TableHead>
+                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs w-[60px] border-r sticky left-0 bg-slate-50 z-20 text-center print:border-black">Roll No</TableHead>
+                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-xs min-w-[180px] border-r sticky left-[60px] bg-slate-50 z-20 print:border-black">Student Name / નામ</TableHead>
                   
                   {activeSubjects.length > 0 ? (
                     activeSubjects.map(subject => (
-                      <TableHead key={subject} className="font-black uppercase tracking-wider text-[10px] text-center border-r bg-muted/30 py-4 min-w-[100px] print:border-black">
+                      <TableHead key={subject} colSpan={isAnnual ? 2 : 1} className="font-black uppercase tracking-wider text-[10px] text-center border-r bg-muted/30 py-4 min-w-[100px] print:border-black">
                         {subject}
                       </TableHead>
                     ))
@@ -162,8 +172,18 @@ export default function PatrakAPage() {
                     </TableHead>
                   )}
                   
-                  <TableHead className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-blue-50/50 print:border-black">Total</TableHead>
+                  <TableHead rowSpan={isAnnual ? 2 : 1} className="font-bold uppercase tracking-wider text-[10px] text-center border-r min-w-[80px] bg-blue-50/50 print:border-black">Total</TableHead>
                 </TableRow>
+                {isAnnual && (
+                  <TableRow>
+                    {activeSubjects.map(subject => (
+                      <React.Fragment key={`${subject}-sub`}>
+                        <TableHead className="text-[8px] font-black text-center border-r bg-blue-50/30">SEM 1</TableHead>
+                        <TableHead className="text-[8px] font-black text-center border-r bg-green-50/30">SEM 2</TableHead>
+                      </React.Fragment>
+                    ))}
+                  </TableRow>
+                )}
               </TableHeader>
               <TableBody>
                 {filteredStudents.length > 0 ? (
@@ -181,15 +201,28 @@ export default function PatrakAPage() {
                         </TableCell>
                         
                         {activeSubjects.map(subject => (
-                          <TableCell key={`${s.id}-${subject}`} className="p-0 border-r print:border-black">
-                            <input 
-                              type="number"
-                              className="w-full h-10 text-center text-xs font-bold bg-transparent border-none outline-none focus:bg-blue-50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
-                              value={studentMarks[subject] ?? ""} 
-                              onChange={(e) => handleMarkChange(s.id, subject, e.target.value)}
-                              placeholder="-"
-                            />
-                          </TableCell>
+                          <React.Fragment key={`${s.id}-${subject}`}>
+                            {isAnnual ? (
+                              <>
+                                <TableCell className="p-0 border-r text-center text-xs font-bold text-slate-500 bg-blue-50/5">
+                                  {studentMarks[subject] ?? "-"}
+                                </TableCell>
+                                <TableCell className="p-0 border-r text-center text-xs font-bold text-slate-500 bg-green-50/5">
+                                  -
+                                </TableCell>
+                              </>
+                            ) : (
+                              <TableCell key={`${s.id}-${subject}`} className="p-0 border-r print:border-black">
+                                <input 
+                                  type="number"
+                                  className="w-full h-10 text-center text-xs font-bold bg-transparent border-none outline-none focus:bg-blue-50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                                  value={studentMarks[subject] ?? ""} 
+                                  onChange={(e) => handleMarkChange(s.id, subject, e.target.value)}
+                                  placeholder="-"
+                                />
+                              </TableCell>
+                            )}
+                          </React.Fragment>
                         ))}
 
                         <TableCell className="text-center font-black text-blue-600 bg-blue-50/10 border-r print:text-black print:border-black text-xs">
@@ -200,7 +233,7 @@ export default function PatrakAPage() {
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={activeSubjects.length + 3} className="h-32 text-center text-muted-foreground italic">
+                    <TableCell colSpan={(activeSubjects.length * (isAnnual ? 2 : 1)) + 3} className="h-32 text-center text-muted-foreground italic">
                       No student records found. / કોઈ માહિતી મળી નથી.
                     </TableCell>
                   </TableRow>
