@@ -1,10 +1,10 @@
-
 "use client";
 
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore, Student, Gender } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
+import { useFirestore } from "@/firebase";
 import {
   Table,
   TableBody,
@@ -25,10 +25,11 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Trash2, Edit, User, CreditCard, Building2, Phone, Home, FileUp, FileDown } from "lucide-react";
+import { Plus, Search, Filter, Trash2, Edit, User, CreditCard, Building2, Phone, Home, FileUp, FileDown, AlertCircle, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 
 const ACADEMIC_STANDARDS = [
@@ -44,7 +45,8 @@ const ACADEMIC_STANDARDS = [
 ];
 
 export default function StudentsPage() {
-  const { students, addStudent, updateStudent, deleteStudent, isLoaded: studentsLoaded } = useStudentStore();
+  const firestore = useFirestore();
+  const { students, addStudent, updateStudent, deleteStudent, isLoaded: studentsLoaded, error: fetchError } = useStudentStore();
   const { academicYear, isLoaded: sessionLoaded } = useSessionStore();
   
   const [search, setSearch] = useState("");
@@ -52,6 +54,7 @@ export default function StudentsPage() {
   const [filterStandard, setFilterStandard] = useState<string>("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState<Omit<Student, 'id'>>({
     rollNumber: "",
@@ -76,16 +79,21 @@ export default function StudentsPage() {
   if (!studentsLoaded || !sessionLoaded) return null;
 
   const filteredStudents = students.filter((s) => {
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
-                          s.academicStandard.toLowerCase().includes(search.toLowerCase()) ||
-                          (s.grNumber || "").toLowerCase().includes(search.toLowerCase()) ||
-                          (s.rollNumber || "").toLowerCase().includes(search.toLowerCase());
+    const sName = s.name || "";
+    const sStd = s.academicStandard || "";
+    const sGR = s.grNumber || "";
+    const sRoll = s.rollNumber || "";
+
+    const matchesSearch = sName.toLowerCase().includes(search.toLowerCase()) || 
+                          sStd.toLowerCase().includes(search.toLowerCase()) ||
+                          sGR.toLowerCase().includes(search.toLowerCase()) ||
+                          sRoll.toLowerCase().includes(search.toLowerCase());
     const matchesGender = filterGender === "all" || s.gender === filterGender;
     const matchesStandard = filterStandard === "all" || s.academicStandard === filterStandard;
     return matchesSearch && matchesGender && matchesStandard;
   }).sort((a, b) => (a.rollNumber || "").localeCompare(b.rollNumber || "", undefined, { numeric: true }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name.trim() || !formData.academicStandard) {
       toast({
         title: "Validation Error / ભૂલ",
@@ -95,16 +103,26 @@ export default function StudentsPage() {
       return;
     }
 
+    setIsSaving(true);
+    let success = false;
     if (editingStudent) {
-      updateStudent({ ...editingStudent, ...formData });
-      toast({ title: "Student Updated / અપડેટ સફળ", description: `${formData.name} updated successfully.` });
-      setEditingStudent(null);
+      success = await updateStudent({ ...editingStudent, ...formData });
+      if (success) {
+        toast({ title: "Student Updated / અપડેટ સફળ", description: `${formData.name} updated successfully.` });
+        setEditingStudent(null);
+      }
     } else {
-      addStudent(formData);
-      toast({ title: "Student Enrolled / નોંધણી સફળ", description: `${formData.name} has been enrolled.` });
+      success = await addStudent(formData);
+      if (success) {
+        toast({ title: "Student Enrolled / નોંધણી સફળ", description: `${formData.name} has been enrolled.` });
+      }
     }
-    resetForm();
-    setIsAddDialogOpen(false);
+    setIsSaving(false);
+
+    if (success) {
+      resetForm();
+      setIsAddDialogOpen(false);
+    }
   };
 
   const resetForm = () => {
@@ -133,11 +151,11 @@ export default function StudentsPage() {
     setEditingStudent(s);
     setFormData({
       rollNumber: s.rollNumber || "",
-      name: s.name,
-      birthday: s.birthday,
-      gender: s.gender,
-      academicStandard: s.academicStandard,
-      attendance: s.attendance,
+      name: s.name || "",
+      birthday: s.birthday || "",
+      gender: s.gender || "Male",
+      academicStandard: s.academicStandard || "",
+      attendance: s.attendance || 0,
       grNumber: s.grNumber || "",
       caste: s.caste || "",
       childUniqueId: s.childUniqueId || "",
@@ -200,6 +218,26 @@ export default function StudentsPage() {
           </div>
         </div>
 
+        {!firestore && (
+          <Alert variant="destructive" className="bg-red-50 border-red-200">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertTitle className="text-red-800 font-bold">Database Disconnected / કનેક્શન નથી</AlertTitle>
+            <AlertDescription className="text-red-700 font-medium">
+              Firebase is not properly initialized. Please check your environment variables (API Key, Project ID). Data cannot be saved or loaded.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {fetchError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Sync Error / ભૂલ</AlertTitle>
+            <AlertDescription>
+              Failed to load student data: {fetchError.message}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-1">
             <div className="relative flex-1 max-w-sm">
@@ -257,7 +295,7 @@ export default function StudentsPage() {
               }
             }}>
               <DialogTrigger asChild>
-                <Button className="font-headline font-bold">
+                <Button className="font-headline font-bold" disabled={!firestore}>
                   <Plus className="w-4 h-4 mr-2" />
                   Enroll Student / વિદ્યાર્થી ઉમેરો
                 </Button>
@@ -386,8 +424,17 @@ export default function StudentsPage() {
                   </div>
                 </ScrollArea>
                 <DialogFooter className="p-6 pt-0 border-t mt-4">
-                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel / રદ કરો</Button>
-                  <Button onClick={handleSave} className="font-bold">Save Student / વિદ્યાર્થી સાચવો</Button>
+                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} disabled={isSaving}>Cancel / રદ કરો</Button>
+                  <Button onClick={handleSave} className="font-bold" disabled={isSaving}>
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Saving... / સાચવી રહ્યાં છે...
+                      </>
+                    ) : (
+                      "Save Student / વિદ્યાર્થી સાચવો"
+                    )}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -399,13 +446,13 @@ export default function StudentsPage() {
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap w-16 text-center">Roll / રોલ</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap w-auto text-center">Roll / રોલ</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">G.R. No / જી.આર.</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Full Name / નામ</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Gender / જાતિ</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Standard / ધોરણ</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Birthday / જ.તા.</TableHead>
-                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Attendance / હાજરી (%)</TableHead>
+                  <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap text-center">Att. / હાજરી</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Caste / જ્ઞાતિ</TableHead>
                   <TableHead className="font-bold uppercase tracking-wider text-xs whitespace-nowrap">Mobile / મોબાઈલ</TableHead>
                   <TableHead className="text-right font-bold uppercase tracking-wider text-xs whitespace-nowrap">Actions / ક્રિયા</TableHead>
@@ -428,8 +475,8 @@ export default function StudentsPage() {
                       </TableCell>
                       <TableCell className="whitespace-nowrap font-medium">{s.birthday}</TableCell>
                       <TableCell className="whitespace-nowrap text-center">
-                        <span className={`font-bold ${s.attendance < 75 ? 'text-destructive' : 'text-primary'}`}>
-                          {s.attendance}%
+                        <span className={`font-bold ${(s.attendance || 0) < 75 ? 'text-destructive' : 'text-primary'}`}>
+                          {s.attendance || 0}%
                         </span>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">{s.caste}</TableCell>
@@ -449,7 +496,9 @@ export default function StudentsPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={10} className="h-32 text-center text-muted-foreground font-medium italic">
-                      No student records matching your criteria. / કોઈ માહિતી મળી નથી.
+                      {studentsLoaded && students.length === 0 
+                        ? "No records found in database. / ડેટાબેઝમાં કોઈ રેકોર્ડ મળ્યા નથી."
+                        : "No student records matching your criteria. / કોઈ માહિતી મળી નથી."}
                     </TableCell>
                   </TableRow>
                 )}
