@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -65,8 +66,8 @@
 
 @media print {
   @page {
-    size: auto;
-    margin: 5mm;
+    size: A4;
+    margin: 15mm;
   }
 
   html, body {
@@ -78,6 +79,7 @@
     margin: 0 !important;
   }
 
+  /* Ensure the main container doesn't hide content */
   [data-sidebar="wrapper"],
   [data-sidebar="inset"],
   .group\/sidebar-wrapper,
@@ -93,10 +95,9 @@
     width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
-  }
-
-  [style*="--sidebar-width"] {
-    display: block !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
   }
 
   .no-print, 
@@ -111,69 +112,20 @@
     display: none !important;
   }
 
-  [role="checkbox"] {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    appearance: none !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 14px !important;
-    height: 14px !important;
+  /* Specific print styles for academic documents */
+  .font-serif {
+    font-family: 'Times New Roman', serif !important;
   }
 
-  [role="checkbox"][data-state="checked"]::after {
-    content: '✓';
-    color: #000 !important;
-    font-weight: 900 !important;
-    font-size: 14px !important;
-  }
-
-  table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    font-size: 8pt !important;
-    table-layout: auto !important;
-    background: white !important;
-    border: 0.5pt solid black !important;
-  }
-
-  thead {
-    display: table-header-group !important;
-  }
-
-  tr {
-    page-break-inside: avoid !important;
-  }
-
-  th, td {
-    border: 0.5pt solid black !important;
-    padding: 2px !important;
+  .text-black {
     color: black !important;
-    background: transparent !important;
   }
 
-  .sticky {
-    position: static !important;
+  .border-black {
+    border-color: black !important;
   }
 
-  .page-break-after-always {
-    page-break-after: always !important;
-  }
-
-  .portrait-break {
-    display: none;
-  }
-
-  @media (orientation: portrait) {
-    .portrait-break {
-      display: block !important;
-      page-break-after: always !important;
-      height: 0 !important;
-      margin: 0 !important;
-    }
+  .bg-black {
+    background-color: black !important;
   }
 }

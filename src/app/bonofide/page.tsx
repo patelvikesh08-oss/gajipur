@@ -5,22 +5,24 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useStudentStore } from "@/lib/student-store";
 import { useSessionStore } from "@/lib/session-store";
+import { useSchoolStore } from "@/lib/school-store";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { IdCard, FileText, Download, CheckCircle2, Calendar, Printer } from "lucide-react";
+import { IdCard, FileText, Calendar, Printer, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function BonofidePage() {
   const { students, isLoaded: studentsLoaded } = useStudentStore();
   const { academicYear, updateYear, isLoaded: sessionLoaded } = useSessionStore();
+  const { school, isLoaded: schoolLoaded } = useSchoolStore();
   const [selectedStudentId, setSelectedStudentId] = useState<string>("");
 
-  if (!studentsLoaded || !sessionLoaded) return null;
+  if (!studentsLoaded || !sessionLoaded || !schoolLoaded) return null;
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
 
-  const handleDownload = () => {
+  const handlePrint = () => {
     window.print();
   };
 
@@ -87,9 +89,9 @@ export default function BonofidePage() {
                 Certificate Preview / પ્રિવ્યુ
               </h2>
               <div className="flex gap-2">
-                <Button onClick={handleDownload} variant="default" size="sm" className="bg-indigo-600 hover:bg-indigo-700 font-bold gap-2 px-6 shadow-lg shadow-indigo-200">
+                <Button onClick={handlePrint} variant="default" size="sm" className="bg-indigo-600 hover:bg-indigo-700 font-bold gap-2 px-6 shadow-lg shadow-indigo-200">
                   <Printer className="w-3.5 h-3.5" />
-                  Print & Download / ડાઉનલોડ
+                  Print Document / પ્રિન્ટ
                 </Button>
                 <Badge className="bg-emerald-500 font-bold flex gap-1 px-3">
                   <CheckCircle2 className="w-3 h-3" /> Ready
@@ -97,34 +99,57 @@ export default function BonofidePage() {
               </div>
             </div>
 
-            <div className="relative bg-white p-12 border-8 border-double border-slate-200 shadow-2xl rounded-sm font-serif min-h-[700px] flex flex-col justify-between print:shadow-none print:border-black print:p-8">
-              <div className="text-center space-y-6">
-                <div className="space-y-2">
-                  <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase">EduPulse Global Academy</h1>
-                  <p className="text-sm font-sans font-bold text-slate-500 uppercase tracking-widest print:text-black">Academic Year {academicYear}</p>
-                </div>
-                <div className="h-px bg-slate-200 w-full print:bg-black" />
-                <div className="py-8">
-                  <span className="inline-block border-b-2 border-slate-900 px-8 py-2 text-2xl font-bold uppercase italic tracking-widest">Bonofide Certificate</span>
-                </div>
-                <div className="text-xl leading-[3.5rem] text-slate-700 text-left px-4 print:text-black">
-                  This is to certify that <span className="font-bold border-b border-slate-400 px-4 text-slate-900 print:border-black">{selectedStudent.name}</span>, 
-                  G.R. No. <span className="font-bold border-b border-slate-400 px-4 text-slate-900 print:border-black">{selectedStudent.grNumber || "N/A"}</span>, 
-                  is a bonofide student of this school studying in the 
-                  <span className="font-bold border-b border-slate-400 px-4 text-slate-900 print:border-black">{selectedStudent.academicStandard}</span> 
-                  during the academic session <span className="font-bold">{academicYear}</span>. 
-                  His/Her general conduct has been found to be <span className="font-bold border-b border-slate-400 px-4 text-slate-900 print:border-black">Satisfactory</span>.
+            {/* Certificate Content */}
+            <div className="bg-white p-12 md:p-16 border-none shadow-none rounded-none font-serif min-h-[297mm] flex flex-col print:p-0 print:shadow-none print:w-full">
+              
+              {/* Letterhead Header */}
+              <div className="text-center space-y-2 pb-6 border-b-2 border-black">
+                <h1 className="text-4xl font-black text-black tracking-tight uppercase leading-none">{school.name}</h1>
+                <div className="text-sm font-bold text-black uppercase tracking-widest">
+                  <p>School Index No: {school.indexNumber} | District: {school.district} | Block: {school.block}</p>
+                  <p className="mt-1">{school.address}</p>
+                  <p>Mobile: {school.mobile}</p>
                 </div>
               </div>
 
-              <div className="flex justify-between items-end px-4 mt-20">
-                <div className="text-center space-y-1">
-                  <div className="w-40 h-px bg-slate-400 print:bg-black" />
-                  <p className="text-sm font-bold text-slate-500 uppercase print:text-black">Date / તારીખ</p>
+              {/* Photo Field & Date */}
+              <div className="flex justify-between items-start mt-10 px-4">
+                <div className="space-y-1">
+                  <p className="text-lg font-bold text-black">Date / તારીખ: <span className="border-b border-dotted border-black px-4">{new Date().toLocaleDateString()}</span></p>
                 </div>
-                <div className="text-center space-y-1">
-                  <div className="w-40 h-px bg-slate-400 print:bg-black" />
-                  <p className="text-sm font-bold text-slate-500 uppercase print:text-black">Principal Signature / આચાર્યની સહી</p>
+                <div className="w-[3.5cm] h-[4.5cm] border-2 border-dashed border-gray-400 flex items-center justify-center text-center p-2 text-[10px] text-gray-400 uppercase leading-tight">
+                  Paste<br/>Passport<br/>Size<br/>Photo
+                </div>
+              </div>
+
+              {/* Certificate Title */}
+              <div className="text-center py-12">
+                <span className="inline-block border-b-2 border-black pb-2 px-8 text-3xl font-bold uppercase tracking-[0.2em] decoration-double underline-offset-8">
+                  Bonofide Certificate
+                </span>
+              </div>
+
+              {/* Certificate Body */}
+              <div className="text-xl leading-[3.5rem] text-black text-justify px-4">
+                This is to certify that <span className="font-bold border-b border-black px-4 mx-1">{selectedStudent.name}</span>, 
+                son/daughter of <span className="font-bold border-b border-black px-4 mx-1">{selectedStudent.fatherName || "____________________"}</span>,
+                G.R. No. <span className="font-bold border-b border-black px-4 mx-1">{selectedStudent.grNumber || "N/A"}</span>, 
+                is a bonofide student of this school studying in the 
+                <span className="font-bold border-b border-black px-4 mx-1">{selectedStudent.academicStandard}</span> 
+                during the academic session <span className="font-bold mx-1">{academicYear}</span>. 
+                His/Her date of birth recorded in the school register is <span className="font-bold border-b border-black px-4 mx-1">{selectedStudent.birthday}</span>.
+                His/Her general conduct has been found to be <span className="font-bold border-b border-black px-4 mx-1">Satisfactory</span>.
+              </div>
+
+              {/* Signatures */}
+              <div className="flex justify-between items-end px-4 mt-auto mb-20">
+                <div className="text-center space-y-2">
+                  <div className="w-44 h-px bg-black" />
+                  <p className="text-sm font-bold text-black uppercase tracking-widest">Office Clerk / કારકુન</p>
+                </div>
+                <div className="text-center space-y-2">
+                  <div className="w-44 h-px bg-black" />
+                  <p className="text-sm font-bold text-black uppercase tracking-widest">Principal / આચાર્ય</p>
                 </div>
               </div>
             </div>
