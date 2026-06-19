@@ -34,7 +34,8 @@ import {
   Settings2,
   Settings,
   FileDigit,
-  Building2
+  Building2,
+  CalendarCheck
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -46,6 +47,7 @@ import { cn } from "@/lib/utils";
 const mainNavigation = [
   { name: "Dashboard / ડેશબોર્ડ", href: "/", icon: LayoutDashboard },
   { name: "Students / વિદ્યાર્થીઓ", href: "/students", icon: Users },
+  { name: "Daily Attendance / દૈનિક હાજરી", href: "/daily-attendance", icon: CalendarCheck },
   { name: "Bonofide / બોનાફાઇડ", href: "/bonofide", icon: IdCard },
   { name: "FLN / અંકજ્ઞાન", href: "/fln", icon: SpellCheck },
 ];
